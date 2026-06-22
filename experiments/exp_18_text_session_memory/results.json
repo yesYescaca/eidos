@@ -1,0 +1,21 @@
+{
+  "experiment": "exp_18_text_session_memory",
+  "description": "v5.0 text + sleep before surprise fixes misleading phrase context",
+  "without_sleep": {
+    "inferred": "water",
+    "source": "recent_history",
+    "associate": "water",
+    "text_decision": "commit"
+  },
+  "with_sleep": {
+    "inferred": "fire",
+    "source": "belief_graph",
+    "associate": "fire",
+    "text_decision": "commit"
+  },
+  "checks": {
+    "misled_without_sleep": true,
+    "recovered_with_sleep": true
+  },
+  "pass": true
+}

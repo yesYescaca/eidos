@@ -5,7 +5,7 @@
 | Field | Value |
 |-------|-------|
 | **Classification** | Research Prototype |
-| **Status** | Active — v4.0 (Experiment 06) |
+| **Status** | Active — v5.0 (Experiment 06) |
 | **Date** | June 2026 |
 | **Stack** | Python, numpy, matplotlib, pytest |
 | **Repository** | [github.com/yesYescaca/eidos](https://github.com/yesYescaca/eidos) |
@@ -16,7 +16,7 @@
 
 EIDOS is a laboratory prototype reasoning agent built from cognitive science primitives — not from transformer architectures or token prediction. Operating on 64-dimensional concept vectors, it implements a **Predictive Active Workspace (PAW)** architecture: hierarchical predictive coding, global workspace broadcasting, Hebbian association learning, attentional gating, intrinsic curiosity reward, dual-process reasoning, complementary learning systems, and meta-cognition.
 
-Across **sixteen controlled experiments**, we demonstrate that:
+Across **eighteen controlled experiments**, we demonstrate that:
 
 1. **Prediction error decreases** with structured exposure (Exp 01).
 2. **Associations form** from co-activation without supervision (Exp 02).
@@ -29,6 +29,7 @@ Across **sixteen controlled experiments**, we demonstrate that:
 9. **Meta-cognition detects unreliable context and reasoning** (Exp 12–13).
 10. **Consequential meta-cognition improves outcomes** — deferring and sleeping beats blind commitment (Exp 14).
 11. **Active inference selects epistemic actions** — probing concepts reduces uncertainty before reasoning (Exp 15–16).
+12. **Text grounds to cognition** — phrases embed to vectors; text decisions drive probe and memory (Exp 17–18).
 
 **Conclusion:** Reasoning-like behaviour — surprise detection, hypothesis generation, belief revision, self-monitoring, action selection under uncertainty, and measurable recovery — can emerge from biologically motivated mechanisms in pure numpy, without an LLM.
 
@@ -78,6 +79,8 @@ Waking steps → EpisodicBuffer ──sleep()──→ BeliefGraph
 
 **v4.0 — Active inference:** select `observe`, `probe:<concept>`, or `sleep` by minimising expected free energy before committing to perception.
 
+**v5.0 — Language grounding:** `TextGroundingBridge` + `EidosTextAgent` map phrases → 64-d vectors; `text_decision` surfaces cognitive outcomes.
+
 ### 2.2 Component Map
 
 | Component | Biological basis | Role |
@@ -95,6 +98,8 @@ Waking steps → EpisodicBuffer ──sleep()──→ BeliefGraph
 | `SleepReplay` | Hippocampal replay (Wilson & McNaughton 1994) | Offline consolidation |
 | `MetaCognitionMonitor` | Metacognition (Flavell; Nelson & Narens) | Context conflict + reasoning quality (v3) |
 | `ActiveInferenceController` | Active inference (Friston et al. 2017) | EFE action selection: observe / probe / sleep (v4) |
+| `TextGroundingBridge` | Symbol grounding (Harnad 1990); distributional semantics | Phrase → vector embedding (v5) |
+| `EidosTextAgent` | Language adapter | `step_text`, `text_decision` (v5) |
 
 ### 2.3 Version Evolution
 
@@ -109,6 +114,7 @@ Waking steps → EpisodicBuffer ──sleep()──→ BeliefGraph
 | v3.0 | Meta-cognition: detect misleading context + ambiguous reasoning |
 | v3.1 | Consequential meta-cognition: defer + auto-sleep |
 | v4.0 | Active inference: expected free energy action selection |
+| v5.0 | Text grounding bridge: phrases → PAW vectors |
 
 ### 2.4 Ablation Flags
 
@@ -158,6 +164,9 @@ v3.1 defer/sleep beats v3.0 blind commit on ambiguous near-duplicate concepts.
 ### Active inference (15–16)
 Exp 15: goal-directed epistemic probe selects `probe:fire` under ambiguity. Exp 16: v4 on probes and lowers error vs passive observe on cold ambiguous input.
 
+### Text grounding (17–18)
+Exp 17: `EidosTextAgent` + active inference probes goal-aligned text concept. Exp 18: pre-surprise sleep consolidates text session memory and fixes misleading phrase context.
+
 ---
 
 ## 5. Discussion
@@ -172,7 +181,7 @@ Exp 15: goal-directed epistemic probe selects `probe:fire` under ambiguity. Exp 
 
 | Limitation | Impact |
 |------------|--------|
-| 64-dim synthetic vectors | No language or real-world grounding |
+| 64-dim synthetic vectors | **Partially addressed in v5.0** — hash text embeddings; not full language |
 | No action output | **Resolved in v4.0** — probe/sleep/observe via EFE |
 | Sleep is explicit | No automatic circadian schedule |
 | Single agent | No multi-agent workspace |
@@ -201,9 +210,9 @@ This is **enhancement** (adding System 2 + memory to System 1 fluency), not subs
 
 ## 6. Conclusion
 
-EIDOS v4.0 demonstrates progressive cognitive completeness: an agent that predicts, reasons, remembers, monitors its own reliability, changes behaviour when uncertain, and **selects actions to reduce expected surprise**. The experiment remains a research prototype — not AGI, not a product — but a reproducible foundation for studying competence under uncertainty.
+EIDOS v5.0 demonstrates progressive cognitive completeness: an agent that predicts, reasons, remembers, monitors its own reliability, selects actions under uncertainty, and **grounds natural-language phrases** into the same PAW loop. The experiment remains a research prototype — not AGI, not a product — but a reproducible foundation for studying competence under uncertainty.
 
-**Next research frontier:** language grounding bridge (embeddings → PAW) and hybrid LLM sidecar experiments.
+**Next research frontier:** hybrid LLM sidecar (EIDOS monitors + defers on LLM drafts) and richer embeddings.
 
 ---
 
@@ -212,11 +221,11 @@ EIDOS v4.0 demonstrates progressive cognitive completeness: an agent that predic
 ```bash
 cd eidos
 pip install -r requirements.txt
-pytest tests/                    # 45+ unit tests
-python run_all_experiments.py    # All 16 experiments + summary
+pytest tests/                    # 49+ unit tests
+python run_all_experiments.py    # All 18 experiments + summary
 ```
 
-State serialisation version: **4.0**
+State serialisation version: **5.0**
 
 ---
 
@@ -240,7 +249,9 @@ State serialisation version: **4.0**
 | 14 | Meta consequential | Success | v3.1 |
 | 15 | Active epistemic probe | Success | v4.0 |
 | 16 | Active inference ablation | Success | v4.0 |
+| 17 | Text goal-directed probe | Success | v5.0 |
+| 18 | Text session memory | Success | v5.0 |
 
 ---
 
-*Kisamapa Labs — Experiment 06 — EIDOS v4.0 — Lab Report*
+*Kisamapa Labs — Experiment 06 — EIDOS v5.0 — Lab Report*

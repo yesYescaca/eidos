@@ -61,5 +61,10 @@ ACTIVE_SLEEP_EPISTEMIC_BONUS = 0.15
 ACTIVE_BELIEF_STRENGTH_THRESHOLD = 0.05
 ACTIVE_SLEEP_REPLAYS = 25
 
+# v5.0: text grounding bridge — hash embeddings (no GPU / no torch)
+TEXT_GROUNDING_SEED = 42
+TEXT_GROUNDING_BUCKETS = 256
+TEXT_ANOMALY_LABEL = "text_anomaly"
+
 # Deprecated alias kept for backward compatibility in tests/docs
 REASONING_THRESHOLD = REASONING_ABSOLUTE_FLOOR

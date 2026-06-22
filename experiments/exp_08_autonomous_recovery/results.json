@@ -8,9 +8,9 @@
     "correct_concept": true,
     "inferred_correct": true,
     "autonomous_inference": true,
-    "early_recovery_full": 0.8489132950129907,
-    "early_recovery_ablated": 727.1069908437361,
-    "improvement_percent": 99.88324781556179,
+    "early_recovery_full": 0.23334115419139598,
+    "early_recovery_ablated": 894.1306248298663,
+    "improvement_percent": 99.97390301285834,
     "beats_ablation": true,
     "pass": true
   },
@@ -23,9 +23,9 @@
     "correct_concept": true,
     "inferred_correct": true,
     "autonomous_inference": true,
-    "early_recovery_full": 0.2475296016712274,
-    "early_recovery_ablated": 20.526149030749924,
-    "improvement_percent": 98.79407675886787,
+    "early_recovery_full": 0.6924979963890664,
+    "early_recovery_ablated": 871.825191129809,
+    "improvement_percent": 99.92056916874682,
     "beats_ablation": true,
     "pass": true
   },
@@ -38,9 +38,9 @@
     "correct_concept": true,
     "inferred_correct": true,
     "autonomous_inference": true,
-    "early_recovery_full": 0.2776539946886175,
-    "early_recovery_ablated": 1591.689037684776,
-    "improvement_percent": 99.98255601514398,
+    "early_recovery_full": 0.22232405226469706,
+    "early_recovery_ablated": 2050.883695086998,
+    "improvement_percent": 99.98915959726057,
     "beats_ablation": true,
     "pass": true
   }

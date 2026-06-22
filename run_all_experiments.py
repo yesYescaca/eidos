@@ -27,6 +27,8 @@ EXPERIMENTS = [
     ("14", "exp_14_meta_consequential", "Meta consequential (v3.1)"),
     ("15", "exp_15_active_epistemic_probe", "Active epistemic probe (v4.0)"),
     ("16", "exp_16_active_inference_ablation", "Active inference ablation (v4.0)"),
+    ("17", "exp_17_text_ambiguous_deferral", "Text goal-directed probe (v5.0)"),
+    ("18", "exp_18_text_session_memory", "Text session memory (v5.0)"),
 ]
 
 

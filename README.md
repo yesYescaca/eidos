@@ -2,7 +2,7 @@
 
 **Emergent Intelligence via Distributed Organisational Systems**
 
-**Status: Active (v4.0)** — See [LAB_REPORT.md](LAB_REPORT.md), [CHANGELOG.md](CHANGELOG.md), and [docs/V4_PLAN.md](docs/V4_PLAN.md).
+**Status: Active (v5.0)** — See [LAB_REPORT.md](LAB_REPORT.md), [CHANGELOG.md](CHANGELOG.md), [docs/WHAT_EIDOS_IS.md](docs/WHAT_EIDOS_IS.md).
 
 EIDOS is a laboratory prototype reasoning agent built from cognitive science primitives — not from transformer architectures or token prediction. Instead of learning statistical text patterns, EIDOS implements mechanisms drawn from neuroscience: hierarchical predictive coding, global workspace broadcasting, Hebbian association learning, attentional gating, and intrinsic curiosity reward. It is a transparent, numpy-only system designed to explore how biological cognition might be computationally reconstructed.
 
@@ -26,9 +26,20 @@ eidos/
 ├── architecture/      # Component implementations
 ├── agent/             # Main EidosAgent class
 ├── tests/             # pytest suite
-├── experiments/       # Sixteen validation experiments (v1 → v4.0)
+├── docs/              # WHAT_EIDOS_IS.md, version plans
+├── experiments/       # Eighteen validation experiments (v1 → v5.0)
 └── run_all_experiments.py
 ```
+
+## v5.0 — Language Grounding Bridge
+
+Version 5.0 connects natural language to PAW **without** an LLM or GPU:
+
+- **`TextGroundingBridge`** — hashed n-gram embeddings → 64-d vectors (numpy only)
+- **`EidosTextAgent`** — `register_text_concept()`, `step_text()`, `text_decision`
+- **Decisions:** `observe` | `probe` | `defer` | `clarify` | `commit` | `sleep`
+- **Exp 17** — goal-directed text probing via active inference
+- **Exp 18** — text session memory: sleep fixes misleading phrase context
 
 ## v4.0 — Active Inference
 
@@ -138,6 +149,8 @@ python experiments/exp_13_meta_ambiguous_reasoning/run.py # v3.0 B: ambiguous re
 python experiments/exp_14_meta_consequential/run.py       # v3.1: defer/sleep beats commit
 python experiments/exp_15_active_epistemic_probe/run.py   # v4.0: epistemic probing
 python experiments/exp_16_active_inference_ablation/run.py  # v4.0: active vs passive ablation
+python experiments/exp_17_text_ambiguous_deferral/run.py    # v5.0: goal-directed text probe
+python experiments/exp_18_text_session_memory/run.py        # v5.0: text + sleep recovery
 ```
 
 ## Running Tests
@@ -186,5 +199,5 @@ EIDOS is a tool for understanding cognition computationally — a Kisamapa Labs 
 
 ---
 
-*KISAMAPA LABS — EXPERIMENT 06 — EIDOS v4.0*
+*KISAMAPA LABS — EXPERIMENT 06 — EIDOS v5.0*
 *Classification: Research Prototype — Active*

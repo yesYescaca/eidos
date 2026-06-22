@@ -1,5 +1,10 @@
 # Changelog
 
+## v5.0 — Language Grounding Bridge
+- `TextGroundingBridge` — deterministic hash embeddings (numpy only)
+- `EidosTextAgent` — `register_text_concept`, `step_text`, `text_decision`
+- Exp 17–18: goal-directed text probe + text session memory via sleep
+
 ## v4.0 — Active Inference
 - `ActiveInferenceController` — expected free energy action selection (Friston 2017)
 - Actions: `observe`, `probe:<concept>`, `sleep`

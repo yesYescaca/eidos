@@ -1,0 +1,20 @@
+{
+  "experiment": "exp_17_text_goal_probe",
+  "description": "v5.0 text + active inference probes goal-aligned concept",
+  "passive": {
+    "text_decision": "observe",
+    "inferred": null,
+    "selected_action": null
+  },
+  "active": {
+    "text_decision": "probe",
+    "inferred": "fire",
+    "selected_action": "probe:fire"
+  },
+  "checks": {
+    "active_probed": true,
+    "active_inferred_fire": true,
+    "passive_no_probe": true
+  },
+  "pass": true
+}

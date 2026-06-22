@@ -126,5 +126,21 @@
     "passed": true,
     "exit_code": 0,
     "ok": true
+  },
+  {
+    "num": "17",
+    "name": "Text goal-directed probe (v5.0)",
+    "folder": "exp_17_text_ambiguous_deferral",
+    "passed": true,
+    "exit_code": 0,
+    "ok": true
+  },
+  {
+    "num": "18",
+    "name": "Text session memory (v5.0)",
+    "folder": "exp_18_text_session_memory",
+    "passed": true,
+    "exit_code": 0,
+    "ok": true
   }
 ]
