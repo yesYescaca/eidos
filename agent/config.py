@@ -75,5 +75,11 @@ SBERT_MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
 HYBRID_DEFAULT_EMBEDDING = "sbert"
 META_INJECTION_MAX_ROUNDS = 2
 
+# v7.1: live Groq eval + belief-grounded prompts
+GROQ_DEFAULT_MODEL = "llama-3.3-70b-versatile"
+GROQ_DEFAULT_BASE_URL = "https://api.groq.com/openai/v1"
+BELIEF_CONTEXT_TOP_K = 3
+GATE_DRAFT_CONCEPT_MISMATCH = True
+
 # Deprecated alias kept for backward compatibility in tests/docs
 REASONING_THRESHOLD = REASONING_ABSOLUTE_FLOOR

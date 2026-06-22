@@ -51,7 +51,9 @@ def main() -> None:
     unified_gated = unified["gated"]
     unified_reasons = unified["gate_evaluation"]["reasons"]
     caught_misalignment = any(
-        r.startswith("draft_goal_misalignment") for r in unified_reasons
+        r.startswith("draft_goal_misalignment")
+        or r.startswith("draft_concept_mismatch")
+        for r in unified_reasons
     )
 
     scenario_pass = bool(
@@ -80,7 +82,7 @@ def main() -> None:
         "checks": {
             "legacy_committed_wrong_draft": legacy_committed,
             "unified_gated": unified_gated,
-            "draft_goal_misalignment_detected": caught_misalignment,
+            "draft_misalignment_detected": caught_misalignment,
         },
         "pass": scenario_pass,
     }

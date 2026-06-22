@@ -13,11 +13,12 @@
       "cognitive:defer"
     ],
     "scores": {
-      "question_surprise_ratio": 0.6559851528340929,
-      "draft_prediction_error": 0.5385328835046819,
-      "draft_goal_alignment": 0.2567063135220663,
-      "concept_gap": 0.0623810749433599,
-      "top_concept_similarity": 0.29960507221166655
+      "question_surprise_ratio": 1.3906074163374609,
+      "draft_prediction_error": 0.4447697606524675,
+      "draft_goal_alignment": 0.07759241585614036,
+      "draft_concept_mismatch": 1.0,
+      "concept_gap": 0.09772758300581469,
+      "top_concept_similarity": 0.38557353454242527
     }
   },
   "benchmark": {
@@ -141,10 +142,11 @@
         ],
         "scores": {
           "question_surprise_ratio": 1.0,
-          "draft_prediction_error": 0.4885235582985299,
-          "draft_goal_alignment": 0.810440940175871,
-          "concept_gap": 0.010650164671830664,
-          "top_concept_similarity": 0.904292800948562
+          "draft_prediction_error": 0.39410373254375874,
+          "draft_goal_alignment": 0.6335458988923698,
+          "draft_concept_mismatch": 1.0,
+          "concept_gap": 0.02737533506675538,
+          "top_concept_similarity": 0.9142545952970105
         }
       },
       {
@@ -165,10 +167,10 @@
         ],
         "scores": {
           "question_surprise_ratio": 1.0,
-          "draft_prediction_error": 0.45353538997472564,
-          "draft_goal_alignment": 0.8298633830119996,
-          "concept_gap": 0.07449979755961744,
-          "top_concept_similarity": 1.0
+          "draft_prediction_error": 0.43869816744426715,
+          "draft_goal_alignment": 0.7600181430076485,
+          "concept_gap": 0.07999249859666169,
+          "top_concept_similarity": 0.9999999999999999
         }
       },
       {
@@ -191,10 +193,11 @@
         ],
         "scores": {
           "question_surprise_ratio": 1.0,
-          "draft_prediction_error": 0.36942194058300937,
-          "draft_goal_alignment": 0.2567063135220663,
-          "concept_gap": 0.0623810749433599,
-          "top_concept_similarity": 0.29960507221166655
+          "draft_prediction_error": 0.4984900938082896,
+          "draft_goal_alignment": 0.07759241585614036,
+          "draft_concept_mismatch": 1.0,
+          "concept_gap": 0.09772758300581469,
+          "top_concept_similarity": 0.38557353454242527
         }
       },
       {
@@ -215,10 +218,10 @@
         ],
         "scores": {
           "question_surprise_ratio": 1.0,
-          "draft_prediction_error": 0.40914578325426976,
-          "draft_goal_alignment": 0.8012644311781627,
-          "concept_gap": 0.18998927933790016,
-          "top_concept_similarity": 0.3108240735863176
+          "draft_prediction_error": 0.4225978498849141,
+          "draft_goal_alignment": 0.7937357631130779,
+          "concept_gap": 0.10879175241708045,
+          "top_concept_similarity": 0.3640593853957983
         }
       },
       {
@@ -241,10 +244,11 @@
         ],
         "scores": {
           "question_surprise_ratio": 1.0,
-          "draft_prediction_error": 0.4188078887263115,
-          "draft_goal_alignment": 0.45175813453799285,
-          "concept_gap": 0.11013900140452243,
-          "top_concept_similarity": 0.46368722866129103
+          "draft_prediction_error": 0.4576829280901921,
+          "draft_goal_alignment": 0.03815621125697791,
+          "draft_concept_mismatch": 1.0,
+          "concept_gap": 0.1383307515572988,
+          "top_concept_similarity": 0.4788536078362629
         }
       },
       {
@@ -267,10 +271,11 @@
         ],
         "scores": {
           "question_surprise_ratio": 1.0,
-          "draft_prediction_error": 0.3698614315134389,
-          "draft_goal_alignment": 0.22098070663419497,
-          "concept_gap": 0.007887543629760463,
-          "top_concept_similarity": 0.23208838026239864
+          "draft_prediction_error": 0.42865142526640027,
+          "draft_goal_alignment": 0.1363626625745029,
+          "draft_concept_mismatch": 1.0,
+          "concept_gap": 0.18247457222240293,
+          "top_concept_similarity": 0.2952202736312364
         }
       },
       {
@@ -291,10 +296,10 @@
         ],
         "scores": {
           "question_surprise_ratio": 1.0,
-          "draft_prediction_error": 0.4140163471232294,
-          "draft_goal_alignment": 0.6234487107322867,
-          "concept_gap": 0.22442041307764038,
-          "top_concept_similarity": 0.47620207998783637
+          "draft_prediction_error": 0.48937659740073797,
+          "draft_goal_alignment": 0.596080544600012,
+          "concept_gap": 0.07471236146660654,
+          "top_concept_similarity": 0.4473620100149333
         }
       },
       {
@@ -317,10 +322,11 @@
         ],
         "scores": {
           "question_surprise_ratio": 1.0,
-          "draft_prediction_error": 0.46697929788083864,
-          "draft_goal_alignment": 0.4929488605067254,
-          "concept_gap": 0.04354312431524465,
-          "top_concept_similarity": 0.58201113813693
+          "draft_prediction_error": 0.3107928603732684,
+          "draft_goal_alignment": 0.4806434053136103,
+          "draft_concept_mismatch": 1.0,
+          "concept_gap": 0.09067106391304836,
+          "top_concept_similarity": 0.3497396040204551
         }
       },
       {
@@ -343,10 +349,11 @@
         ],
         "scores": {
           "question_surprise_ratio": 1.0,
-          "draft_prediction_error": 0.4058850326893936,
-          "draft_goal_alignment": 0.19937638584956607,
-          "concept_gap": 0.2225584037838223,
-          "top_concept_similarity": 0.617768500530343
+          "draft_prediction_error": 0.557672892035373,
+          "draft_goal_alignment": 0.33967526363333567,
+          "draft_concept_mismatch": 1.0,
+          "concept_gap": 0.06338860886355335,
+          "top_concept_similarity": 0.3079452173040426
         }
       },
       {
@@ -369,10 +376,11 @@
         ],
         "scores": {
           "question_surprise_ratio": 1.0,
-          "draft_prediction_error": 0.381837751951161,
-          "draft_goal_alignment": 0.3196815404090154,
-          "concept_gap": 0.30191553866161025,
-          "top_concept_similarity": 0.6379088212181432
+          "draft_prediction_error": 0.4264479773357825,
+          "draft_goal_alignment": 0.19600493450099227,
+          "draft_concept_mismatch": 1.0,
+          "concept_gap": 0.5610873025645154,
+          "top_concept_similarity": 0.6297868485079355
         }
       },
       {
@@ -393,10 +401,10 @@
         ],
         "scores": {
           "question_surprise_ratio": 1.0,
-          "draft_prediction_error": 0.47440045836297084,
-          "draft_goal_alignment": 0.7659156260078024,
-          "concept_gap": 0.23116994193664397,
-          "top_concept_similarity": 0.5607797332597111
+          "draft_prediction_error": 0.4097436185644287,
+          "draft_goal_alignment": 0.7609193771717555,
+          "concept_gap": 0.3120251840932955,
+          "top_concept_similarity": 0.5380267442521647
         }
       },
       {
@@ -419,10 +427,11 @@
         ],
         "scores": {
           "question_surprise_ratio": 1.0,
-          "draft_prediction_error": 0.30654273695946055,
-          "draft_goal_alignment": 0.40304743514962216,
-          "concept_gap": 0.000554942635254907,
-          "top_concept_similarity": 0.5469485100241838
+          "draft_prediction_error": 0.32749824910080727,
+          "draft_goal_alignment": 0.419474968909596,
+          "draft_concept_mismatch": 1.0,
+          "concept_gap": 0.11003771903410903,
+          "top_concept_similarity": 0.4552104467181663
         }
       },
       {
@@ -445,10 +454,11 @@
         ],
         "scores": {
           "question_surprise_ratio": 1.0,
-          "draft_prediction_error": 0.4920974840486522,
-          "draft_goal_alignment": 0.2520445982475744,
-          "concept_gap": 0.062085054609622325,
-          "top_concept_similarity": 0.3249409046983055
+          "draft_prediction_error": 0.4555714243777568,
+          "draft_goal_alignment": 0.09685217423541442,
+          "draft_concept_mismatch": 1.0,
+          "concept_gap": 0.02023951261283108,
+          "top_concept_similarity": 0.26529570281830317
         }
       },
       {
@@ -471,10 +481,11 @@
         ],
         "scores": {
           "question_surprise_ratio": 1.0,
-          "draft_prediction_error": 0.392897065489813,
-          "draft_goal_alignment": 0.44056868923069337,
-          "concept_gap": 0.060462535771914794,
-          "top_concept_similarity": 0.3972233648071764
+          "draft_prediction_error": 0.4582656710402736,
+          "draft_goal_alignment": 0.31199484202668826,
+          "draft_concept_mismatch": 1.0,
+          "concept_gap": 0.1267948747809371,
+          "top_concept_similarity": 0.3629877722216322
         }
       },
       {
@@ -497,10 +508,10 @@
         ],
         "scores": {
           "question_surprise_ratio": 1.0,
-          "draft_prediction_error": 0.3032922394625688,
-          "draft_goal_alignment": 0.25176633038846846,
-          "concept_gap": 0.15962538021656014,
-          "top_concept_similarity": 0.6971603660005135
+          "draft_prediction_error": 0.516863598455058,
+          "draft_goal_alignment": 0.11765758992115705,
+          "concept_gap": 0.11870251312456659,
+          "top_concept_similarity": 0.6395038031093565
         }
       },
       {
@@ -523,10 +534,11 @@
         ],
         "scores": {
           "question_surprise_ratio": 1.0,
-          "draft_prediction_error": 0.3395078861910018,
-          "draft_goal_alignment": 0.13992389655465687,
-          "concept_gap": 0.11297609829629257,
-          "top_concept_similarity": 0.45606030086734706
+          "draft_prediction_error": 0.3959272692810024,
+          "draft_goal_alignment": 0.024960200192880144,
+          "draft_concept_mismatch": 1.0,
+          "concept_gap": 0.013525706062213427,
+          "top_concept_similarity": 0.5101598798797689
         }
       },
       {
@@ -549,10 +561,11 @@
         ],
         "scores": {
           "question_surprise_ratio": 1.0,
-          "draft_prediction_error": 0.3709301730614325,
-          "draft_goal_alignment": 0.33283412857215955,
-          "concept_gap": 0.0443589009268362,
-          "top_concept_similarity": 0.47353911188901204
+          "draft_prediction_error": 0.3726730398337136,
+          "draft_goal_alignment": 0.28325018148098313,
+          "draft_concept_mismatch": 1.0,
+          "concept_gap": 0.14480097873102205,
+          "top_concept_similarity": 0.4517214677465479
         }
       }
     ]
@@ -654,10 +667,11 @@
         ],
         "scores": {
           "question_surprise_ratio": 1.0,
-          "draft_prediction_error": 0.3698614315134389,
-          "draft_goal_alignment": 0.22098070663419497,
-          "concept_gap": 0.007887543629760463,
-          "top_concept_similarity": 0.23208838026239864
+          "draft_prediction_error": 0.42865142526640027,
+          "draft_goal_alignment": 0.1363626625745029,
+          "draft_concept_mismatch": 1.0,
+          "concept_gap": 0.18247457222240293,
+          "top_concept_similarity": 0.2952202736312364
         }
       },
       {
@@ -678,10 +692,10 @@
         ],
         "scores": {
           "question_surprise_ratio": 1.0,
-          "draft_prediction_error": 0.4140163471232294,
-          "draft_goal_alignment": 0.6234487107322867,
-          "concept_gap": 0.22442041307764038,
-          "top_concept_similarity": 0.47620207998783637
+          "draft_prediction_error": 0.48937659740073797,
+          "draft_goal_alignment": 0.596080544600012,
+          "concept_gap": 0.07471236146660654,
+          "top_concept_similarity": 0.4473620100149333
         }
       },
       {
@@ -704,10 +718,11 @@
         ],
         "scores": {
           "question_surprise_ratio": 1.0,
-          "draft_prediction_error": 0.46697929788083864,
-          "draft_goal_alignment": 0.4929488605067254,
-          "concept_gap": 0.04354312431524465,
-          "top_concept_similarity": 0.58201113813693
+          "draft_prediction_error": 0.3107928603732684,
+          "draft_goal_alignment": 0.4806434053136103,
+          "draft_concept_mismatch": 1.0,
+          "concept_gap": 0.09067106391304836,
+          "top_concept_similarity": 0.3497396040204551
         }
       },
       {
@@ -730,10 +745,11 @@
         ],
         "scores": {
           "question_surprise_ratio": 1.0,
-          "draft_prediction_error": 0.4058850326893936,
-          "draft_goal_alignment": 0.19937638584956607,
-          "concept_gap": 0.2225584037838223,
-          "top_concept_similarity": 0.617768500530343
+          "draft_prediction_error": 0.557672892035373,
+          "draft_goal_alignment": 0.33967526363333567,
+          "draft_concept_mismatch": 1.0,
+          "concept_gap": 0.06338860886355335,
+          "top_concept_similarity": 0.3079452173040426
         }
       },
       {
@@ -756,10 +772,11 @@
         ],
         "scores": {
           "question_surprise_ratio": 1.0,
-          "draft_prediction_error": 0.381837751951161,
-          "draft_goal_alignment": 0.3196815404090154,
-          "concept_gap": 0.30191553866161025,
-          "top_concept_similarity": 0.6379088212181432
+          "draft_prediction_error": 0.4264479773357825,
+          "draft_goal_alignment": 0.19600493450099227,
+          "draft_concept_mismatch": 1.0,
+          "concept_gap": 0.5610873025645154,
+          "top_concept_similarity": 0.6297868485079355
         }
       },
       {
@@ -780,10 +797,10 @@
         ],
         "scores": {
           "question_surprise_ratio": 1.0,
-          "draft_prediction_error": 0.47440045836297084,
-          "draft_goal_alignment": 0.7659156260078024,
-          "concept_gap": 0.23116994193664397,
-          "top_concept_similarity": 0.5607797332597111
+          "draft_prediction_error": 0.4097436185644287,
+          "draft_goal_alignment": 0.7609193771717555,
+          "concept_gap": 0.3120251840932955,
+          "top_concept_similarity": 0.5380267442521647
         }
       },
       {
@@ -806,10 +823,11 @@
         ],
         "scores": {
           "question_surprise_ratio": 1.0,
-          "draft_prediction_error": 0.30654273695946055,
-          "draft_goal_alignment": 0.40304743514962216,
-          "concept_gap": 0.000554942635254907,
-          "top_concept_similarity": 0.5469485100241838
+          "draft_prediction_error": 0.32749824910080727,
+          "draft_goal_alignment": 0.419474968909596,
+          "draft_concept_mismatch": 1.0,
+          "concept_gap": 0.11003771903410903,
+          "top_concept_similarity": 0.4552104467181663
         }
       },
       {
@@ -832,10 +850,11 @@
         ],
         "scores": {
           "question_surprise_ratio": 1.0,
-          "draft_prediction_error": 0.4920974840486522,
-          "draft_goal_alignment": 0.2520445982475744,
-          "concept_gap": 0.062085054609622325,
-          "top_concept_similarity": 0.3249409046983055
+          "draft_prediction_error": 0.4555714243777568,
+          "draft_goal_alignment": 0.09685217423541442,
+          "draft_concept_mismatch": 1.0,
+          "concept_gap": 0.02023951261283108,
+          "top_concept_similarity": 0.26529570281830317
         }
       },
       {
@@ -858,10 +877,11 @@
         ],
         "scores": {
           "question_surprise_ratio": 1.0,
-          "draft_prediction_error": 0.392897065489813,
-          "draft_goal_alignment": 0.44056868923069337,
-          "concept_gap": 0.060462535771914794,
-          "top_concept_similarity": 0.3972233648071764
+          "draft_prediction_error": 0.4582656710402736,
+          "draft_goal_alignment": 0.31199484202668826,
+          "draft_concept_mismatch": 1.0,
+          "concept_gap": 0.1267948747809371,
+          "top_concept_similarity": 0.3629877722216322
         }
       },
       {
@@ -884,10 +904,10 @@
         ],
         "scores": {
           "question_surprise_ratio": 1.0,
-          "draft_prediction_error": 0.3032922394625688,
-          "draft_goal_alignment": 0.25176633038846846,
-          "concept_gap": 0.15962538021656014,
-          "top_concept_similarity": 0.6971603660005135
+          "draft_prediction_error": 0.516863598455058,
+          "draft_goal_alignment": 0.11765758992115705,
+          "concept_gap": 0.11870251312456659,
+          "top_concept_similarity": 0.6395038031093565
         }
       },
       {
@@ -910,10 +930,11 @@
         ],
         "scores": {
           "question_surprise_ratio": 1.0,
-          "draft_prediction_error": 0.3395078861910018,
-          "draft_goal_alignment": 0.13992389655465687,
-          "concept_gap": 0.11297609829629257,
-          "top_concept_similarity": 0.45606030086734706
+          "draft_prediction_error": 0.3959272692810024,
+          "draft_goal_alignment": 0.024960200192880144,
+          "draft_concept_mismatch": 1.0,
+          "concept_gap": 0.013525706062213427,
+          "top_concept_similarity": 0.5101598798797689
         }
       },
       {
@@ -936,10 +957,11 @@
         ],
         "scores": {
           "question_surprise_ratio": 1.0,
-          "draft_prediction_error": 0.3709301730614325,
-          "draft_goal_alignment": 0.33283412857215955,
-          "concept_gap": 0.0443589009268362,
-          "top_concept_similarity": 0.47353911188901204
+          "draft_prediction_error": 0.3726730398337136,
+          "draft_goal_alignment": 0.28325018148098313,
+          "draft_concept_mismatch": 1.0,
+          "concept_gap": 0.14480097873102205,
+          "top_concept_similarity": 0.4517214677465479
         }
       }
     ]

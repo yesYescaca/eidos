@@ -2,7 +2,7 @@
 
 **Emergent Intelligence via Distributed Organisational Systems**
 
-**Status: Active (v7.0)** — [Lab report](LAB_REPORT.md) · [Changelog](CHANGELOG.md) · [Positioning](docs/POSITIONING.md) · [What EIDOS is](docs/WHAT_EIDOS_IS.md) · [Releases](https://github.com/yesYescaca/eidos/releases)
+**Status: Active (v7.1)** — [Lab report](LAB_REPORT.md) · [Changelog](CHANGELOG.md) · [Positioning](docs/POSITIONING.md) · [What EIDOS is](docs/WHAT_EIDOS_IS.md) · [Releases](https://github.com/yesYescaca/eidos/releases)
 
 EIDOS is a laboratory prototype reasoning agent built from cognitive science primitives — not from transformer architectures or token prediction. Instead of learning statistical text patterns, EIDOS implements mechanisms drawn from neuroscience: hierarchical predictive coding, global workspace broadcasting, Hebbian association learning, attentional gating, and intrinsic curiosity reward. It is a transparent, numpy-only system designed to explore how biological cognition might be computationally reconstructed.
 
@@ -10,10 +10,10 @@ EIDOS is a laboratory prototype reasoning agent built from cognitive science pri
 
 | | |
 |---|---|
-| **Experiments** | 23 controlled tests (v1 → v7.0) |
-| **Unit tests** | 70 (pytest) |
-| **Benchmark** | 17 ambiguous QA cases + 8 graded EIDOS-Eval questions |
-| **Latest** | v7.0 — EIDOS-Eval + metacognitive injection |
+| **Experiments** | 24 controlled tests (v1 → v7.1) |
+| **Unit tests** | 78 (pytest) |
+| **Benchmark** | 17 ambiguous QA cases + EIDOS-Eval (mock + live) |
+| **Latest** | v7.1 — Live Groq eval + belief-grounded prompts |
 | **Hybrid** | LLM proposes → EIDOS gates (`HybridEidosAgent`) |
 
 ```bash
@@ -23,6 +23,21 @@ pytest tests/ && python run_all_experiments.py
 py -m benchmark.ambiguous_qa.runner
 py -m benchmark.ambiguous_qa.runner
 py -m eval.eidos_eval.runner
+py -m eval.eidos_eval.live_runner --provider groq   # needs GROQ_API_KEY
+```
+
+## v7.1 — Live Groq Eval + Belief-Grounded Sidecar
+
+- **`create_live_llm("groq")`** — live API via Groq (`GROQ_API_KEY`)
+- **`enable_belief_context`** — inject EIDOS concept rankings into LLM prompt
+- **Draft–concept mismatch** — gate vetoes drafts aligned to wrong concept
+- **Exp 24** — optional live Groq comparison (skips in CI without API key)
+
+```bash
+set GROQ_API_KEY=gsk_...
+py -m eval.eidos_eval.live_runner --provider groq
+py experiments/exp_24_groq_live_eval/run.py
+py demos/hybrid_qa/run.py --groq --meta-injection --belief-context
 ```
 
 ## v7.0 — EIDOS-Eval + Metacognitive Injection
@@ -307,5 +322,5 @@ py experiments/exp_19_hybrid_spike/run.py   # measurable gate vs blind LLM
 
 ---
 
-*KISAMAPA LABS — EXPERIMENT 06 — EIDOS v7.0*
+*KISAMAPA LABS — EXPERIMENT 06 — EIDOS v7.1*
 *Classification: Research Prototype — Active*

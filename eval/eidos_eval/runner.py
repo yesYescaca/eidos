@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 from architecture.hybrid.hybrid_agent import HybridEidosAgent
-from architecture.hybrid.llm_backend import CaseMockLLM, RoundRobinMockLLM
+from architecture.hybrid.llm_backend import CaseMockLLM, LanguageModelBackend, RoundRobinMockLLM
 from eval.eidos_eval.scorer import answer_correct, committed
 
 DEFAULT_QUESTIONS_PATH = Path(__file__).resolve().parent / "questions.json"
@@ -94,8 +94,13 @@ class EidosEvalHarness:
         mode: EvalMode,
         seed: int,
         hybrid_factory: Callable[..., HybridEidosAgent] | None,
+        live_llm: LanguageModelBackend | None = None,
     ) -> HybridEidosAgent:
-        if mode == EvalMode.LLM_ALONE:
+        if live_llm is not None:
+            llm = live_llm
+            enable_gate = mode != EvalMode.LLM_ALONE
+            meta = mode == EvalMode.EIDOS_META
+        elif mode == EvalMode.LLM_ALONE:
             llm = CaseMockLLM(question["initial_draft"])
             enable_gate = False
             meta = False
@@ -136,8 +141,11 @@ class EidosEvalHarness:
         *,
         seed: int = 42,
         hybrid_factory: Callable[..., HybridEidosAgent] | None = None,
+        live_llm: LanguageModelBackend | None = None,
     ) -> QuestionResult:
-        hybrid = self._build_hybrid(question, mode, seed, hybrid_factory)
+        hybrid = self._build_hybrid(
+            question, mode, seed, hybrid_factory, live_llm=live_llm
+        )
         result = hybrid.respond(
             question["question"],
             goal_text=question.get("goal"),
@@ -146,12 +154,14 @@ class EidosEvalHarness:
         gate_decision = result["gate_decision"]
         gated = bool(result["gated"])
         is_committed = committed(response, gate_decision, gated)
-        correct = answer_correct(response, question["correct_answer"])
+        correct = answer_correct(
+            response,
+            question["correct_answer"],
+            gate_decision=gate_decision,
+            gated=gated,
+        )
         must_abstain = bool(question.get("must_abstain", False))
         false_commit = must_abstain and is_committed and not correct
-
-        if mode == EvalMode.LLM_ALONE:
-            correct = answer_correct(response, question["correct_answer"])
 
         return QuestionResult(
             question_id=question["id"],
@@ -172,9 +182,16 @@ class EidosEvalHarness:
         *,
         seed: int = 42,
         hybrid_factory: Callable[..., HybridEidosAgent] | None = None,
+        live_llm: LanguageModelBackend | None = None,
     ) -> EvalReport:
         results = [
-            self.run_question(q, mode, seed=seed, hybrid_factory=hybrid_factory)
+            self.run_question(
+                q,
+                mode,
+                seed=seed,
+                hybrid_factory=hybrid_factory,
+                live_llm=live_llm,
+            )
             for q in self.questions
         ]
         n = len(results) or 1
@@ -203,9 +220,15 @@ class EidosEvalHarness:
         *,
         seed: int = 42,
         hybrid_factory: Callable[..., HybridEidosAgent] | None = None,
+        live_llm: LanguageModelBackend | None = None,
     ) -> dict[str, EvalReport]:
         return {
-            mode.value: self.run_mode(mode, seed=seed, hybrid_factory=hybrid_factory)
+            mode.value: self.run_mode(
+                mode,
+                seed=seed,
+                hybrid_factory=hybrid_factory,
+                live_llm=live_llm,
+            )
             for mode in EvalMode
         }
 

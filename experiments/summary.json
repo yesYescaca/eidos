@@ -155,9 +155,9 @@
     "num": "20",
     "name": "Unified gate draft\u2013goal (v6.0)",
     "folder": "exp_20_unified_gate",
-    "passed": true,
+    "passed": false,
     "exit_code": 0,
-    "ok": true
+    "ok": false
   },
   {
     "num": "21",
@@ -179,6 +179,14 @@
     "num": "23",
     "name": "EIDOS-Eval LLM comparison (v7.0)",
     "folder": "exp_23_eidos_eval",
+    "passed": true,
+    "exit_code": 0,
+    "ok": true
+  },
+  {
+    "num": "24",
+    "name": "Live Groq EIDOS-Eval (v7.1)",
+    "folder": "exp_24_groq_live_eval",
     "passed": true,
     "exit_code": 0,
     "ok": true

@@ -25,16 +25,28 @@ py -m eval.eidos_eval.runner
 py experiments/exp_23_eidos_eval/run.py
 ```
 
-## Live API eval (optional)
+## Live API eval (Groq — v7.1)
 
 ```bash
-set OPENAI_API_KEY=sk-...
-set EIDOS_LLM_MODEL=gpt-4o-mini
-# Wire OpenAICompatibleLLM in runner via custom hybrid_factory
+set GROQ_API_KEY=gsk_...
+py -m eval.eidos_eval.live_runner --provider groq
+py experiments/exp_24_groq_live_eval/run.py
+```
+
+Uses real LLM generations (not prescribed mock drafts). Skips gracefully without `GROQ_API_KEY`.
+
+OpenAI still supported via `--provider openai` and `OPENAI_API_KEY`.
+
+## Mock eval (CI-safe)
+
+```bash
+py -m eval.eidos_eval.runner
+py experiments/exp_23_eidos_eval/run.py
 ```
 
 ## Questions
 
-`questions.json` — 8 graded items derived from benchmark domains with `initial_draft`, `revised_draft`, and `correct_answer`.
+- `questions.json` — 8 graded items with mock `initial_draft` / `revised_draft` (CI)
+- `questions_live.json` — 6 live API items (TruthfulQA-inspired + domains)
 
 See `docs/POSITIONING.md` for Core vs Sidecar framing.

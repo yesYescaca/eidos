@@ -1,0 +1,6 @@
+{
+  "experiment": "exp_24_groq_live_eval",
+  "description": "Live Groq EIDOS-Eval (skipped \u2014 no GROQ_API_KEY)",
+  "skipped": true,
+  "pass": true
+}

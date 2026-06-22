@@ -11,6 +11,7 @@ from architecture.bridge.embedding_factory import (
     resolve_hybrid_embedding_backend,
 )
 from architecture.gate.gate_policy import GateEvaluation, GatePolicy, gate_response
+from architecture.hybrid.belief_context import build_belief_context, build_grounded_prompt
 from architecture.hybrid.llm_backend import LanguageModelBackend, MockLanguageModel
 from architecture.hybrid.metacognitive_prompt import (
     build_meta_injection,
@@ -28,6 +29,7 @@ class HybridEidosAgent:
     System 1 (LLM) + System 2 (EIDOS) hybrid.
 
     v7.0: optional metacognitive injection loop + SBERT-default grounding.
+    v7.1: optional belief-grounded prompt injection before LLM generation.
     """
 
     def __init__(
@@ -37,6 +39,7 @@ class HybridEidosAgent:
         enable_gate: bool = True,
         use_unified_gate: bool = True,
         enable_meta_injection: bool = False,
+        enable_belief_context: bool = False,
         max_revision_rounds: int = META_INJECTION_MAX_ROUNDS,
         gate_policy: GatePolicy | None = None,
         hybrid_embedding: bool = True,
@@ -54,6 +57,7 @@ class HybridEidosAgent:
         self.enable_gate = enable_gate
         self.use_unified_gate = use_unified_gate
         self.enable_meta_injection = enable_meta_injection
+        self.enable_belief_context = enable_belief_context
         self.max_revision_rounds = max_revision_rounds
         self.gate_policy = gate_policy or GatePolicy()
 
@@ -123,7 +127,18 @@ class HybridEidosAgent:
         )
 
         template = prompt_template or "Question: {q}\nAnswer:"
-        draft = self.llm.generate(template.format(q=user_text))
+        if self.enable_belief_context:
+            belief = build_belief_context(
+                question_step,
+                text_concepts=self.text._text_concepts,
+                grounding=self.text.grounding,
+                user_text=user_text,
+                goal_text=goal_text,
+            )
+            llm_prompt = build_grounded_prompt(user_text, belief, template=template)
+        else:
+            llm_prompt = template.format(q=user_text)
+        draft = self.llm.generate(llm_prompt)
         draft_step = self.text.step_text(
             draft,
             "llm_draft",
@@ -197,5 +212,6 @@ class HybridEidosAgent:
             "gated": self.enable_gate and evaluation.decision != "commit",
             "use_unified_gate": self.use_unified_gate,
             "meta_injection": self.enable_meta_injection,
+            "belief_context": self.enable_belief_context,
             "revision_rounds": revision_rounds,
         }

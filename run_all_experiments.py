@@ -34,6 +34,7 @@ EXPERIMENTS = [
     ("21", "exp_21_sbert_embeddings", "SBERT embeddings (v6.0)"),
     ("22", "exp_22_end_to_end", "End-to-end full stack (v6.2)"),
     ("23", "exp_23_eidos_eval", "EIDOS-Eval LLM comparison (v7.0)"),
+    ("24", "exp_24_groq_live_eval", "Live Groq EIDOS-Eval (v7.1)"),
 ]
 
 

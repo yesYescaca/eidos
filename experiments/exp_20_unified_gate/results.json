@@ -15,20 +15,21 @@
     "gated": true,
     "reasons": [
       "cognitive:observe",
-      "draft_goal_misalignment:0.779"
+      "draft_concept_mismatch:beta"
     ],
     "scores": {
       "question_surprise_ratio": 1.0,
-      "draft_prediction_error": 0.834315123337543,
-      "draft_goal_alignment": 0.7790712438108197,
-      "concept_gap": 0.05377435201734315,
-      "top_concept_similarity": 0.9289842440176804
+      "draft_prediction_error": 0.8110963737298923,
+      "draft_goal_alignment": 0.835283796827431,
+      "draft_concept_mismatch": 1.0,
+      "concept_gap": 0.0019126613667117542,
+      "top_concept_similarity": 0.8970010682082592
     }
   },
   "checks": {
     "legacy_committed_wrong_draft": true,
     "unified_gated": true,
-    "draft_goal_misalignment_detected": true
+    "draft_misalignment_detected": true
   },
   "pass": true
 }

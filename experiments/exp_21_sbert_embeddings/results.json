@@ -3,10 +3,10 @@
   "description": "Semantic embeddings separate related vs unrelated phrases better than hash",
   "hash": {
     "scores": [
-      0.5308778569270337,
-      0.17425496511163951
+      0.6072880601543316,
+      0.4792496307649371
     ],
-    "mean_separation": 0.3525664110193366
+    "mean_separation": 0.5432688454596344
   },
   "sbert": {
     "available": true,

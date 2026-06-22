@@ -1,5 +1,15 @@
 # Changelog
 
+## v7.1 — Live Groq Eval + Belief-Grounded Sidecar
+- **`create_live_llm("groq")`** — Groq OpenAI-compatible API (`GROQ_API_KEY`, `llama-3.3-70b-versatile` default)
+- **`eval/eidos_eval/live_runner.py`** — live API comparison CLI (skips without API key)
+- **`questions_live.json`** — 6-item live subset (TruthfulQA-inspired + domains)
+- **Belief-grounded prompts** — `enable_belief_context` injects EIDOS concept rankings before LLM generation
+- **`GatePolicy` draft–concept mismatch** — veto when draft best-matches wrong concept
+- **Exp 24** — optional live Groq eval (CI-safe skip)
+- **`demos/hybrid_qa`** — `--groq`, `--meta-injection`, `--belief-context`
+- State version **7.1**
+
 ## v7.0 — EIDOS-Eval + Metacognitive Injection
 - **`eval/eidos_eval/`** — graded questions, LLM-alone vs gate vs meta comparison harness
 - **`OpenAICompatibleLLM`** — optional API backend (stdlib urllib, `OPENAI_API_KEY`)

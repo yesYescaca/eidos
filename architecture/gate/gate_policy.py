@@ -7,6 +7,7 @@ from typing import Any, Literal
 
 from agent.config import (
     GATE_CONCEPT_AMBIGUITY_EPS,
+    GATE_DRAFT_CONCEPT_MISMATCH,
     GATE_MIN_DRAFT_GOAL_ALIGN,
 )
 
@@ -42,9 +43,11 @@ class GatePolicy:
         self,
         min_draft_goal_align: float = GATE_MIN_DRAFT_GOAL_ALIGN,
         concept_ambiguity_eps: float = GATE_CONCEPT_AMBIGUITY_EPS,
+        draft_concept_mismatch: bool = GATE_DRAFT_CONCEPT_MISMATCH,
     ) -> None:
         self.min_draft_goal_align = min_draft_goal_align
         self.concept_ambiguity_eps = concept_ambiguity_eps
+        self.draft_concept_mismatch = draft_concept_mismatch
 
     @staticmethod
     def decision_from_step(step_result: dict[str, Any]) -> GateDecision:
@@ -98,6 +101,52 @@ class GatePolicy:
         gap = ranked[0][1] - ranked[1][1]
         return gap, ranked[0][1]
 
+    def _draft_concept_mismatch(
+        self,
+        draft_text: str,
+        goal_text: str,
+        text_concepts: dict[str, str],
+        grounding: Any,
+    ) -> tuple[bool, str | None]:
+        """True when draft best-matches a different concept than the goal."""
+        if (
+            not self.draft_concept_mismatch
+            or not draft_text
+            or not goal_text
+            or not text_concepts
+            or grounding is None
+        ):
+            return False, None
+
+        draft_ranked = sorted(
+            (
+                (label, float(grounding.similarity(draft_text, phrase)))
+                for label, phrase in text_concepts.items()
+            ),
+            key=lambda item: item[1],
+            reverse=True,
+        )
+        goal_ranked = sorted(
+            (
+                (label, float(grounding.similarity(goal_text, phrase)))
+                for label, phrase in text_concepts.items()
+            ),
+            key=lambda item: item[1],
+            reverse=True,
+        )
+        if not draft_ranked or not goal_ranked:
+            return False, None
+
+        draft_label, draft_sim = draft_ranked[0]
+        goal_label, _ = goal_ranked[0]
+        if draft_label == goal_label:
+            return False, None
+
+        draft_to_goal = float(grounding.similarity(draft_text, goal_text))
+        if draft_sim > draft_to_goal:
+            return True, draft_label
+        return False, None
+
     def evaluate(
         self,
         question_step: dict[str, Any],
@@ -131,6 +180,16 @@ class GatePolicy:
             scores["draft_goal_alignment"] = draft_goal_align
             misaligned = draft_goal_align < self.min_draft_goal_align
 
+        concept_mismatch, mismatch_label = self._draft_concept_mismatch(
+            draft_text or "",
+            goal_text or "",
+            text_concepts or {},
+            grounding,
+        )
+        if concept_mismatch:
+            misaligned = True
+            scores["draft_concept_mismatch"] = 1.0
+
         concept_gap, top_concept_sim = self._concept_ambiguity(
             user_text or "", text_concepts or {}, grounding
         )
@@ -144,9 +203,12 @@ class GatePolicy:
             and decision in ("observe", "commit")
         ):
             decision = "clarify"
-            reasons.append(
-                f"draft_goal_misalignment:{draft_goal_align:.3f}"
-            )
+            if concept_mismatch and mismatch_label:
+                reasons.append(f"draft_concept_mismatch:{mismatch_label}")
+            else:
+                reasons.append(
+                    f"draft_goal_misalignment:{draft_goal_align:.3f}"
+                )
 
         if (
             user_text

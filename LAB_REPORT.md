@@ -230,9 +230,9 @@ See `demos/hybrid_qa/` and `benchmark/ambiguous_qa/`.
 
 ## 6. Conclusion
 
-EIDOS v7.0 adds **EIDOS-Eval** — external comparison of LLM-alone vs gated vs meta-injection Sidecar — on top of the real-world benchmark. State version **7.0**.
+EIDOS v7.1 adds **live Groq API eval** and **belief-grounded prompt injection** on top of v7.0 EIDOS-Eval. State version **7.1**.
 
-**Next research frontier:** live API eval on TruthfulQA subset; belief-grounded LLM context.
+**Next research frontier:** learned gate thresholds; larger TruthfulQA live runs.
 
 ---
 
@@ -241,8 +241,8 @@ EIDOS v7.0 adds **EIDOS-Eval** — external comparison of LLM-alone vs gated vs 
 ```bash
 cd eidos
 pip install -r requirements.txt
-pytest tests/                    # 70 unit tests
-python run_all_experiments.py    # All 23 experiments + summary
+pytest tests/                    # 78 unit tests
+python run_all_experiments.py    # All 24 experiments + summary
 py -m benchmark.ambiguous_qa.runner
 py -m eval.eidos_eval.runner
 ```

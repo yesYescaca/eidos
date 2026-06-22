@@ -11,9 +11,31 @@ def normalize(text: str) -> str:
     return re.sub(r"\s+", " ", text).strip()
 
 
-def answer_correct(response: str, correct_answer: str) -> bool:
-    """Check if response contains the expected answer phrase."""
-    if not response or not correct_answer:
+def answer_correct(
+    response: str,
+    correct_answer: str,
+    *,
+    gate_decision: str = "",
+    gated: bool = False,
+) -> bool:
+    """Check if response matches expected outcome (substring or abstention)."""
+    if not correct_answer:
+        return False
+    if normalize(correct_answer) == "clarify":
+        if gated or gate_decision in ("clarify", "defer", "probe", "sleep"):
+            return True
+        markers = (
+            "clarify",
+            "which scenario",
+            "more than one",
+            "not confident",
+            "unclear",
+            "cannot determine",
+            "need more",
+        )
+        norm = normalize(response)
+        return any(marker in norm for marker in markers)
+    if not response:
         return False
     return normalize(correct_answer) in normalize(response)
 
