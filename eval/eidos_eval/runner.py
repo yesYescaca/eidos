@@ -1,4 +1,4 @@
-"""EIDOS-Eval harness — LLM-alone vs gate vs meta-injection (v7.0)."""
+"""EIDOS-Eval harness — LLM-alone vs gate vs meta-injection (v7.0+)."""
 
 from __future__ import annotations
 
@@ -8,9 +8,16 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Callable
 
+from agent.config import GATE_LIVE_MIN_DRAFT_GOAL_ALIGN
+from architecture.gate.gate_policy import GatePolicy
 from architecture.hybrid.hybrid_agent import HybridEidosAgent
 from architecture.hybrid.llm_backend import CaseMockLLM, LanguageModelBackend, RoundRobinMockLLM
-from eval.eidos_eval.scorer import answer_correct, committed
+from eval.eidos_eval.scorer import (
+    answer_correct,
+    committed,
+    selective_accuracy_delta,
+    task_handled_correctly,
+)
 
 DEFAULT_QUESTIONS_PATH = Path(__file__).resolve().parent / "questions.json"
 
@@ -18,7 +25,11 @@ DEFAULT_QUESTIONS_PATH = Path(__file__).resolve().parent / "questions.json"
 class EvalMode(str, Enum):
     LLM_ALONE = "llm_alone"
     EIDOS_GATE = "eidos_gate"
+    EIDOS_BELIEF = "eidos_belief"
     EIDOS_META = "eidos_meta"
+
+
+MOCK_MODES = frozenset({EvalMode.LLM_ALONE, EvalMode.EIDOS_GATE, EvalMode.EIDOS_META})
 
 
 @dataclass
@@ -29,6 +40,7 @@ class QuestionResult:
     gated: bool
     committed: bool
     correct: bool
+    task_correct: bool
     must_abstain: bool
     false_commit: bool
     response_preview: str
@@ -41,6 +53,7 @@ class EvalReport:
     mode: str
     n_questions: int
     accuracy: float
+    task_accuracy: float
     accuracy_when_commit: float
     abstention_rate: float
     false_commit_rate: float
@@ -53,6 +66,7 @@ class EvalReport:
             "mode": self.mode,
             "n_questions": self.n_questions,
             "accuracy": self.accuracy,
+            "task_accuracy": self.task_accuracy,
             "accuracy_when_commit": self.accuracy_when_commit,
             "abstention_rate": self.abstention_rate,
             "false_commit_rate": self.false_commit_rate,
@@ -65,6 +79,7 @@ class EvalReport:
                     "gated": q.gated,
                     "committed": q.committed,
                     "correct": q.correct,
+                    "task_correct": q.task_correct,
                     "must_abstain": q.must_abstain,
                     "false_commit": q.false_commit,
                     "revision_rounds": q.revision_rounds,
@@ -75,11 +90,32 @@ class EvalReport:
         }
 
 
+@dataclass
+class ComparisonSummary:
+    """Cross-mode deltas vs LLM-alone baseline."""
+
+    selective_accuracy_delta_gate: float
+    selective_accuracy_delta_belief: float
+    selective_accuracy_delta_meta: float
+    false_commit_reduction_gate: float
+    task_accuracy_delta_gate: float
+
+    def to_dict(self) -> dict[str, float]:
+        return {
+            "selective_accuracy_delta_gate": self.selective_accuracy_delta_gate,
+            "selective_accuracy_delta_belief": self.selective_accuracy_delta_belief,
+            "selective_accuracy_delta_meta": self.selective_accuracy_delta_meta,
+            "false_commit_reduction_gate": self.false_commit_reduction_gate,
+            "task_accuracy_delta_gate": self.task_accuracy_delta_gate,
+        }
+
+
 class EidosEvalHarness:
     """
     Compare LLM-alone vs EIDOS-gated vs EIDOS meta-injection on graded questions.
 
-    Uses mock LLMs in CI; swap in OpenAICompatibleLLM for live API eval.
+    Mock path (CI): hash embeddings + prescribed drafts.
+    Live path: SBERT when available + calibrated gate thresholds.
     """
 
     def __init__(self, questions_path: str | Path | None = None) -> None:
@@ -96,33 +132,49 @@ class EidosEvalHarness:
         hybrid_factory: Callable[..., HybridEidosAgent] | None,
         live_llm: LanguageModelBackend | None = None,
     ) -> HybridEidosAgent:
-        if live_llm is not None:
+        live = live_llm is not None
+        if live:
             llm = live_llm
             enable_gate = mode != EvalMode.LLM_ALONE
             meta = mode == EvalMode.EIDOS_META
+            belief = mode in (EvalMode.EIDOS_BELIEF, EvalMode.EIDOS_META)
         elif mode == EvalMode.LLM_ALONE:
             llm = CaseMockLLM(question["initial_draft"])
             enable_gate = False
             meta = False
+            belief = False
         elif mode == EvalMode.EIDOS_GATE:
             llm = CaseMockLLM(question["initial_draft"])
             enable_gate = True
             meta = False
+            belief = False
+        elif mode == EvalMode.EIDOS_BELIEF:
+            llm = CaseMockLLM(question["initial_draft"])
+            enable_gate = True
+            meta = False
+            belief = True
         else:
             llm = RoundRobinMockLLM(
                 [question["initial_draft"], question["revised_draft"]]
             )
             enable_gate = True
             meta = True
+            belief = False
+
+        gate_policy = None
+        if live and enable_gate:
+            gate_policy = GatePolicy(min_draft_goal_align=GATE_LIVE_MIN_DRAFT_GOAL_ALIGN)
 
         factory = hybrid_factory or (lambda **kw: HybridEidosAgent(**kw))
         hybrid = factory(
             llm=llm,
             enable_gate=enable_gate,
             enable_meta_injection=meta,
+            enable_belief_context=belief,
             use_unified_gate=True,
             seed=seed,
-            hybrid_embedding=False,
+            hybrid_embedding=live,
+            gate_policy=gate_policy,
             enable_meta_cognition=False,
             enable_meta_consequential=False,
             enable_active_inference=False,
@@ -154,14 +206,20 @@ class EidosEvalHarness:
         gate_decision = result["gate_decision"]
         gated = bool(result["gated"])
         is_committed = committed(response, gate_decision, gated)
-        correct = answer_correct(
+        answer_ok = answer_correct(
             response,
             question["correct_answer"],
             gate_decision=gate_decision,
             gated=gated,
         )
         must_abstain = bool(question.get("must_abstain", False))
-        false_commit = must_abstain and is_committed and not correct
+        false_commit = must_abstain and is_committed and not answer_ok
+        task_ok = task_handled_correctly(
+            must_abstain=must_abstain,
+            is_committed=is_committed,
+            false_commit=false_commit,
+            answer_ok=answer_ok,
+        )
 
         return QuestionResult(
             question_id=question["id"],
@@ -169,7 +227,8 @@ class EidosEvalHarness:
             gate_decision=gate_decision,
             gated=gated,
             committed=is_committed,
-            correct=correct if is_committed or mode == EvalMode.LLM_ALONE else False,
+            correct=answer_ok if is_committed or mode == EvalMode.LLM_ALONE else False,
+            task_correct=task_ok,
             must_abstain=must_abstain,
             false_commit=false_commit,
             response_preview=response[:120],
@@ -203,6 +262,7 @@ class EidosEvalHarness:
             mode=mode.value,
             n_questions=len(results),
             accuracy=sum(1 for r in results if r.correct) / n,
+            task_accuracy=sum(1 for r in results if r.task_correct) / n,
             accuracy_when_commit=(
                 sum(1 for r in commits if r.correct) / max(len(commits), 1)
             ),
@@ -221,7 +281,9 @@ class EidosEvalHarness:
         seed: int = 42,
         hybrid_factory: Callable[..., HybridEidosAgent] | None = None,
         live_llm: LanguageModelBackend | None = None,
+        modes: list[EvalMode] | None = None,
     ) -> dict[str, EvalReport]:
+        selected = modes or list(EvalMode)
         return {
             mode.value: self.run_mode(
                 mode,
@@ -229,23 +291,51 @@ class EidosEvalHarness:
                 hybrid_factory=hybrid_factory,
                 live_llm=live_llm,
             )
-            for mode in EvalMode
+            for mode in selected
         }
+
+    @staticmethod
+    def summarize_comparison(reports: dict[str, EvalReport]) -> ComparisonSummary:
+        alone = reports[EvalMode.LLM_ALONE.value]
+        gate = reports.get(EvalMode.EIDOS_GATE.value)
+        belief = reports.get(EvalMode.EIDOS_BELIEF.value)
+        meta = reports.get(EvalMode.EIDOS_META.value)
+
+        def delta(sidecar: EvalReport | None) -> float:
+            if sidecar is None:
+                return 0.0
+            return selective_accuracy_delta(
+                alone.accuracy_when_commit,
+                sidecar.accuracy_when_commit,
+            )
+
+        return ComparisonSummary(
+            selective_accuracy_delta_gate=delta(gate),
+            selective_accuracy_delta_belief=delta(belief),
+            selective_accuracy_delta_meta=delta(meta),
+            false_commit_reduction_gate=alone.false_commit_rate
+            - (gate.false_commit_rate if gate else alone.false_commit_rate),
+            task_accuracy_delta_gate=(gate.task_accuracy if gate else 0.0)
+            - alone.task_accuracy,
+        )
 
 
 def main() -> None:
     harness = EidosEvalHarness()
-    reports = harness.run_comparison()
+    reports = harness.run_comparison(modes=list(MOCK_MODES))
+    summary = harness.summarize_comparison(reports)
     print("=" * 55)
-    print("EIDOS-EVAL (v7.0)")
+    print("EIDOS-EVAL (mock)")
     print("=" * 55)
     for mode, report in reports.items():
         print(
-            f"  [{mode}] acc={report.accuracy:.1%} "
+            f"  [{mode}] task_acc={report.task_accuracy:.1%} "
             f"commit_acc={report.accuracy_when_commit:.1%} "
-            f"abstain={report.abstention_rate:.1%} "
             f"false_commit={report.false_commit_rate:.1%}"
         )
+    print(
+        f"  Δ commit_acc (gate vs alone): {summary.selective_accuracy_delta_gate:+.1%}"
+    )
 
 
 if __name__ == "__main__":

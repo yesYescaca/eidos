@@ -155,9 +155,9 @@
     "num": "20",
     "name": "Unified gate draft\u2013goal (v6.0)",
     "folder": "exp_20_unified_gate",
-    "passed": false,
+    "passed": true,
     "exit_code": 0,
-    "ok": false
+    "ok": true
   },
   {
     "num": "21",

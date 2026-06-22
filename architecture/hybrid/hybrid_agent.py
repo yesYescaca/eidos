@@ -162,7 +162,21 @@ class HybridEidosAgent:
             and rounds < self.max_revision_rounds
         ):
             injection = build_meta_injection(evaluation, question_step, draft_step)
-            revision_prompt = build_revision_prompt(user_text, draft, injection)
+            belief_block = None
+            if self.enable_belief_context:
+                belief_block = build_belief_context(
+                    question_step,
+                    text_concepts=self.text._text_concepts,
+                    grounding=self.text.grounding,
+                    user_text=user_text,
+                    goal_text=goal_text,
+                )
+            revision_prompt = build_revision_prompt(
+                user_text,
+                draft,
+                injection,
+                belief_context=belief_block,
+            )
             revised = self.llm.generate(revision_prompt)
             revision_rounds.append(
                 {

@@ -1,5 +1,15 @@
 # Changelog
 
+# v7.2 — Calibrated live Sidecar + task accuracy metrics
+- **Live eval uses SBERT** + `GATE_LIVE_MIN_DRAFT_GOAL_ALIGN=0.72` (fixes 100% over-abstention)
+- **Gate calibration** — question-clarity bypass; concept mismatch only when draft–goal below threshold
+- **`task_accuracy`** + **`ComparisonSummary`** selective accuracy deltas
+- **`EvalMode.eidos_belief`** — gate + belief-grounded prompts
+- **Belief context in meta-injection revisions**
+- **`CachedLLM`** — disk cache for live API responses (`live_cache.json`)
+- **LLM retry** on 429/5xx with backoff
+- State version **7.2**
+
 ## v7.1 — Live Groq Eval + Belief-Grounded Sidecar
 - **`create_live_llm("groq")`** — Groq OpenAI-compatible API (`GROQ_API_KEY`, `llama-3.3-70b-versatile` default)
 - **`eval/eidos_eval/live_runner.py`** — live API comparison CLI (skips without API key)

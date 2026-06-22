@@ -19,11 +19,12 @@
     ],
     "scores": {
       "question_surprise_ratio": 1.0,
-      "draft_prediction_error": 0.8110963737298923,
-      "draft_goal_alignment": 0.835283796827431,
+      "draft_prediction_error": 0.8467981734465659,
+      "draft_goal_alignment": 0.6731321579263989,
       "draft_concept_mismatch": 1.0,
-      "concept_gap": 0.0019126613667117542,
-      "top_concept_similarity": 0.8970010682082592
+      "concept_gap": 0.0207980316710924,
+      "top_concept_similarity": 0.8732490926234603,
+      "question_goal_alignment": 0.8524510609523679
     }
   },
   "checks": {

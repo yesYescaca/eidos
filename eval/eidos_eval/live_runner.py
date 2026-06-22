@@ -1,4 +1,4 @@
-"""Live EIDOS-Eval — Groq API comparison (v7.1)."""
+"""Live EIDOS-Eval — Groq API comparison (v7.2)."""
 
 from __future__ import annotations
 
@@ -10,9 +10,17 @@ from pathlib import Path
 from architecture.hybrid.hybrid_agent import HybridEidosAgent
 from architecture.hybrid.llm_backend import LanguageModelBackend
 from architecture.hybrid.llm_factory import create_live_llm, live_llm_available
-from eval.eidos_eval.runner import DEFAULT_QUESTIONS_PATH, EidosEvalHarness, EvalMode
+from eval.eidos_eval.llm_cache import CachedLLM, DEFAULT_CACHE_PATH
+from eval.eidos_eval.runner import EidosEvalHarness, EvalMode
 
 LIVE_QUESTIONS_PATH = Path(__file__).resolve().parent / "questions_live.json"
+
+DEFAULT_LIVE_MODES = [
+    EvalMode.LLM_ALONE,
+    EvalMode.EIDOS_GATE,
+    EvalMode.EIDOS_BELIEF,
+    EvalMode.EIDOS_META,
+]
 
 
 def run_live_comparison(
@@ -22,26 +30,28 @@ def run_live_comparison(
     seed: int = 42,
     modes: list[EvalMode] | None = None,
     llm: LanguageModelBackend | None = None,
+    use_cache: bool = True,
+    cache_path: Path | None = None,
 ) -> dict:
     """Run EIDOS-Eval with a live LLM for all modes."""
     path = questions_path or LIVE_QUESTIONS_PATH
     harness = EidosEvalHarness(path)
     backend = llm or create_live_llm(provider)  # type: ignore[arg-type]
+    if use_cache:
+        backend = CachedLLM(backend, cache_path or DEFAULT_CACHE_PATH)
 
     def hybrid_factory(**kwargs: object) -> HybridEidosAgent:
         kwargs["llm"] = backend
         return HybridEidosAgent(**kwargs)
 
-    selected = modes or list(EvalMode)
-    return {
-        mode.value: harness.run_mode(
-            mode,
-            seed=seed,
-            hybrid_factory=hybrid_factory,
-            live_llm=backend,
-        )
-        for mode in selected
-    }
+    selected = modes or DEFAULT_LIVE_MODES
+    reports = harness.run_comparison(
+        seed=seed,
+        hybrid_factory=hybrid_factory,
+        live_llm=backend,
+        modes=selected,
+    )
+    return reports
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -63,13 +73,18 @@ def main(argv: list[str] | None = None) -> int:
         "--modes",
         nargs="+",
         choices=[m.value for m in EvalMode],
-        default=[m.value for m in EvalMode],
+        default=[m.value for m in DEFAULT_LIVE_MODES],
     )
     parser.add_argument(
         "--out",
         type=Path,
         default=None,
         help="Write JSON report to path",
+    )
+    parser.add_argument(
+        "--no-cache",
+        action="store_true",
+        help="Disable live response disk cache",
     )
     args = parser.parse_args(argv)
 
@@ -84,21 +99,34 @@ def main(argv: list[str] | None = None) -> int:
         questions_path=args.questions,
         seed=args.seed,
         modes=modes,
+        use_cache=not args.no_cache,
     )
+    summary = EidosEvalHarness.summarize_comparison(reports)
 
     print("=" * 55)
-    print(f"EIDOS-EVAL LIVE ({args.provider}) — v7.1")
+    print(f"EIDOS-EVAL LIVE ({args.provider}) — v7.2")
     print("=" * 55)
-    payload: dict = {}
+    payload: dict = {"reports": {}, "summary": summary.to_dict()}
     for mode, report in reports.items():
         print(
-            f"  [{mode}] acc={report.accuracy:.1%} "
+            f"  [{mode}] task_acc={report.task_accuracy:.1%} "
             f"commit_acc={report.accuracy_when_commit:.1%} "
             f"abstain={report.abstention_rate:.1%} "
             f"false_commit={report.false_commit_rate:.1%} "
             f"must_abstain_safe={report.must_abstain_safe_rate:.1%}"
         )
-        payload[mode] = report.to_dict()
+        payload["reports"][mode] = report.to_dict()
+
+    print("  ---")
+    print(
+        f"  Δ commit_acc (gate vs alone): {summary.selective_accuracy_delta_gate:+.1%}"
+    )
+    print(
+        f"  Δ task_acc (gate vs alone): {summary.task_accuracy_delta_gate:+.1%}"
+    )
+    print(
+        f"  false_commit reduction (gate): {summary.false_commit_reduction_gate:.1%}"
+    )
 
     if args.out:
         args.out.write_text(json.dumps(payload, indent=2))

@@ -24,3 +24,13 @@ def test_create_live_llm_groq_with_key(monkeypatch):
     assert llm.model == "llama-3.3-70b-versatile"
     assert llm.api_key == "test-key"
     assert "groq.com" in llm.base_url
+
+
+def test_openai_compatible_llm_includes_user_agent():
+    from architecture.hybrid.llm_backend import OpenAICompatibleLLM
+
+    headers = OpenAICompatibleLLM._request_headers("test-key")
+    assert "User-Agent" in headers
+    assert "EIDOS-LiveEval/7.2" in headers["User-Agent"]
+    assert headers["Accept"] == "application/json"
+    assert headers["Authorization"] == "Bearer test-key"

@@ -1,7 +1,7 @@
 """Tests for EIDOS-Eval harness (v7.0)."""
 
-from eval.eidos_eval.runner import EidosEvalHarness, EvalMode
-from eval.eidos_eval.scorer import answer_correct, normalize
+from eval.eidos_eval.runner import EidosEvalHarness, EvalMode, MOCK_MODES
+from eval.eidos_eval.scorer import answer_correct, normalize, task_handled_correctly
 
 
 def test_normalize_lowercase():
@@ -19,11 +19,21 @@ def test_eval_harness_loads_questions():
 
 def test_gate_safer_than_llm_alone():
     harness = EidosEvalHarness()
-    reports = harness.run_comparison(seed=42)
+    reports = harness.run_comparison(seed=42, modes=list(MOCK_MODES))
     alone = reports["llm_alone"]
     gate = reports["eidos_gate"]
     assert gate.false_commit_rate < alone.false_commit_rate
     assert gate.must_abstain_safe_rate >= 1.0
+    assert gate.task_accuracy >= alone.task_accuracy
+
+
+def test_task_handled_abstain_ok():
+    assert task_handled_correctly(
+        must_abstain=True,
+        is_committed=False,
+        false_commit=False,
+        answer_ok=False,
+    )
 
 
 def test_meta_mode_runs():

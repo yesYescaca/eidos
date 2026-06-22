@@ -230,7 +230,7 @@ See `demos/hybrid_qa/` and `benchmark/ambiguous_qa/`.
 
 ## 6. Conclusion
 
-EIDOS v7.1 adds **live Groq API eval** and **belief-grounded prompt injection** on top of v7.0 EIDOS-Eval. State version **7.1**.
+EIDOS v7.2 calibrates the live Sidecar path (SBERT + relaxed live thresholds) and adds **task_accuracy** so correct abstentions count. State version **7.2**.
 
 **Next research frontier:** learned gate thresholds; larger TruthfulQA live runs.
 

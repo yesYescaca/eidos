@@ -94,10 +94,23 @@ class OpenAICompatibleLLM:
                 "OpenAICompatibleLLM requires OPENAI_API_KEY or explicit api_key"
             )
 
+    @staticmethod
+    def _request_headers(api_key: str) -> dict[str, str]:
+        """Headers for chat-completions (Groq/Cloudflare rejects default urllib UA)."""
+        return {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "Authorization": f"Bearer {api_key}",
+            "User-Agent": "EIDOS-LiveEval/7.2 (compatible; +https://github.com/yesYescaca/eidos)",
+        }
+
     def generate(self, prompt: str, max_new_tokens: int | None = None) -> str:
         import json
+        import time
         import urllib.error
         import urllib.request
+
+        from agent.config import GATE_LLM_RETRY_ATTEMPTS, GATE_LLM_RETRY_BACKOFF_SEC
 
         tokens = max_new_tokens if max_new_tokens is not None else self.max_tokens
         payload = json.dumps(
@@ -108,26 +121,42 @@ class OpenAICompatibleLLM:
                 "temperature": self.temperature,
             }
         ).encode("utf-8")
-        req = urllib.request.Request(
-            f"{self.base_url.rstrip('/')}/chat/completions",
-            data=payload,
-            headers={
-                "Content-Type": "application/json",
-                "Authorization": f"Bearer {self.api_key}",
-            },
-            method="POST",
-        )
-        try:
-            with urllib.request.urlopen(req, timeout=120) as resp:
-                data = json.loads(resp.read().decode("utf-8"))
-        except urllib.error.HTTPError as exc:
-            body = exc.read().decode("utf-8", errors="replace")
-            raise RuntimeError(f"LLM API error {exc.code}: {body}") from exc
-        choices = data.get("choices", [])
-        if not choices:
-            raise RuntimeError(f"LLM API returned no choices: {data}")
-        message = choices[0].get("message", {})
-        return str(message.get("content", "")).strip()
+        url = f"{self.base_url.rstrip('/')}/chat/completions"
+        headers = self._request_headers(self.api_key)
+        last_error: Exception | None = None
+
+        for attempt in range(max(1, GATE_LLM_RETRY_ATTEMPTS)):
+            req = urllib.request.Request(
+                url,
+                data=payload,
+                headers=headers,
+                method="POST",
+            )
+            try:
+                with urllib.request.urlopen(req, timeout=120) as resp:
+                    data = json.loads(resp.read().decode("utf-8"))
+                choices = data.get("choices", [])
+                if not choices:
+                    raise RuntimeError(f"LLM API returned no choices: {data}")
+                message = choices[0].get("message", {})
+                return str(message.get("content", "")).strip()
+            except urllib.error.HTTPError as exc:
+                body = exc.read().decode("utf-8", errors="replace")
+                last_error = RuntimeError(f"LLM API error {exc.code}: {body}")
+                if exc.code in (429, 500, 502, 503, 504) and attempt + 1 < GATE_LLM_RETRY_ATTEMPTS:
+                    time.sleep(GATE_LLM_RETRY_BACKOFF_SEC * (attempt + 1))
+                    continue
+                raise last_error from exc
+            except urllib.error.URLError as exc:
+                last_error = RuntimeError(f"LLM API connection error: {exc}")
+                if attempt + 1 < GATE_LLM_RETRY_ATTEMPTS:
+                    time.sleep(GATE_LLM_RETRY_BACKOFF_SEC * (attempt + 1))
+                    continue
+                raise last_error from exc
+
+        if last_error:
+            raise last_error
+        raise RuntimeError("LLM API request failed")
 
 
 class GPT2LanguageModel:

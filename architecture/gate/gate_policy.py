@@ -9,6 +9,7 @@ from agent.config import (
     GATE_CONCEPT_AMBIGUITY_EPS,
     GATE_DRAFT_CONCEPT_MISMATCH,
     GATE_MIN_DRAFT_GOAL_ALIGN,
+    GATE_QUESTION_GOAL_CLEAR,
 )
 
 GateDecision = Literal["commit", "defer", "clarify", "probe", "sleep", "observe"]
@@ -143,6 +144,8 @@ class GatePolicy:
             return False, None
 
         draft_to_goal = float(grounding.similarity(draft_text, goal_text))
+        if draft_to_goal >= self.min_draft_goal_align:
+            return False, None
         if draft_sim > draft_to_goal:
             return True, draft_label
         return False, None
@@ -196,6 +199,12 @@ class GatePolicy:
         scores["concept_gap"] = concept_gap
         scores["top_concept_similarity"] = top_concept_sim
 
+        question_goal_align = 1.0
+        if grounding and user_text and goal_text:
+            question_goal_align = float(grounding.similarity(user_text, goal_text))
+            scores["question_goal_alignment"] = question_goal_align
+        question_clear = question_goal_align >= GATE_QUESTION_GOAL_CLEAR
+
         decision: GateDecision = cognitive
 
         if (
@@ -214,6 +223,7 @@ class GatePolicy:
             user_text
             and text_concepts
             and concept_gap < self.concept_ambiguity_eps
+            and not question_clear
             and decision in ("observe", "commit")
         ):
             decision = "clarify"

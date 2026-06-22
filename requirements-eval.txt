@@ -1,8 +1,8 @@
 # Optional API LLM eval — stdlib urllib, no extra packages
 #
 # Groq (recommended for v7.1 live eval):
-#   set GROQ_API_KEY=gsk_...
-#   set GROQ_MODEL=llama-3.3-70b-versatile   # optional
+   set GROQ_API_KEY=your_groq_key_here
+   set GROQ_MODEL=llama-3.3-70b-versatile   # optional
 #
 # OpenAI-compatible (alternative):
 #   set OPENAI_API_KEY=sk-...
@@ -10,3 +10,6 @@
 #
 # Run:
 #   py -m eval.eidos_eval.live_runner --provider groq
+#
+# Note: Groq sits behind Cloudflare — requests need a User-Agent header
+# (error 1010 if missing). OpenAICompatibleLLM sets this automatically.

@@ -81,5 +81,11 @@ GROQ_DEFAULT_BASE_URL = "https://api.groq.com/openai/v1"
 BELIEF_CONTEXT_TOP_K = 3
 GATE_DRAFT_CONCEPT_MISMATCH = True
 
+# v7.2: live gate calibration + eval metrics
+GATE_LIVE_MIN_DRAFT_GOAL_ALIGN = 0.72
+GATE_QUESTION_GOAL_CLEAR = 0.78
+GATE_LLM_RETRY_ATTEMPTS = 3
+GATE_LLM_RETRY_BACKOFF_SEC = 2.0
+
 # Deprecated alias kept for backward compatibility in tests/docs
 REASONING_THRESHOLD = REASONING_ABSOLUTE_FLOOR

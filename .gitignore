@@ -7,3 +7,4 @@ venv/
 *.egg-info/
 .DS_Store
 Thumbs.db
+eval/eidos_eval/live_cache.json

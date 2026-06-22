@@ -25,7 +25,7 @@ py -m eval.eidos_eval.runner
 py experiments/exp_23_eidos_eval/run.py
 ```
 
-## Live API eval (Groq — v7.1)
+## Live API eval (Groq — v7.2)
 
 ```bash
 set GROQ_API_KEY=gsk_...
@@ -33,7 +33,9 @@ py -m eval.eidos_eval.live_runner --provider groq
 py experiments/exp_24_groq_live_eval/run.py
 ```
 
-Uses real LLM generations (not prescribed mock drafts). Skips gracefully without `GROQ_API_KEY`.
+Uses **SBERT** + calibrated gate (`GATE_LIVE_MIN_DRAFT_GOAL_ALIGN=0.72`). Reports **task_accuracy** (credits correct abstentions). Responses cached in `live_cache.json` (use `--no-cache` to bypass).
+
+Modes: `llm_alone`, `eidos_gate`, `eidos_belief`, `eidos_meta`.
 
 OpenAI still supported via `--provider openai` and `OPENAI_API_KEY`.
 

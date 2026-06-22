@@ -48,10 +48,13 @@ def build_revision_prompt(
     user_text: str,
     prior_draft: str,
     injection: str,
+    *,
+    belief_context: str | None = None,
 ) -> str:
     """Prompt template for metacognitive revision round."""
+    prefix = f"{belief_context}\n\n" if belief_context else ""
     return (
-        f"Question: {user_text}\n\n"
+        f"{prefix}Question: {user_text}\n\n"
         f"Your prior draft:\n{prior_draft}\n\n"
         f"{injection}\n\n"
         "Revised answer:"

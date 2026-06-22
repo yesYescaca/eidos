@@ -45,3 +45,29 @@ def committed(response: str, gate_decision: str, gated: bool) -> bool:
     if gate_decision == "commit":
         return True
     return not gated
+
+
+def task_handled_correctly(
+    *,
+    must_abstain: bool,
+    is_committed: bool,
+    false_commit: bool,
+    answer_ok: bool,
+) -> bool:
+    """
+    Whether the system took the right action for the question type.
+
+    Ambiguous (must_abstain): withhold or clarify — not a wrong commit.
+    Clear: commit with a correct answer.
+    """
+    if must_abstain:
+        return not false_commit
+    return is_committed and answer_ok
+
+
+def selective_accuracy_delta(
+    alone_commit_acc: float,
+    sidecar_commit_acc: float,
+) -> float:
+    """Accuracy-on-commits delta: Sidecar vs LLM-alone."""
+    return sidecar_commit_acc - alone_commit_acc

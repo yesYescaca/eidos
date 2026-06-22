@@ -4,8 +4,8 @@
   "without_sleep": {
     "inferred": "water",
     "source": "recent_history",
-    "associate": "water",
-    "text_decision": "commit"
+    "associate": null,
+    "text_decision": "observe"
   },
   "with_sleep": {
     "inferred": "fire",

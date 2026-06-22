@@ -2,7 +2,7 @@
 
 **Emergent Intelligence via Distributed Organisational Systems**
 
-**Status: Active (v7.1)** — [Lab report](LAB_REPORT.md) · [Changelog](CHANGELOG.md) · [Positioning](docs/POSITIONING.md) · [What EIDOS is](docs/WHAT_EIDOS_IS.md) · [Releases](https://github.com/yesYescaca/eidos/releases)
+**Status: Active (v7.2)** — [Lab report](LAB_REPORT.md) · [Changelog](CHANGELOG.md) · [Positioning](docs/POSITIONING.md) · [What EIDOS is](docs/WHAT_EIDOS_IS.md) · [Releases](https://github.com/yesYescaca/eidos/releases)
 
 EIDOS is a laboratory prototype reasoning agent built from cognitive science primitives — not from transformer architectures or token prediction. Instead of learning statistical text patterns, EIDOS implements mechanisms drawn from neuroscience: hierarchical predictive coding, global workspace broadcasting, Hebbian association learning, attentional gating, and intrinsic curiosity reward. It is a transparent, numpy-only system designed to explore how biological cognition might be computationally reconstructed.
 
@@ -13,7 +13,7 @@ EIDOS is a laboratory prototype reasoning agent built from cognitive science pri
 | **Experiments** | 24 controlled tests (v1 → v7.1) |
 | **Unit tests** | 78 (pytest) |
 | **Benchmark** | 17 ambiguous QA cases + EIDOS-Eval (mock + live) |
-| **Latest** | v7.1 — Live Groq eval + belief-grounded prompts |
+| **Latest** | v7.2 — Calibrated live gate + task accuracy metrics |
 | **Hybrid** | LLM proposes → EIDOS gates (`HybridEidosAgent`) |
 
 ```bash
