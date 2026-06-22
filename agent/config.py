@@ -43,5 +43,10 @@ SLEEP_CONSOLIDATE_TOP_K = 2
 SLEEP_CONSOLIDATE_STEPS = 10
 SLOW_STORE_CONFLICT_RATIO = 1.5
 
+# v3.0: meta-cognition — misleading context + reasoning quality monitoring
+MISLEADING_CONTEXT_RATIO = 2.0
+META_LOW_CONFIDENCE = 0.4
+CLOSE_HYPOTHESIS_EPSILON = 0.5
+
 # Deprecated alias kept for backward compatibility in tests/docs
 REASONING_THRESHOLD = REASONING_ABSOLUTE_FLOOR

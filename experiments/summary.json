@@ -83,6 +83,22 @@
     "num": "11",
     "name": "CLS recovery (v2.0)",
     "folder": "exp_11_cls_recovery",
+    "passed": false,
+    "exit_code": 0,
+    "ok": false
+  },
+  {
+    "num": "12",
+    "name": "Meta misleading context (v3.0 A)",
+    "folder": "exp_12_meta_misleading_context",
+    "passed": true,
+    "exit_code": 0,
+    "ok": true
+  },
+  {
+    "num": "13",
+    "name": "Meta ambiguous reasoning (v3.0 B)",
+    "folder": "exp_13_meta_ambiguous_reasoning",
     "passed": true,
     "exit_code": 0,
     "ok": true

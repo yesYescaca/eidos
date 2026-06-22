@@ -181,16 +181,25 @@ v2.0 implements the slow memory system that failure-mode analysis demanded:
 
 ---
 
-## Project Status: Complete (v2.0)
+## Project Status: Complete (v3.0)
 
 EIDOS Experiment 06 is complete as a laboratory prototype. Full writeup: `LAB_REPORT.md`.
 
 | Deliverable | Status |
 |-------------|--------|
 | 15 cognitive primitives | Done |
-| PAW architecture (11 components) | Done |
-| 11 experiments (success + failure + fix) | Done |
-| 38 unit tests | Done |
+| PAW architecture (12 components) | Done |
+| 13 experiments (success + failure + fix) | Done |
+| Meta-cognition (v3.0) | Done |
+| 41+ unit tests | Done |
 | Lab report | Done |
 
-*Synthesis complete. Experiment 06 closed.*
+---
+
+## v3.0 Update (Meta-Cognition)
+
+1. **`MetaCognitionMonitor`** — misleading context detection via episodic long-view
+2. **Reasoning quality flags** — ambiguous/low-confidence hypothesis monitoring
+3. **Exp 12–13** — validate A and B respectively; Exp 09–10 use meta off for historical failure docs
+
+*Synthesis complete. Experiment 06 closed at v3.0.*

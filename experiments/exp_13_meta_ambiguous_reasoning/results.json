@@ -1,0 +1,31 @@
+{
+  "experiment": "exp_13_meta_ambiguous_reasoning",
+  "description": "v3.0 B \u2014 close hypothesis competition flagged",
+  "reasoning_triggered": true,
+  "meta_cognition_flags": [
+    "ambiguous_hypothesis"
+  ],
+  "top_two_error_gap": 0.0,
+  "hypothesis": {
+    "label": "explain:alpha",
+    "confidence": 0.9999690108270419,
+    "predicted_error": 0.027778299672880938,
+    "preview_recovery_error": 0.027778299672880938,
+    "current_error": 896.3872546863485,
+    "hypotheses_evaluated": 4,
+    "concept": "alpha",
+    "associate": "alpha",
+    "hypothesis_type": "consolidation_preview",
+    "scoring": "consolidation_preview",
+    "path": null,
+    "recovery_inference_source": "recent_history",
+    "consolidated_error": 1.7879971054319957e-12
+  },
+  "hypothesis_applied": true,
+  "checks": {
+    "ambiguous_hypothesis_flagged": true,
+    "reasoning_triggered": true,
+    "close_competition": true
+  },
+  "pass": true
+}

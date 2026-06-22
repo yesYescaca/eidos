@@ -41,7 +41,9 @@ def test_sleep_replay_strengthens_beliefs():
 
 def test_v2_misleading_context_uses_belief_graph():
     rng = np.random.default_rng(1)
-    agent = EidosAgent(seed=1, enable_reasoning=True, apply_hypotheses=True)
+    agent = EidosAgent(
+        seed=1, enable_reasoning=True, apply_hypotheses=True, enable_meta_cognition=False
+    )
     base = rng.normal(0, 1, 64)
     fire, water = base.copy(), base + rng.normal(0, 2, 64)
     agent.register_concept("fire", fire)

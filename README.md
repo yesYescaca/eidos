@@ -2,7 +2,7 @@
 
 **Emergent Intelligence via Distributed Organisational Systems**
 
-**Status: Complete (v2.0)** — See [LAB_REPORT.md](LAB_REPORT.md) for full findings.
+**Status: Complete (v3.0)** — See [LAB_REPORT.md](LAB_REPORT.md) for full findings.
 
 EIDOS is a laboratory prototype reasoning agent built from cognitive science primitives — not from transformer architectures or token prediction. Instead of learning statistical text patterns, EIDOS implements mechanisms drawn from neuroscience: hierarchical predictive coding, global workspace broadcasting, Hebbian association learning, attentional gating, and intrinsic curiosity reward. It is a transparent, numpy-only system designed to explore how biological cognition might be computationally reconstructed.
 
@@ -25,10 +25,20 @@ eidos/
 ├── research/          # Cognitive primitives (JSON) + synthesis
 ├── architecture/      # Component implementations
 ├── agent/             # Main EidosAgent class
-├── tests/             # pytest suite (38 tests)
-├── experiments/       # Eleven validation experiments (v1 → v2.0)
+├── tests/             # pytest suite
+├── experiments/       # Thirteen validation experiments (v1 → v3.0)
 └── run_all_experiments.py
 ```
+
+## v3.0 — Meta-Cognition
+
+Version 3.0 adds System 2 self-monitoring:
+
+- **`MetaCognitionMonitor`** — detects misleading short-term context vs long episodic evidence (A)
+- **Reasoning quality flags** — `ambiguous_hypothesis`, `low_confidence`, `hypothesis_suppressed` (B)
+- **`enable_meta_cognition`** — ablation flag (off in Exp 09–10 to preserve v1.4 failure docs)
+- **Exp 12** — prevents Exp 09-style misleading context without sleep
+- **Exp 13** — flags ambiguous hypothesis competition on near-duplicate concepts
 
 ## v2.0 — Complementary Learning Systems (BeliefGraph + Sleep Replay)
 
@@ -104,6 +114,8 @@ python experiments/exp_08_autonomous_recovery/run.py # v1.4: no external recover
 python experiments/exp_09_misleading_context/run.py  # failure: decoy episodic context
 python experiments/exp_10_cold_start/run.py            # failure: no context / cold start
 python experiments/exp_11_cls_recovery/run.py          # v2.0: sleep replay fixes 09+10
+python experiments/exp_12_meta_misleading_context/run.py  # v3.0 A: meta detects decoy context
+python experiments/exp_13_meta_ambiguous_reasoning/run.py # v3.0 B: ambiguous reasoning flags
 ```
 
 ## Running Tests
@@ -151,5 +163,5 @@ Potential directions when revisiting this project: meta-cognition (reasoning tra
 
 ---
 
-*KISAMAPA LABS — EXPERIMENT 06 — EIDOS v2.0*
+*KISAMAPA LABS — EXPERIMENT 06 — EIDOS v3.0*
 *Classification: Research Prototype — Complete*

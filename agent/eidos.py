@@ -21,7 +21,10 @@ from agent.config import (
     HYPOTHESIS_BLEND_WEIGHT,
     HYPOTHESIS_PERSISTENCE_STEPS,
     INPUT_DIM,
+    CLOSE_HYPOTHESIS_EPSILON,
     EPISODIC_BUFFER_CAPACITY,
+    META_LOW_CONFIDENCE,
+    MISLEADING_CONTEXT_RATIO,
     PREDICTION_LEARNING_RATE,
     REASONING_ABSOLUTE_FLOOR,
     RECENT_HISTORY_WINDOW,
@@ -43,6 +46,7 @@ from architecture.components.attention_gate import AttentionGate
 from architecture.components.belief_graph import BeliefGraph
 from architecture.components.episodic_buffer import EpisodicBuffer
 from architecture.components.prediction_engine import PredictionEngine
+from architecture.components.meta_cognition import MetaCognitionMonitor
 from architecture.components.reasoning_loop import ReasoningLoop
 from architecture.components.recovery_context import RecoveryContextTracker
 from architecture.components.reward_signal import RewardSignal
@@ -62,11 +66,13 @@ class EidosAgent:
         seed: int | None = None,
         enable_reasoning: bool = True,
         apply_hypotheses: bool = True,
+        enable_meta_cognition: bool = True,
     ) -> None:
         self.input_dim = input_dim
         self.hidden_dim = hidden_dim
         self.enable_reasoning = enable_reasoning
         self.apply_hypotheses = apply_hypotheses
+        self.enable_meta_cognition = enable_meta_cognition
 
         self.workspace = WorkspaceBuffer(capacity=workspace_capacity)
         self.prediction = PredictionEngine(
@@ -106,6 +112,12 @@ class EidosAgent:
         self.episodic_buffer = EpisodicBuffer(capacity=EPISODIC_BUFFER_CAPACITY)
         self._sleep = SleepReplay(seed=seed)
         self._last_sleep_result: dict[str, Any] | None = None
+        self.meta_cognition = MetaCognitionMonitor(
+            misleading_context_ratio=MISLEADING_CONTEXT_RATIO,
+            low_confidence_threshold=META_LOW_CONFIDENCE,
+            close_hypothesis_epsilon=CLOSE_HYPOTHESIS_EPSILON,
+        )
+        self._last_meta_flags: list[str] = []
 
     def _raw_workspace_mean_vector(self) -> np.ndarray:
         """Workspace mean without applying or consuming belief bias."""
@@ -172,34 +184,35 @@ class EidosAgent:
     def _recent_label_count(self, label: str) -> int:
         return self._recovery_context.label_count(label)
 
-    def _resolve_recovery_probe(
+    def _goal_recovery_probe(self) -> tuple[np.ndarray, str] | None:
+        if self._current_goal is None:
+            return None
+        goal = self._current_goal
+        best_label = None
+        best_sim = -1.0
+        for name, vec in self._concept_vectors.items():
+            min_len = min(len(goal), len(vec))
+            g, v = goal[:min_len], vec[:min_len]
+            norm_g, norm_v = np.linalg.norm(g), np.linalg.norm(v)
+            if norm_g < 1e-10 or norm_v < 1e-10:
+                continue
+            sim = float(np.dot(g, v) / (norm_g * norm_v))
+            if sim > best_sim:
+                best_sim = sim
+                best_label = name
+        if best_label is not None and best_sim > 0.3:
+            return self._concept_vectors[best_label].copy(), best_label
+        return None
+
+    def _resolve_recovery_probe_legacy(
         self,
-        recovery_probe: np.ndarray | None,
-        input_label: str,
-        workspace_labels: list[str],
+        recent_probe: np.ndarray | None,
+        recent_label: str | None,
+        recent_source: str,
+        belief_probe: np.ndarray | None,
+        belief_label: str | None,
+        goal_pair: tuple[np.ndarray, str] | None,
     ) -> tuple[np.ndarray | None, str | None, str]:
-        """Explicit probe overrides; merge recent episodic + slow BeliefGraph."""
-        if recovery_probe is not None:
-            return (
-                np.asarray(recovery_probe, dtype=np.float64).flatten(),
-                None,
-                "explicit",
-            )
-
-        recent_probe, recent_label, recent_source = (
-            self._recovery_context.infer_recovery_probe(
-                self._concept_vectors,
-                input_label,
-                self.input_dim,
-                workspace_labels=workspace_labels,
-            )
-        )
-
-        belief_probe, belief_label = self.belief_graph.infer_recovery_probe(
-            self._concept_vectors,
-            self.input_dim,
-        )
-
         if belief_probe is not None and recent_probe is not None:
             if belief_label != recent_label:
                 belief_strength = self.belief_graph.strength(belief_label or "")
@@ -215,28 +228,69 @@ class EidosAgent:
 
         if belief_probe is not None:
             return belief_probe, belief_label, "belief_graph"
-
         if recent_probe is not None:
             return recent_probe, recent_label, recent_source
-
-        if self._current_goal is not None:
-            goal = self._current_goal
-            best_label = None
-            best_sim = -1.0
-            for name, vec in self._concept_vectors.items():
-                min_len = min(len(goal), len(vec))
-                g, v = goal[:min_len], vec[:min_len]
-                norm_g, norm_v = np.linalg.norm(g), np.linalg.norm(v)
-                if norm_g < 1e-10 or norm_v < 1e-10:
-                    continue
-                sim = float(np.dot(g, v) / (norm_g * norm_v))
-                if sim > best_sim:
-                    best_sim = sim
-                    best_label = name
-            if best_label is not None and best_sim > 0.3:
-                return self._concept_vectors[best_label].copy(), best_label, "goal"
-
+        if goal_pair is not None:
+            return goal_pair[0], goal_pair[1], "goal"
         return None, None, "none"
+
+    def _resolve_recovery_probe(
+        self,
+        recovery_probe: np.ndarray | None,
+        input_label: str,
+        workspace_labels: list[str],
+    ) -> tuple[np.ndarray | None, str | None, str, list[str]]:
+        """Explicit probe overrides; meta-cognition arbitrates context conflicts."""
+        if recovery_probe is not None:
+            return (
+                np.asarray(recovery_probe, dtype=np.float64).flatten(),
+                None,
+                "explicit",
+                [],
+            )
+
+        recent_probe, recent_label, recent_source = (
+            self._recovery_context.infer_recovery_probe(
+                self._concept_vectors,
+                input_label,
+                self.input_dim,
+                workspace_labels=workspace_labels,
+            )
+        )
+
+        belief_probe, belief_label = self.belief_graph.infer_recovery_probe(
+            self._concept_vectors,
+            self.input_dim,
+        )
+        goal_pair = self._goal_recovery_probe()
+
+        if not self.enable_meta_cognition:
+            probe, label, source = self._resolve_recovery_probe_legacy(
+                recent_probe, recent_label, recent_source,
+                belief_probe, belief_label, goal_pair,
+            )
+            return probe, label, source, []
+
+        recent_count = (
+            self._recent_label_count(recent_label) if recent_label else 0
+        )
+        probe, label, source, flags = self.meta_cognition.arbitrate_recovery(
+            recent_probe=recent_probe,
+            recent_label=recent_label,
+            recent_source=recent_source,
+            recent_window_count=recent_count,
+            belief_probe=belief_probe,
+            belief_label=belief_label,
+            belief_strength_fn=self.belief_graph.strength,
+            episodic_buffer=self.episodic_buffer,
+            concept_vectors=self._concept_vectors,
+            input_dim=self.input_dim,
+            workspace_labels=workspace_labels,
+            goal_probe=goal_pair,
+            slow_store_conflict_ratio=SLOW_STORE_CONFLICT_RATIO,
+        )
+        self._last_meta_flags = flags
+        return probe, label, source, flags
 
     def _apply_hypothesis(
         self, hypothesis: dict[str, Any], surprise_label: str | None = None
@@ -360,18 +414,29 @@ class EidosAgent:
         reasoning_triggered = False
         inferred_label: str | None = None
         inference_source = "none"
+        meta_flags: list[str] = []
 
-        effective_probe, inferred_label, inference_source = self._resolve_recovery_probe(
-            recovery_probe, input_label, active_labels
+        effective_probe, inferred_label, inference_source, meta_flags = (
+            self._resolve_recovery_probe(recovery_probe, input_label, active_labels)
         )
 
+        episodic_dominant, _ = self.episodic_buffer.dominant_label(
+            set(self._concept_vectors.keys())
+        )
         belief_dominant, _ = self.belief_graph.dominant_concept(
             registered=set(self._concept_vectors.keys())
         )
         cold_start_reason = (
             input_label not in self._concept_vectors
-            and belief_dominant is not None
             and prediction_error >= REASONING_ABSOLUTE_FLOOR
+            and (
+                (belief_dominant is not None and self.belief_graph.strength(belief_dominant) > 0)
+                or (
+                    self.enable_meta_cognition
+                    and episodic_dominant is not None
+                    and self.episodic_buffer.label_counts().get(episodic_dominant, 0) > 0
+                )
+            )
         )
 
         if self.enable_reasoning and (
@@ -388,11 +453,28 @@ class EidosAgent:
                 preview_steps=CONSOLIDATION_PREVIEW_STEPS,
                 preview_lr=BELIEF_CONSOLIDATION_LR,
             )
-            if hypothesis and self.apply_hypotheses:
+            if hypothesis and self.enable_meta_cognition:
+                trace = self.reasoner.get_trace()
+                reasoning_flags = self.meta_cognition.evaluate_reasoning(
+                    hypothesis, trace[-1] if trace else None
+                )
+                meta_flags = list(dict.fromkeys(meta_flags + reasoning_flags))
+
+            apply = (
+                hypothesis is not None
+                and self.apply_hypotheses
+                and not (
+                    self.enable_meta_cognition
+                    and self.meta_cognition.should_suppress_hypothesis(meta_flags)
+                )
+            )
+            if apply:
                 hypothesis["recovery_inference_source"] = inference_source
                 hypothesis_applied = self._apply_hypothesis(
                     hypothesis, surprise_label=input_label
                 )
+            elif hypothesis and self.enable_meta_cognition:
+                meta_flags.append("hypothesis_suppressed")
 
         self._recovery_context.record(input_label, raw_input)
         self.episodic_buffer.record(input_label, raw_input)
@@ -411,6 +493,7 @@ class EidosAgent:
             ),
             "inferred_recovery_label": inferred_label,
             "recovery_inference_source": inference_source,
+            "meta_cognition_flags": meta_flags,
             "surprise_ratio": self.surprise.surprise_ratio(prediction_error),
             "error_baseline": self.surprise.baseline(),
             "workspace_size": len(self.workspace),
@@ -446,12 +529,13 @@ class EidosAgent:
                 "content": self._serialise_content(slot["content"]),
             })
         state = {
-            "version": "2.0",
+            "version": "3.0",
             "input_dim": self.input_dim,
             "hidden_dim": self.hidden_dim,
             "workspace_capacity": self.workspace.capacity,
             "enable_reasoning": self.enable_reasoning,
             "apply_hypotheses": self.apply_hypotheses,
+            "enable_meta_cognition": self.enable_meta_cognition,
             "workspace_slots": serialised_slots,
             "prediction_weights": self.prediction.get_weights_dict(),
             "associations": self.associations.to_dict(),
@@ -474,6 +558,7 @@ class EidosAgent:
         self.hidden_dim = state["hidden_dim"]
         self.enable_reasoning = state.get("enable_reasoning", True)
         self.apply_hypotheses = state.get("apply_hypotheses", True)
+        self.enable_meta_cognition = state.get("enable_meta_cognition", True)
         self.workspace = WorkspaceBuffer(capacity=state["workspace_capacity"])
         for slot in state.get("workspace_slots", []):
             self.workspace.insert(

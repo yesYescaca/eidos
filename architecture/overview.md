@@ -11,7 +11,7 @@ EIDOS implements the **Predictive Active Workspace** architecture — a biologic
 | Hebbian Learning (Hebb) | `AssociationStore` | `association_store.py` |
 | Attention (Corbetta & Shulman) | `AttentionGate` | `attention_gate.py` |
 | Reward Prediction Error (Schultz) | `RewardSignal` | `reward_signal.py` |
-| Dual-Process Theory (Kahneman) | `ReasoningLoop` | `reasoning_loop.py` |
+| Dual-Process Theory (Kahneman) | `ReasoningLoop` + `MetaCognitionMonitor` | `reasoning_loop.py`, `meta_cognition.py` |
 | Hippocampal Replay (Wilson & McNaughton) | `consolidate_belief()` + `SleepReplay` | `prediction_engine.py`, `sleep_replay.py` |
 | Complementary Learning Systems (McClelland) | `EpisodicBuffer` + `BeliefGraph` | `episodic_buffer.py`, `belief_graph.py` |
 

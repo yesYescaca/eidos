@@ -1,0 +1,22 @@
+{
+  "experiment": "exp_12_meta_misleading_context",
+  "description": "v3.0 meta-cognition detects decoy warmup without sleep",
+  "result": {
+    "inferred_recovery_label": "fire",
+    "recovery_inference_source": "meta_cognition",
+    "selected_associate": "fire",
+    "meta_cognition_flags": [
+      "misleading_context_detected",
+      "ambiguous_hypothesis"
+    ],
+    "early_recovery_error": 89.01346864811167
+  },
+  "checks": {
+    "misleading_context_detected": true,
+    "correct_inference": true,
+    "correct_selection": true,
+    "meta_cognition_source": true,
+    "good_recovery": true
+  },
+  "pass": true
+}

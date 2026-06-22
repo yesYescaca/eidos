@@ -101,13 +101,15 @@ def surprise_recovery(
 
 
 def load_trained_agent(vectors: dict[str, np.ndarray], rng: np.random.Generator) -> EidosAgent:
-    trainer = EidosAgent(seed=42, enable_reasoning=False, apply_hypotheses=False)
+    trainer = EidosAgent(
+        seed=42, enable_reasoning=False, apply_hypotheses=False, enable_meta_cognition=False
+    )
     train_and_sleep(trainer, vectors, TRAINED_TARGET, rng=rng)
 
     with tempfile.TemporaryDirectory() as tmp:
         snapshot = Path(tmp) / "trained.json"
         trainer.save_state(snapshot)
-        agent = EidosAgent(seed=99)
+        agent = EidosAgent(seed=99, enable_meta_cognition=False)
         agent.load_state(snapshot)
         agent.enable_reasoning = True
         agent.apply_hypotheses = True

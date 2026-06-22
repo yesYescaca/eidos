@@ -5,7 +5,7 @@
 | Field | Value |
 |-------|-------|
 | **Classification** | Research Prototype |
-| **Status** | Complete (v2.0) |
+| **Status** | Complete (v3.0) |
 | **Date** | June 2026 |
 | **Stack** | Python, numpy, matplotlib, pytest |
 | **Repository** | `eidos/` |
@@ -249,7 +249,25 @@ Key frameworks: Friston (2010, 2017), Rao & Ballard (1999), Baars (1988), Baddel
 | 09 | Misleading context | Failure mode | v1.4 |
 | 10 | Cold start | Failure mode | v1.4 |
 | 11 | CLS recovery | Success | v2.0 |
+| 12 | Meta misleading context | Success | v3.0 A |
+| 13 | Meta ambiguous reasoning | Success | v3.0 B |
 
 ---
 
-*Kisamapa Labs — Experiment 06 — EIDOS v2.0 — Lab Report*
+## v3.0 Addendum — Meta-Cognition
+
+### A: Misleading context detection
+Compares recent window dominance against full `EpisodicBuffer` distribution. When short-term context is a decoy burst (Exp 09 scenario), meta-cognition overrides with `meta_cognition` inference source and flags `misleading_context_detected`.
+
+### B: Reasoning trace monitoring
+After ReasoningLoop selection, evaluates confidence and top-2 preview error gap. Flags `ambiguous_hypothesis` when competition is too close; may suppress hypothesis application when both ambiguous and low-confidence.
+
+### Evidence
+- **Exp 12:** Misled warmup (15 water, trained fire) → infers fire, error < 50, flag raised
+- **Exp 13:** Near-duplicate concepts → `ambiguous_hypothesis` flagged
+
+Exp 09–10 remain valid with `enable_meta_cognition=False`.
+
+---
+
+*Kisamapa Labs — Experiment 06 — EIDOS v3.0 — Lab Report*

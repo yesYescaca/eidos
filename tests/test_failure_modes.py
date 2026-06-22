@@ -18,7 +18,7 @@ def _train_fire(agent: EidosAgent, rng: np.random.Generator) -> tuple[np.ndarray
 
 def test_misleading_context_infers_decoy():
     rng = np.random.default_rng(0)
-    agent = EidosAgent(seed=0, enable_reasoning=True, apply_hypotheses=True)
+    agent = EidosAgent(seed=0, enable_reasoning=True, apply_hypotheses=True, enable_meta_cognition=False)
     fire, water = _train_fire(agent, rng)
 
     for _ in range(12):
@@ -34,7 +34,7 @@ def test_misleading_context_infers_decoy():
 
 def test_cold_start_has_no_history_inference():
     rng = np.random.default_rng(1)
-    agent = EidosAgent(seed=1, enable_reasoning=True, apply_hypotheses=True)
+    agent = EidosAgent(seed=1, enable_reasoning=True, apply_hypotheses=True, enable_meta_cognition=False)
     fire, _ = _train_fire(agent, rng)
 
     agent.workspace.clear()

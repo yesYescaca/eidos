@@ -36,6 +36,25 @@ class EpisodicBuffer:
             counts[lbl] = counts.get(lbl, 0) + 1
         return counts
 
+    def dominant_label(
+        self, registered: set[str] | None = None
+    ) -> tuple[str | None, int]:
+        counts = self.label_counts()
+        if registered is not None:
+            counts = {k: v for k, v in counts.items() if k in registered}
+        if not counts:
+            return None, 0
+        label = max(counts, key=counts.get)
+        return label, counts[label]
+
+    def mean_vector_for_label(self, label: str) -> np.ndarray | None:
+        vectors = [
+            t["vector"] for t in self._traces if t["label"] == label
+        ]
+        if not vectors:
+            return None
+        return np.mean(vectors, axis=0)
+
     def __len__(self) -> int:
         return len(self._traces)
 

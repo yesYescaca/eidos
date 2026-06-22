@@ -150,6 +150,7 @@ def load_trained_agent(vectors: dict[str, np.ndarray], rng: np.random.Generator)
         agent.load_state(snapshot)
         agent.enable_reasoning = True
         agent.apply_hypotheses = True
+        agent.enable_meta_cognition = False
         agent.reasoner.clear_trace()
         agent.surprise._history.clear()
     return agent

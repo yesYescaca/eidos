@@ -22,6 +22,8 @@ EXPERIMENTS = [
     ("09", "exp_09_misleading_context", "Misleading context (failure)"),
     ("10", "exp_10_cold_start", "Cold start (failure)"),
     ("11", "exp_11_cls_recovery", "CLS recovery (v2.0)"),
+    ("12", "exp_12_meta_misleading_context", "Meta misleading context (v3.0 A)"),
+    ("13", "exp_13_meta_ambiguous_reasoning", "Meta ambiguous reasoning (v3.0 B)"),
 ]
 
 
