@@ -99,5 +99,8 @@ class RecoveryContextTracker:
     def label_count(self, label: str) -> int:
         return sum(1 for e in self._history if e["label"] == label)
 
+    def has_registered_context(self, concept_vectors: dict[str, np.ndarray]) -> bool:
+        return any(e["label"] in concept_vectors for e in self._history)
+
     def clear(self) -> None:
         self._history.clear()

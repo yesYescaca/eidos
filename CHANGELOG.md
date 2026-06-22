@@ -1,5 +1,11 @@
 # Changelog
 
+## v4.0 — Active Inference
+- `ActiveInferenceController` — expected free energy action selection (Friston 2017)
+- Actions: `observe`, `probe:<concept>`, `sleep`
+- `enable_active_inference` flag (default off for Exp 01–14 compatibility)
+- Exp 15–16: epistemic probing and ablation
+
 ## v3.1 — Consequential Meta-Cognition
 - `enable_meta_consequential` flag (default on)
 - Defer hypothesis when `ambiguous_hypothesis` or `low_confidence` (v3.0 required both)

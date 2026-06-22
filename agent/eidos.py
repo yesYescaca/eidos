@@ -9,12 +9,18 @@ from typing import Any
 import numpy as np
 
 from agent.config import (
+    ACTIVE_BELIEF_STRENGTH_THRESHOLD,
+    ACTIVE_PROBE_NOISE_STD,
+    ACTIVE_SLEEP_EPISTEMIC_BONUS,
+    ACTIVE_SLEEP_REPLAYS,
     ASSOCIATION_DECAY,
     ATTENTION_ALPHA,
     ATTENTION_BETA,
     BELIEF_CONSOLIDATION_LR,
     BELIEF_CONSOLIDATION_STEPS,
     CONSOLIDATION_PREVIEW_STEPS,
+    EFE_EPISTEMIC_WEIGHT,
+    EFE_PRAGMATIC_WEIGHT,
     HEBBIAN_LEARNING_RATE,
     HIDDEN_DIM,
     HYPOTHESIS_ASSOCIATION_BOOST,
@@ -44,6 +50,7 @@ from agent.config import (
     SURPRISE_WINDOW,
     WORKSPACE_CAPACITY,
 )
+from architecture.components.active_inference import ActiveInferenceController
 from architecture.components.association_store import AssociationStore
 from architecture.components.attention_gate import AttentionGate
 from architecture.components.belief_graph import BeliefGraph
@@ -71,6 +78,7 @@ class EidosAgent:
         apply_hypotheses: bool = True,
         enable_meta_cognition: bool = True,
         enable_meta_consequential: bool = True,
+        enable_active_inference: bool = False,
     ) -> None:
         self.input_dim = input_dim
         self.hidden_dim = hidden_dim
@@ -78,6 +86,7 @@ class EidosAgent:
         self.apply_hypotheses = apply_hypotheses
         self.enable_meta_cognition = enable_meta_cognition
         self.enable_meta_consequential = enable_meta_consequential
+        self.enable_active_inference = enable_active_inference
 
         self.workspace = WorkspaceBuffer(capacity=workspace_capacity)
         self.prediction = PredictionEngine(
@@ -121,6 +130,13 @@ class EidosAgent:
             misleading_context_ratio=MISLEADING_CONTEXT_RATIO,
             low_confidence_threshold=META_LOW_CONFIDENCE,
             close_hypothesis_epsilon=CLOSE_HYPOTHESIS_EPSILON,
+        )
+        self.active_inference = ActiveInferenceController(
+            epistemic_weight=EFE_EPISTEMIC_WEIGHT,
+            pragmatic_weight=EFE_PRAGMATIC_WEIGHT,
+            probe_noise_std=ACTIVE_PROBE_NOISE_STD,
+            sleep_epistemic_bonus=ACTIVE_SLEEP_EPISTEMIC_BONUS,
+            belief_strength_threshold=ACTIVE_BELIEF_STRENGTH_THRESHOLD,
         )
         self._last_meta_flags: list[str] = []
 
@@ -246,6 +262,16 @@ class EidosAgent:
         workspace_labels: list[str],
     ) -> tuple[np.ndarray | None, str | None, str, list[str]]:
         """Explicit probe overrides; meta-cognition arbitrates context conflicts."""
+        if input_label.startswith("probe:"):
+            concept = input_label.split(":", 1)[1]
+            if concept in self._concept_vectors:
+                return (
+                    self._concept_vectors[concept].copy(),
+                    concept,
+                    "active_probe",
+                    [],
+                )
+
         if recovery_probe is not None:
             return (
                 np.asarray(recovery_probe, dtype=np.float64).flatten(),
@@ -360,6 +386,21 @@ class EidosAgent:
             self._last_applied_hypothesis = hypothesis
         return applied
 
+    def _should_use_active_inference(self, input_label: str, pre_error: float) -> bool:
+        if not self.enable_active_inference:
+            return False
+        if input_label in self._concept_vectors:
+            return False
+        if input_label.startswith("probe:"):
+            return False
+        if pre_error < REASONING_ABSOLUTE_FLOOR:
+            return False
+        if not self._concept_vectors:
+            return False
+        if self.surprise.is_surprising(pre_error):
+            return True
+        return not self._recovery_context.has_registered_context(self._concept_vectors)
+
     def step(
         self,
         raw_input: np.ndarray,
@@ -378,6 +419,44 @@ class EidosAgent:
 
         workspace_mean = self._raw_workspace_mean_vector()
         prediction_context = self._prediction_context()
+        context = prediction_context[: self.hidden_dim]
+
+        selected_action: str | None = None
+        expected_free_energy: float | None = None
+        action_epistemic_value: float | None = None
+        action_pragmatic_value: float | None = None
+        active_sleep_performed = False
+
+        _, pre_error = self.prediction.predict_no_learn(raw_input, context)
+        if self._should_use_active_inference(input_label, pre_error):
+            belief_strengths = {
+                name: self.belief_graph.strength(name)
+                for name in self._concept_vectors
+            }
+            decision = self.active_inference.select_action(
+                raw_input,
+                context,
+                self._concept_vectors,
+                self.prediction,
+                goal=self._current_goal,
+                belief_strengths=belief_strengths,
+            )
+            action = decision["action"]
+            selected_action = action["label"]
+            expected_free_energy = action["expected_free_energy"]
+            action_epistemic_value = action["epistemic_value"]
+            action_pragmatic_value = action["pragmatic_value"]
+
+            if action["type"] == "probe" and action["concept"] in self._concept_vectors:
+                raw_input = self.active_inference.probe_vector(
+                    self._concept_vectors[action["concept"]],
+                    rng=np.random.default_rng(self._step_count + 1),
+                )
+                input_label = f"probe:{action['concept']}"
+            elif action["type"] == "sleep":
+                self.sleep(n_replays=ACTIVE_SLEEP_REPLAYS)
+                active_sleep_performed = True
+
         signal = {
             "id": f"input_{self._step_count}",
             "content_vector": raw_input,
@@ -394,7 +473,6 @@ class EidosAgent:
                 source=input_label,
             )
 
-        context = prediction_context[: self.hidden_dim]
         pred_result = self.prediction.predict(raw_input, context=context)
         prediction_error = pred_result["prediction_error"]
 
@@ -542,6 +620,11 @@ class EidosAgent:
             "inferred_recovery_label": inferred_label,
             "recovery_inference_source": inference_source,
             "meta_cognition_flags": meta_flags,
+            "selected_action": selected_action,
+            "expected_free_energy": expected_free_energy,
+            "action_epistemic_value": action_epistemic_value,
+            "action_pragmatic_value": action_pragmatic_value,
+            "active_sleep_performed": active_sleep_performed,
             "surprise_ratio": self.surprise.surprise_ratio(prediction_error),
             "error_baseline": self.surprise.baseline(),
             "workspace_size": len(self.workspace),
@@ -577,7 +660,7 @@ class EidosAgent:
                 "content": self._serialise_content(slot["content"]),
             })
         state = {
-            "version": "3.1",
+            "version": "4.0",
             "input_dim": self.input_dim,
             "hidden_dim": self.hidden_dim,
             "workspace_capacity": self.workspace.capacity,
@@ -585,6 +668,7 @@ class EidosAgent:
             "apply_hypotheses": self.apply_hypotheses,
             "enable_meta_cognition": self.enable_meta_cognition,
             "enable_meta_consequential": self.enable_meta_consequential,
+            "enable_active_inference": self.enable_active_inference,
             "workspace_slots": serialised_slots,
             "prediction_weights": self.prediction.get_weights_dict(),
             "associations": self.associations.to_dict(),
@@ -609,6 +693,7 @@ class EidosAgent:
         self.apply_hypotheses = state.get("apply_hypotheses", True)
         self.enable_meta_cognition = state.get("enable_meta_cognition", True)
         self.enable_meta_consequential = state.get("enable_meta_consequential", True)
+        self.enable_active_inference = state.get("enable_active_inference", False)
         self.workspace = WorkspaceBuffer(capacity=state["workspace_capacity"])
         for slot in state.get("workspace_slots", []):
             self.workspace.insert(

@@ -25,6 +25,8 @@ EXPERIMENTS = [
     ("12", "exp_12_meta_misleading_context", "Meta misleading context (v3.0 A)"),
     ("13", "exp_13_meta_ambiguous_reasoning", "Meta ambiguous reasoning (v3.0 B)"),
     ("14", "exp_14_meta_consequential", "Meta consequential (v3.1)"),
+    ("15", "exp_15_active_epistemic_probe", "Active epistemic probe (v4.0)"),
+    ("16", "exp_16_active_inference_ablation", "Active inference ablation (v4.0)"),
 ]
 
 

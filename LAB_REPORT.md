@@ -5,7 +5,7 @@
 | Field | Value |
 |-------|-------|
 | **Classification** | Research Prototype |
-| **Status** | Active — v3.1 (Experiment 06) |
+| **Status** | Active — v4.0 (Experiment 06) |
 | **Date** | June 2026 |
 | **Stack** | Python, numpy, matplotlib, pytest |
 | **Repository** | [github.com/yesYescaca/eidos](https://github.com/yesYescaca/eidos) |
@@ -16,7 +16,7 @@
 
 EIDOS is a laboratory prototype reasoning agent built from cognitive science primitives — not from transformer architectures or token prediction. Operating on 64-dimensional concept vectors, it implements a **Predictive Active Workspace (PAW)** architecture: hierarchical predictive coding, global workspace broadcasting, Hebbian association learning, attentional gating, intrinsic curiosity reward, dual-process reasoning, complementary learning systems, and meta-cognition.
 
-Across **fourteen controlled experiments**, we demonstrate that:
+Across **sixteen controlled experiments**, we demonstrate that:
 
 1. **Prediction error decreases** with structured exposure (Exp 01).
 2. **Associations form** from co-activation without supervision (Exp 02).
@@ -28,14 +28,15 @@ Across **fourteen controlled experiments**, we demonstrate that:
 8. **Sleep replay fixes those failures** via BeliefGraph (Exp 11).
 9. **Meta-cognition detects unreliable context and reasoning** (Exp 12–13).
 10. **Consequential meta-cognition improves outcomes** — deferring and sleeping beats blind commitment (Exp 14).
+11. **Active inference selects epistemic actions** — probing concepts reduces uncertainty before reasoning (Exp 15–16).
 
-**Conclusion:** Reasoning-like behaviour — surprise detection, hypothesis generation, belief revision, self-monitoring, and measurable recovery — can emerge from biologically motivated mechanisms in pure numpy, without an LLM.
+**Conclusion:** Reasoning-like behaviour — surprise detection, hypothesis generation, belief revision, self-monitoring, action selection under uncertainty, and measurable recovery — can emerge from biologically motivated mechanisms in pure numpy, without an LLM.
 
 ---
 
 ## 1. Research Question
 
-> Can an agent exhibit reasoning-like behaviour by composing cognitive science primitives, without statistical language modelling — and can it *know when its own inference is unreliable*?
+> Can an agent exhibit reasoning-like behaviour by composing cognitive science primitives, without statistical language modelling — and can it *know when its own inference is unreliable* and *act to reduce uncertainty*?
 
 ### Hypothesis
 
@@ -48,6 +49,7 @@ A minimal interacting mechanism set produces measurable reasoning on vector-valu
 | Reasoning is decorative | Exp 04, 06 ablation | **Rejected** (90–99.9% improvement) |
 | Recovery needs oracle hints | Exp 08 | **Rejected** |
 | Meta-cognition is decorative | Exp 14 v3.0 vs v3.1 | **Rejected** when consequential |
+| Action selection is decorative | Exp 15–16 v4 off vs on | **Rejected** |
 
 ---
 
@@ -74,6 +76,8 @@ Waking steps → EpisodicBuffer ──sleep()──→ BeliefGraph
 
 **v3.1 — Consequential meta-cognition:** auto-sleep on misleading/ambiguous context; defer hypothesis application when unreliable.
 
+**v4.0 — Active inference:** select `observe`, `probe:<concept>`, or `sleep` by minimising expected free energy before committing to perception.
+
 ### 2.2 Component Map
 
 | Component | Biological basis | Role |
@@ -90,6 +94,7 @@ Waking steps → EpisodicBuffer ──sleep()──→ BeliefGraph
 | `BeliefGraph` | Neocortex | Slow consolidated beliefs (v2.0) |
 | `SleepReplay` | Hippocampal replay (Wilson & McNaughton 1994) | Offline consolidation |
 | `MetaCognitionMonitor` | Metacognition (Flavell; Nelson & Narens) | Context conflict + reasoning quality (v3) |
+| `ActiveInferenceController` | Active inference (Friston et al. 2017) | EFE action selection: observe / probe / sleep (v4) |
 
 ### 2.3 Version Evolution
 
@@ -103,6 +108,7 @@ Waking steps → EpisodicBuffer ──sleep()──→ BeliefGraph
 | v2.0 | BeliefGraph + sleep replay |
 | v3.0 | Meta-cognition: detect misleading context + ambiguous reasoning |
 | v3.1 | Consequential meta-cognition: defer + auto-sleep |
+| v4.0 | Active inference: expected free energy action selection |
 
 ### 2.4 Ablation Flags
 
@@ -112,6 +118,7 @@ Waking steps → EpisodicBuffer ──sleep()──→ BeliefGraph
 | `apply_hypotheses=False` | Hypotheses not written back |
 | `enable_meta_cognition=False` | v1.4/v2.0 recovery only (Exp 09–10) |
 | `enable_meta_consequential=False` | v3.0 observe-only meta (flags, no defer/sleep) |
+| `enable_active_inference=False` | No EFE action selection (default; Exp 01–14) |
 
 ---
 
@@ -148,6 +155,9 @@ Exp 12: misleading context detected, fire recovered without sleep. Exp 13: ambig
 ### Consequential meta (14)
 v3.1 defer/sleep beats v3.0 blind commit on ambiguous near-duplicate concepts.
 
+### Active inference (15–16)
+Exp 15: goal-directed epistemic probe selects `probe:fire` under ambiguity. Exp 16: v4 on probes and lowers error vs passive observe on cold ambiguous input.
+
 ---
 
 ## 5. Discussion
@@ -163,7 +173,7 @@ v3.1 defer/sleep beats v3.0 blind commit on ambiguous near-duplicate concepts.
 | Limitation | Impact |
 |------------|--------|
 | 64-dim synthetic vectors | No language or real-world grounding |
-| No action output | No active inference action selection yet |
+| No action output | **Resolved in v4.0** — probe/sleep/observe via EFE |
 | Sleep is explicit | No automatic circadian schedule |
 | Single agent | No multi-agent workspace |
 | Meta-cognition is heuristic | Not a learned uncertainty estimator |
@@ -191,9 +201,9 @@ This is **enhancement** (adding System 2 + memory to System 1 fluency), not subs
 
 ## 6. Conclusion
 
-EIDOS v3.1 demonstrates progressive cognitive completeness: an agent that predicts, reasons, remembers, monitors its own reliability, and **changes behaviour when uncertain**. The experiment remains a research prototype — not AGI, not a product — but a reproducible foundation for studying competence under uncertainty.
+EIDOS v4.0 demonstrates progressive cognitive completeness: an agent that predicts, reasons, remembers, monitors its own reliability, changes behaviour when uncertain, and **selects actions to reduce expected surprise**. The experiment remains a research prototype — not AGI, not a product — but a reproducible foundation for studying competence under uncertainty.
 
-**Next research frontier:** active inference (action selection under expected surprise) and optional LLM grounding experiments as a separate Kisamapa track.
+**Next research frontier:** language grounding bridge (embeddings → PAW) and hybrid LLM sidecar experiments.
 
 ---
 
@@ -202,11 +212,11 @@ EIDOS v3.1 demonstrates progressive cognitive completeness: an agent that predic
 ```bash
 cd eidos
 pip install -r requirements.txt
-pytest tests/                    # 43+ unit tests
-python run_all_experiments.py    # All 14 experiments + summary
+pytest tests/                    # 45+ unit tests
+python run_all_experiments.py    # All 16 experiments + summary
 ```
 
-State serialisation version: **3.1**
+State serialisation version: **4.0**
 
 ---
 
@@ -228,7 +238,9 @@ State serialisation version: **3.1**
 | 12 | Meta misleading context | Success | v3.0 A |
 | 13 | Meta ambiguous reasoning | Success | v3.0 B |
 | 14 | Meta consequential | Success | v3.1 |
+| 15 | Active epistemic probe | Success | v4.0 |
+| 16 | Active inference ablation | Success | v4.0 |
 
 ---
 
-*Kisamapa Labs — Experiment 06 — EIDOS v3.1 — Lab Report*
+*Kisamapa Labs — Experiment 06 — EIDOS v4.0 — Lab Report*

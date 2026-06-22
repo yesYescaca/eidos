@@ -110,5 +110,21 @@
     "passed": true,
     "exit_code": 0,
     "ok": true
+  },
+  {
+    "num": "15",
+    "name": "Active epistemic probe (v4.0)",
+    "folder": "exp_15_active_epistemic_probe",
+    "passed": true,
+    "exit_code": 0,
+    "ok": true
+  },
+  {
+    "num": "16",
+    "name": "Active inference ablation (v4.0)",
+    "folder": "exp_16_active_inference_ablation",
+    "passed": true,
+    "exit_code": 0,
+    "ok": true
   }
 ]

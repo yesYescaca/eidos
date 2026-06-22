@@ -1,0 +1,25 @@
+{
+  "experiment": "exp_16_active_inference_ablation",
+  "description": "v4.0 on probes under cold ambiguous input without goal",
+  "passive": {
+    "selected_action": null,
+    "inferred_recovery_label": null,
+    "recovery_inference_source": "none",
+    "hypothesis_associate": null,
+    "prediction_error": 19.494740825145303
+  },
+  "active": {
+    "selected_action": "probe:smoke",
+    "inferred_recovery_label": "smoke",
+    "recovery_inference_source": "active_probe",
+    "hypothesis_associate": null,
+    "prediction_error": 1.9214923454322859
+  },
+  "checks": {
+    "active_probed": true,
+    "active_used_probe_source": true,
+    "passive_no_probe": true,
+    "active_lower_error": true
+  },
+  "pass": true
+}

@@ -1,0 +1,26 @@
+{
+  "experiment": "exp_15_active_epistemic_probe",
+  "description": "v4.0 \u2014 probe goal-aligned concept under ambiguity",
+  "passive": {
+    "selected_action": null,
+    "inferred_recovery_label": null,
+    "recovery_inference_source": "none",
+    "hypothesis_associate": null,
+    "prediction_error": 29.227696038261755,
+    "reasoning_triggered": false
+  },
+  "active": {
+    "selected_action": "probe:fire",
+    "inferred_recovery_label": "fire",
+    "recovery_inference_source": "active_probe",
+    "hypothesis_associate": null,
+    "prediction_error": 20.588956013673766,
+    "reasoning_triggered": false
+  },
+  "checks": {
+    "active_probed_fire": true,
+    "active_correct_associate": true,
+    "passive_did_not_probe": true
+  },
+  "pass": true
+}
