@@ -14,4 +14,4 @@ py demos/hybrid_qa/run.py --gpt2
 py demos/hybrid_qa/run.py --no-gate
 ```
 
-See `docs/HYBRID_SPIKE_PLAN.md` for architecture and v6 roadmap.
+See `docs/HYBRID_SPIKE_PLAN.md` for architecture. Run the benchmark: `py -m benchmark.ambiguous_qa.runner`

@@ -5,7 +5,7 @@
 | Field | Value |
 |-------|-------|
 | **Classification** | Research Prototype |
-| **Status** | Active — v5.0 (Experiment 06) |
+| **Status** | Active — v6.2 (Experiment 06) |
 | **Date** | June 2026 |
 | **Stack** | Python, numpy, matplotlib, pytest |
 | **Repository** | [github.com/yesYescaca/eidos](https://github.com/yesYescaca/eidos) |
@@ -16,7 +16,7 @@
 
 EIDOS is a laboratory prototype reasoning agent built from cognitive science primitives — not from transformer architectures or token prediction. Operating on 64-dimensional concept vectors, it implements a **Predictive Active Workspace (PAW)** architecture: hierarchical predictive coding, global workspace broadcasting, Hebbian association learning, attentional gating, intrinsic curiosity reward, dual-process reasoning, complementary learning systems, and meta-cognition.
 
-Across **eighteen controlled experiments**, we demonstrate that:
+Across **twenty-two controlled experiments**, we demonstrate that:
 
 1. **Prediction error decreases** with structured exposure (Exp 01).
 2. **Associations form** from co-activation without supervision (Exp 02).
@@ -30,8 +30,12 @@ Across **eighteen controlled experiments**, we demonstrate that:
 10. **Consequential meta-cognition improves outcomes** — deferring and sleeping beats blind commitment (Exp 14).
 11. **Active inference selects epistemic actions** — probing concepts reduces uncertainty before reasoning (Exp 15–16).
 12. **Text grounds to cognition** — phrases embed to vectors; text decisions drive probe and memory (Exp 17–18).
+13. **Hybrid LLM gating works** — EIDOS blocks blind LLM commits on ambiguous input (Exp 19).
+14. **Unified gate policy** — draft↔goal alignment catches wrong LLM output (Exp 20).
+15. **Semantic embeddings optional** — SBERT improves phrase separation vs hash (Exp 21).
+16. **Benchmark + end-to-end** — 17 labeled QA cases and full-stack meta+sleep+gate validation (Exp 22, v6.2).
 
-**Conclusion:** Reasoning-like behaviour — surprise detection, hypothesis generation, belief revision, self-monitoring, action selection under uncertainty, and measurable recovery — can emerge from biologically motivated mechanisms in pure numpy, without an LLM.
+**Conclusion:** Reasoning-like behaviour — surprise detection, hypothesis generation, belief revision, self-monitoring, action selection under uncertainty, LLM output gating, and measurable recovery — can emerge from biologically motivated mechanisms in pure numpy, with optional hybrid LLM integration.
 
 ---
 
@@ -81,6 +85,12 @@ Waking steps → EpisodicBuffer ──sleep()──→ BeliefGraph
 
 **v5.0 — Language grounding:** `TextGroundingBridge` + `EidosTextAgent` map phrases → 64-d vectors; `text_decision` surfaces cognitive outcomes.
 
+**v5.1 — Hybrid spike:** `HybridEidosAgent` — LLM draft + EIDOS gate.
+
+**v6.0 — Unified gate:** `GatePolicy` fuses cognitive steps, draft↔goal alignment, concept ambiguity.
+
+**v6.1–v6.2 — Benchmark:** `AmbiguousQABenchmark` — 17 labeled cases (lab + real-world professional domains).
+
 ### 2.2 Component Map
 
 | Component | Biological basis | Role |
@@ -100,6 +110,9 @@ Waking steps → EpisodicBuffer ──sleep()──→ BeliefGraph
 | `ActiveInferenceController` | Active inference (Friston et al. 2017) | EFE action selection: observe / probe / sleep (v4) |
 | `TextGroundingBridge` | Symbol grounding (Harnad 1990); distributional semantics | Phrase → vector embedding (v5) |
 | `EidosTextAgent` | Language adapter | `step_text`, `text_decision` (v5) |
+| `GatePolicy` | Metacognitive control (Nelson & Narens 1990) | Unified hybrid gate (v6) |
+| `HybridEidosAgent` | Dual-process (Kahneman 2011) | LLM + EIDOS sidecar (v5.1+) |
+| `AmbiguousQABenchmark` | Calibration under uncertainty | Labeled defer/commit evaluation (v6.1+) |
 
 ### 2.3 Version Evolution
 
@@ -115,6 +128,10 @@ Waking steps → EpisodicBuffer ──sleep()──→ BeliefGraph
 | v3.1 | Consequential meta-cognition: defer + auto-sleep |
 | v4.0 | Active inference: expected free energy action selection |
 | v5.0 | Text grounding bridge: phrases → PAW vectors |
+| v5.1 | Hybrid LLM + EIDOS gate spike |
+| v6.0 | Unified `GatePolicy` + optional SBERT embeddings |
+| v6.1 | Ambiguous QA benchmark + Exp 22 end-to-end |
+| v6.2 | Real-world benchmark expansion (10 professional domains) |
 
 ### 2.4 Ablation Flags
 
@@ -167,6 +184,9 @@ Exp 15: goal-directed epistemic probe selects `probe:fire` under ambiguity. Exp 
 ### Text grounding (17–18)
 Exp 17: `EidosTextAgent` + active inference probes goal-aligned text concept. Exp 18: pre-surprise sleep consolidates text session memory and fixes misleading phrase context.
 
+### Hybrid + gate (19–22)
+Exp 19: hybrid agent gates blind LLM commit. Exp 20: unified gate catches draft–goal misalignment. Exp 21: optional SBERT embeddings. Exp 22: full-stack (meta + sleep + gate) beats baseline; benchmark v2.0 covers lab + real-world domains.
+
 ---
 
 ## 5. Discussion
@@ -191,20 +211,20 @@ Exp 17: `EidosTextAgent` + active inference probes goal-aligned text concept. Ex
 
 EIDOS does not compete with language models. It explores **orthogonal mechanisms**: structured deliberation under surprise, explicit memory systems, and calibrated self-monitoring.
 
-A plausible **future research direction** (not implemented here) is a **hybrid architecture**:
+**Implemented hybrid architecture (v5.1–v6.2):**
 
 | Layer | Role |
 |-------|------|
-| **LLM** | Language interface, broad knowledge, text generation |
-| **EIDOS-style module** | Surprise detection, episodic context, belief consolidation, meta-cognitive deferral |
+| **LLM** | Language interface, draft generation (`MockLanguageModel`, optional GPT-2) |
+| **EIDOS module** | Surprise detection, episodic context, belief consolidation, meta-cognitive deferral, unified gate |
 
-Example integration patterns worth studying:
+Integration patterns demonstrated in code:
 
-1. **Cognitive wrapper** — LLM outputs are scored by a predictive/error module; high surprise triggers EIDOS-style deliberation before responding.
-2. **Memory sidecar** — EpisodicBuffer + BeliefGraph store session concepts; LLM retrieves consolidated beliefs instead of raw chat history.
-3. **Deferral gate** — When meta-cognition flags `ambiguous_hypothesis`, the hybrid system asks a clarifying question or runs consolidation instead of answering confidently.
+1. **Cognitive wrapper** — LLM drafts scored by `GatePolicy`; misalignment triggers clarify/defer/probe.
+2. **Memory sidecar** — `EpisodicBuffer` + `BeliefGraph` + `sleep()` consolidate session context (Exp 18, 22).
+3. **Deferral gate** — Meta-cognition + benchmark labeled cases validate safe non-commit under ambiguity.
 
-This is **enhancement** (adding System 2 + memory to System 1 fluency), not substitution. Kisamapa Experiment 06 establishes the laboratory baseline for that module in isolation.
+See `demos/hybrid_qa/` and `benchmark/ambiguous_qa/`.
 
 ---
 
@@ -255,9 +275,9 @@ State serialisation version: **6.0**
 | 19 | Hybrid LLM gate | Success | v5.1 |
 | 20 | Unified gate draft–goal | Success | v6.0 |
 | 21 | SBERT embeddings | Success | v6.0 |
-| 22 | End-to-end full stack | Success | v6.1 |
+| 22 | End-to-end full stack | Success | v6.2 |
 
-*Exp 01–18: core PAW lab. Exp 19–22: text + hybrid gate demonstrations.*
+*Exp 01–18: core PAW lab. Exp 19–22: hybrid gate + benchmark.*
 
 ---
 

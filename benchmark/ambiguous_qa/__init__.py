@@ -1,4 +1,4 @@
-"""Ambiguous QA benchmark package (v6.1)."""
+"""Ambiguous QA benchmark package (v6.2)."""
 
 from benchmark.ambiguous_qa.runner import AmbiguousQABenchmark, BenchmarkReport, CaseResult
 

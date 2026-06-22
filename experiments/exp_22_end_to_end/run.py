@@ -1,4 +1,4 @@
-"""Experiment 22: End-to-end full stack (v6.1).
+"""Experiment 22: End-to-end full stack (v6.2).
 
 Session phases on one agent:
   1. Train fire concept
@@ -132,7 +132,7 @@ def main() -> None:
     fig, axes = plt.subplots(1, 2, figsize=(10, 4))
 
     axes[0].bar(
-        ["Baseline\n(no stack)", "Full stack\n(v6.1)"],
+        ["Baseline\n(no stack)", "Full stack\n(v6.2)"],
         [1 if baseline_blind else 0, 0 if full_safe else 1],
         color=["#e74c3c", "#2ecc71"],
     )

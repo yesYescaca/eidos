@@ -14,6 +14,10 @@ EIDOS implements the **Predictive Active Workspace** architecture — a biologic
 | Dual-Process Theory (Kahneman) | `ReasoningLoop` + `MetaCognitionMonitor` | `reasoning_loop.py`, `meta_cognition.py` |
 | Hippocampal Replay (Wilson & McNaughton) | `consolidate_belief()` + `SleepReplay` | `prediction_engine.py`, `sleep_replay.py` |
 | Complementary Learning Systems (McClelland) | `EpisodicBuffer` + `BeliefGraph` | `episodic_buffer.py`, `belief_graph.py` |
+| Active Inference (Friston 2017) | `ActiveInferenceController` | `active_inference.py` |
+| Metacognition (Nelson & Narens) | `MetaCognitionMonitor` + `GatePolicy` | `meta_cognition.py`, `gate/gate_policy.py` |
+| Dual-process hybrid (Kahneman) | `HybridEidosAgent` | `hybrid/hybrid_agent.py` |
+| Symbol grounding (Harnad) | `TextGroundingBridge` | `bridge/text_grounding.py` |
 
 ## Data Flow
 

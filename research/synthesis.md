@@ -181,20 +181,22 @@ v2.0 implements the slow memory system that failure-mode analysis demanded:
 
 ---
 
-## Project Status: Active (v5.0)
+## Project Status: Active (v6.2)
 
 EIDOS Experiment 06 continues as an active research prototype. Full writeup: `LAB_REPORT.md`.
 
 | Deliverable | Status |
 |-------------|--------|
 | 15 cognitive primitives | Done |
-| PAW architecture (13 components) | Done |
-| 18 experiments (success + failure + fix) | Done |
+| PAW architecture (13+ components) | Done |
+| 22 experiments (success + failure + hybrid) | Done |
 | Meta-cognition (v3.0) | Done |
 | Consequential meta (v3.1) | Done |
 | Active inference (v4.0) | Done |
 | Text grounding (v5.0) | Done |
-| 49+ unit tests | Done |
+| Hybrid LLM gate (v5.1–v6.0) | Done |
+| Ambiguous QA benchmark (v6.1–v6.2) | Done |
+| 63 unit tests | Done |
 | Lab report | Done |
 
 ---

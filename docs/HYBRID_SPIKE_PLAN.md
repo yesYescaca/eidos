@@ -44,6 +44,12 @@ Final response
 2. **`create_grounding("hash" \| "sbert")`** — optional sentence-transformers (`requirements-embeddings.txt`)
 3. **Exp 20–21** — legacy merge vs unified gate; SBERT separation benchmark
 
+## v6.1–v6.2 (shipped)
+
+1. **`benchmark/ambiguous_qa/`** — 17 labeled cases (lab + real-world professional domains)
+2. **Exp 22** — end-to-end full stack vs baseline; benchmark metrics in results
+3. **`respond(reset=False)`** — session-preserving hybrid flows
+
 ## Future
 
 1. **Learned gate thresholds** from benchmark logs (`benchmark/ambiguous_qa/`)

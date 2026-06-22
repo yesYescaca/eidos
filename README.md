@@ -2,9 +2,26 @@
 
 **Emergent Intelligence via Distributed Organisational Systems**
 
-**Status: Active (v6.2)** — See [LAB_REPORT.md](LAB_REPORT.md), [CHANGELOG.md](CHANGELOG.md), [docs/WHAT_EIDOS_IS.md](docs/WHAT_EIDOS_IS.md).
+**Status: Active (v6.2)** — [Lab report](LAB_REPORT.md) · [Changelog](CHANGELOG.md) · [What EIDOS is](docs/WHAT_EIDOS_IS.md) · [Releases](https://github.com/yesYescaca/eidos/releases)
 
 EIDOS is a laboratory prototype reasoning agent built from cognitive science primitives — not from transformer architectures or token prediction. Instead of learning statistical text patterns, EIDOS implements mechanisms drawn from neuroscience: hierarchical predictive coding, global workspace broadcasting, Hebbian association learning, attentional gating, and intrinsic curiosity reward. It is a transparent, numpy-only system designed to explore how biological cognition might be computationally reconstructed.
+
+## At a glance
+
+| | |
+|---|---|
+| **Experiments** | 22 controlled tests (v1 → v6.2) |
+| **Unit tests** | 63 (pytest) |
+| **Benchmark** | 17 ambiguous QA cases — lab + 10 real-world domains |
+| **Latest** | v6.2 — real-world benchmark expansion |
+| **Hybrid** | LLM proposes → EIDOS gates (`HybridEidosAgent`) |
+
+```bash
+git clone https://github.com/yesYescaca/eidos.git && cd eidos
+pip install -r requirements.txt
+pytest tests/ && python run_all_experiments.py
+py -m benchmark.ambiguous_qa.runner
+```
 
 ## Biological Frameworks
 
@@ -25,24 +42,43 @@ eidos/
 ├── research/          # Cognitive primitives (JSON) + synthesis
 ├── architecture/      # PAW components + gate + bridge + hybrid
 ├── agent/             # EidosAgent, EidosTextAgent
-├── benchmark/         # Ambiguous QA benchmark (v6.1)
+├── benchmark/         # Ambiguous QA benchmark (v6.1–v6.2)
+├── demos/             # Hybrid QA demo (LLM + EIDOS gate)
 ├── tests/             # pytest suite (63 tests)
-├── docs/              # WHAT_EIDOS_IS.md, version plans
-├── experiments/       # Twenty-two validation experiments (v1 → v6.1)
+├── docs/              # WHAT_EIDOS_IS.md, version plans (V4–V6_2)
+├── experiments/       # Twenty-two validation experiments (v1 → v6.2)
 └── run_all_experiments.py
 ```
 
-## v6.1 — Ambiguous QA Benchmark
+## v6.2 — Real-World Benchmark
+
+Expands the ambiguous QA benchmark with **12 real-world professional scenarios**:
+
+| Domain | Example ambiguity |
+|--------|-------------------|
+| IT support | Password reset vs account compromise |
+| Cybersecurity | Phishing vs marketing email |
+| Finance | Fraud vs duplicate billing |
+| Clinical | Stroke vs migraine triage |
+| HR / legal / aviation / education / logistics | …see [benchmark README](benchmark/ambiguous_qa/README.md) |
+
+- **`cases.json` v2.0** — 17 total cases (5 lab + 12 real-world)
+- **Per-category metrics** — `by_category`, `by_domain`, filter API
+- **Exp 22** — reports full benchmark + real-world subset safety
+
+```bash
+py -m benchmark.ambiguous_qa.runner
+```
+
+## v6.1 — Ambiguous QA Benchmark + Exp 22
 
 Reusable labeled benchmark for hybrid gate evaluation:
 
-- **`benchmark/ambiguous_qa/cases.json`** — 17 cases: lab (5) + real-world (12) domains
-- **`AmbiguousQABenchmark`** — decision match, false-commit, per-category/domain metrics
+- **`AmbiguousQABenchmark`** — decision match, false-commit, per-case audit
 - **Exp 22** — end-to-end: misleading context → sleep → meta + active inference + unified gate
 
 ```bash
-py -m benchmark.ambiguous_qa.runner          # run benchmark report
-py experiments/exp_22_end_to_end/run.py      # full-stack vs baseline
+py experiments/exp_22_end_to_end/run.py
 ```
 
 ## v6.0 — Unified Gate
@@ -193,7 +229,7 @@ python experiments/exp_18_text_session_memory/run.py        # v5.0: text + sleep
 python experiments/exp_19_hybrid_spike/run.py                 # v5.1: hybrid LLM gate
 python experiments/exp_20_unified_gate/run.py                 # v6.0: unified gate
 python experiments/exp_21_sbert_embeddings/run.py             # v6.0: SBERT embeddings
-python experiments/exp_22_end_to_end/run.py                     # v6.1: full-stack E2E
+python experiments/exp_22_end_to_end/run.py                     # v6.2: full-stack E2E + benchmark
 ```
 
 ## Running Tests
@@ -229,7 +265,7 @@ Full entries in `research/primitives/` and index in `research/knowledge_base.jso
 ## What This Is Not
 
 - **Not AGI.** EIDOS is a minimal laboratory model operating on 64-dimensional vectors.
-- **Not an LLM replacement.** It does not process language or predict tokens.
+- **Not an LLM replacement.** It grounds phrases to vectors and gates LLM drafts; it does not train on or predict tokens at scale.
 - **Not biologically accurate.** It is inspired by neuroscience, not simulating neurons.
 - **Not production-ready.** No API, no deployment, no scaling claims.
 

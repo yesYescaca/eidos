@@ -66,7 +66,7 @@ Data flow: **input → predict → error → (reason / remember / doubt / act) �
 
 ## Tech stack
 
-Python · numpy · matplotlib · pytest · no PyTorch · no API keys
+Python · numpy · matplotlib · pytest · optional sentence-transformers / GPT-2 · no API keys
 
 ---
 
@@ -92,4 +92,4 @@ Researchers, students, and builders exploring **how minds might work computation
 
 **Repository:** [github.com/yesYescaca/eidos](https://github.com/yesYescaca/eidos)
 
-*Kisamapa Labs — Experiment 06*
+*Kisamapa Labs — Experiment 06 — EIDOS v6.2*

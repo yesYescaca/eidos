@@ -4,6 +4,7 @@
 - **`cases.json` v2.0** — 12 real-world cases across IT, support, security, finance, clinical, HR, legal, aviation, education, logistics
 - **Per-category/domain metrics** in `AmbiguousQABenchmark` (`by_category`, `by_domain`, filters)
 - **`benchmark/ambiguous_qa/README.md`** — domain index and references
+- **Docs polish** — README, LAB_REPORT, synthesis updated for v6.2
 
 ## v6.1 — Ambiguous QA Benchmark + End-to-End Exp 22
 - **`benchmark/ambiguous_qa/`** — labeled cases, `AmbiguousQABenchmark` runner, metrics
