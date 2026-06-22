@@ -27,7 +27,7 @@ eidos/
 ├── agent/             # Main EidosAgent class
 ├── tests/             # pytest suite
 ├── docs/              # WHAT_EIDOS_IS.md, version plans
-├── experiments/       # Eighteen validation experiments (v1 → v5.0)
+├── experiments/       # Twenty-one validation experiments (v1 → v6.0)
 └── run_all_experiments.py
 ```
 
@@ -38,6 +38,8 @@ Optional layer (not required for core experiments):
 - **`HybridEidosAgent`** — LLM draft → EIDOS monitor → gate (`commit` / `defer` / `clarify` / `probe`)
 - **`MockLanguageModel`** — CI-safe; **`GPT2LanguageModel`** — CPU demo
 - **Exp 19** — gate blocks blind LLM commit on ambiguous input
+- **Exp 20** — unified gate catches draft–goal misalignment (v6.0)
+- **Exp 21** — optional SBERT embeddings beat hash separation (v6.0)
 - **Demo:** `demos/hybrid_qa/run.py`
 
 ## v5.0 — Language Grounding Bridge
@@ -136,7 +138,7 @@ Version 1.1 makes reasoning **consequential**:
 cd eidos
 pip install -r requirements.txt
 pytest tests/                      # 38 unit tests
-python run_all_experiments.py      # All 11 experiments + summary
+python run_all_experiments.py      # All 21 experiments + summary
 ```
 
 ## Running Experiments (individual)
@@ -160,6 +162,9 @@ python experiments/exp_15_active_epistemic_probe/run.py   # v4.0: epistemic prob
 python experiments/exp_16_active_inference_ablation/run.py  # v4.0: active vs passive ablation
 python experiments/exp_17_text_ambiguous_deferral/run.py    # v5.0: goal-directed text probe
 python experiments/exp_18_text_session_memory/run.py        # v5.0: text + sleep recovery
+python experiments/exp_19_hybrid_spike/run.py                 # v5.1: hybrid LLM gate
+python experiments/exp_20_unified_gate/run.py                 # v6.0: unified gate
+python experiments/exp_21_sbert_embeddings/run.py             # v6.0: SBERT embeddings
 ```
 
 ## Running Tests
@@ -203,8 +208,18 @@ EIDOS is a tool for understanding cognition computationally — a Kisamapa Labs 
 
 ## Future Expansion
 
-- **v6 unified gate** — single policy combining meta + active inference + text (see `docs/HYBRID_SPIKE_PLAN.md`)
-- **Richer embeddings** — optional sentence-transformers backend
+- **Richer grounding** — trainable or domain-specific embeddings beyond hash/SBERT
+- **Learned gate policy** — tune thresholds from experiment logs
+
+## v6.0 — Unified Gate
+
+Single `GatePolicy` fuses meta-cognition, active inference, and text alignment:
+
+```bash
+py experiments/exp_20_unified_gate/run.py   # v6 vs legacy v5.1 merge
+pip install -r requirements-embeddings.txt  # optional SBERT
+py experiments/exp_21_sbert_embeddings/run.py
+```
 
 ## Hybrid Spike (LLM + EIDOS)
 
@@ -220,5 +235,5 @@ py experiments/exp_19_hybrid_spike/run.py   # measurable gate vs blind LLM
 
 ---
 
-*KISAMAPA LABS — EXPERIMENT 06 — EIDOS v5.0*
+*KISAMAPA LABS — EXPERIMENT 06 — EIDOS v6.0*
 *Classification: Research Prototype — Active*

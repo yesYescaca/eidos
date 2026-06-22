@@ -210,9 +210,9 @@ This is **enhancement** (adding System 2 + memory to System 1 fluency), not subs
 
 ## 6. Conclusion
 
-EIDOS v5.0 demonstrates progressive cognitive completeness: an agent that predicts, reasons, remembers, monitors its own reliability, selects actions under uncertainty, and **grounds natural-language phrases** into the same PAW loop. The experiment remains a research prototype — not AGI, not a product — but a reproducible foundation for studying competence under uncertainty.
+EIDOS v6.0 demonstrates progressive cognitive completeness: an agent that predicts, reasons, remembers, monitors its own reliability, selects actions under uncertainty, grounds natural-language phrases, and **gates LLM drafts** through a unified policy. The experiment remains a research prototype — not AGI, not a product — but a reproducible foundation for studying competence under uncertainty.
 
-**Next research frontier:** hybrid LLM sidecar (EIDOS monitors + defers on LLM drafts) and richer embeddings.
+**Next research frontier:** learned gate thresholds and domain-specific embeddings.
 
 ---
 
@@ -221,11 +221,11 @@ EIDOS v5.0 demonstrates progressive cognitive completeness: an agent that predic
 ```bash
 cd eidos
 pip install -r requirements.txt
-pytest tests/                    # 49+ unit tests
-python run_all_experiments.py    # All 18 experiments + summary
+pytest tests/                    # 56+ unit tests
+python run_all_experiments.py    # All 21 experiments + summary
 ```
 
-State serialisation version: **5.0**
+State serialisation version: **6.0**
 
 ---
 
@@ -251,10 +251,12 @@ State serialisation version: **5.0**
 | 16 | Active inference ablation | Success | v4.0 |
 | 17 | Text goal-directed probe | Success | v5.0 |
 | 18 | Text session memory | Success | v5.0 |
-| 19 | Hybrid LLM gate | Success | hybrid spike |
+| 19 | Hybrid LLM gate | Success | v5.1 |
+| 20 | Unified gate draft–goal | Success | v6.0 |
+| 21 | SBERT embeddings | Success | v6.0 |
 
-*Exp 01–18: core PAW lab. Exp 19: optional LLM + EIDOS gate demonstration.*
+*Exp 01–18: core PAW lab. Exp 19–21: text + hybrid gate demonstrations.*
 
 ---
 
-*Kisamapa Labs — Experiment 06 — EIDOS v5.0 — Lab Report*
+*Kisamapa Labs — Experiment 06 — EIDOS v6.0 — Lab Report*

@@ -1,5 +1,13 @@
 # Changelog
 
+## v6.0 — Unified Gate + Semantic Embeddings
+- `GatePolicy` — fuses cognitive steps, draft↔goal alignment, concept ambiguity
+- `gate_response()` + `GateEvaluation` audit trail (`scores`, `reasons`)
+- `HybridEidosAgent.use_unified_gate` (default on); legacy merge via `use_unified_gate=False`
+- `create_grounding("hash" | "sbert")` + `SentenceTransformerGrounding` (optional)
+- Exp 20–21: unified gate vs legacy merge; SBERT separation (optional dep)
+- State version **6.0**
+
 ## v5.1 — Hybrid Spike (LLM + EIDOS)
 - `HybridEidosAgent` — LLM proposes, EIDOS gates output
 - `MockLanguageModel` + optional `GPT2LanguageModel` (CPU)

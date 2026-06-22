@@ -1,75 +1,25 @@
-"""HybridEidosAgent — LLM generation gated by EIDOS cognition."""
+"""HybridEidosAgent — LLM generation gated by unified GatePolicy (v6.0)."""
 
 from __future__ import annotations
 
-from typing import Any, Literal
+from typing import Any
 
 from agent.config import TEXT_ANOMALY_LABEL
-from agent.text_agent import EidosTextAgent, interpret_text_decision
+from agent.text_agent import EidosTextAgent
+from architecture.gate.gate_policy import GateEvaluation, GatePolicy, gate_response
 from architecture.hybrid.llm_backend import LanguageModelBackend, MockLanguageModel
 
-GateDecision = Literal["commit", "defer", "clarify", "probe", "sleep", "observe"]
 
-# Priority order — higher index wins when merging monitor steps
-_DECISION_PRIORITY: dict[str, int] = {
-    "observe": 0,
-    "commit": 1,
-    "probe": 2,
-    "clarify": 3,
-    "defer": 4,
-    "sleep": 5,
-}
-
-
-def merge_decisions(*decisions: str) -> GateDecision:
-    """Conservative merge: pick the most cautious decision."""
-    best = "observe"
-    best_rank = -1
-    for d in decisions:
-        rank = _DECISION_PRIORITY.get(d, 0)
-        if rank > best_rank:
-            best = d  # type: ignore[assignment]
-            best_rank = rank
-    return best  # type: ignore[return-value]
-
-
-def gate_response(
-    decision: GateDecision,
-    draft: str,
-    probe_concept: str | None = None,
-    probe_phrase: str | None = None,
-) -> str:
-    """Map gate decision to user-facing text."""
-    if decision == "commit":
-        return draft
-    if decision == "probe" and probe_phrase:
-        return (
-            f"I need to verify context first. Probing concept '{probe_concept}': "
-            f"{probe_phrase}"
-        )
-    if decision == "defer":
-        return (
-            "I'm not confident enough to answer yet. "
-            "Deferring until I can consolidate more context."
-        )
-    if decision == "clarify":
-        return (
-            "This could mean more than one thing. "
-            "Can you clarify which scenario you mean?"
-        )
-    if decision == "sleep":
-        return (
-            "I need a moment to consolidate memory before answering. "
-            "(Sleep replay triggered.)"
-        )
-    return draft
+def merge_decisions(*decisions: str) -> str:
+    """Backward-compatible alias for v5.1 tests."""
+    return GatePolicy.merge_cognitive(*decisions)
 
 
 class HybridEidosAgent:
     """
     System 1 (LLM) + System 2 (EIDOS) hybrid.
 
-    The LLM proposes; EIDOS monitors question and draft, then gates output.
+    v6.0: `GatePolicy` fuses cognitive steps + draft–goal text alignment.
     """
 
     def __init__(
@@ -77,19 +27,21 @@ class HybridEidosAgent:
         text_agent: EidosTextAgent | None = None,
         llm: LanguageModelBackend | None = None,
         enable_gate: bool = True,
+        use_unified_gate: bool = True,
+        gate_policy: GatePolicy | None = None,
         **text_agent_kwargs: Any,
     ) -> None:
         self.text = text_agent or EidosTextAgent(**text_agent_kwargs)
         self.llm = llm or MockLanguageModel()
         self.enable_gate = enable_gate
+        self.use_unified_gate = use_unified_gate
+        self.gate_policy = gate_policy or GatePolicy()
 
     def register_domain(self, concepts: dict[str, str]) -> None:
-        """Register labelled phrases for the session domain."""
         for label, phrase in concepts.items():
             self.text.register_text_concept(label, phrase)
 
     def warm_session(self, training: list[tuple[str, str]], n_each: int = 1) -> None:
-        """Optional exposure steps before Q&A."""
         for label, phrase in training:
             for _ in range(n_each):
                 self.text.step_text(phrase, label)
@@ -100,11 +52,6 @@ class HybridEidosAgent:
         goal_text: str | None = None,
         prompt_template: str | None = None,
     ) -> dict[str, Any]:
-        """
-        Full hybrid cycle: monitor → generate → monitor → gate.
-
-        Returns dict with draft, final_response, gate_decision, and step traces.
-        """
         self.text.agent.workspace.clear()
         self.text.agent._recovery_context.clear()
         self.text.agent.surprise._history.clear()
@@ -116,8 +63,7 @@ class HybridEidosAgent:
         )
 
         template = prompt_template or "Question: {q}\nAnswer:"
-        prompt = template.format(q=user_text)
-        draft = self.llm.generate(prompt)
+        draft = self.llm.generate(template.format(q=user_text))
 
         draft_step = self.text.step_text(
             draft,
@@ -125,9 +71,34 @@ class HybridEidosAgent:
             goal_text=goal_text,
         )
 
-        q_decision = interpret_text_decision(question_step)
-        d_decision = interpret_text_decision(draft_step)
-        gate_decision = merge_decisions(q_decision, d_decision)
+        if self.use_unified_gate:
+            evaluation = self.gate_policy.evaluate(
+                question_step,
+                draft_step,
+                user_text=user_text,
+                draft_text=draft,
+                goal_text=goal_text,
+                grounding=self.text.grounding,
+                text_concepts=self.text._text_concepts,
+            )
+        else:
+            legacy = GatePolicy.merge_cognitive(
+                GatePolicy.decision_from_step(question_step),
+                GatePolicy.decision_from_step(draft_step),
+            )
+            evaluation = GateEvaluation(
+                decision=legacy,
+                cognitive_decision=legacy,
+                reasons=["legacy_v5_merge"],
+            )
+
+        if not self.enable_gate:
+            evaluation = GateEvaluation(
+                decision="commit",
+                cognitive_decision=evaluation.cognitive_decision,
+                scores=evaluation.scores,
+                reasons=evaluation.reasons + ["gate_disabled"],
+            )
 
         probe_concept = None
         probe_phrase = None
@@ -136,20 +107,21 @@ class HybridEidosAgent:
             probe_concept = str(action).split(":", 1)[1]
             probe_phrase = self.text._text_concepts.get(probe_concept)
 
-        if not self.enable_gate:
-            gate_decision = "commit"
-
-        final = gate_response(gate_decision, draft, probe_concept, probe_phrase)
+        final = gate_response(evaluation, draft, probe_concept, probe_phrase)
 
         return {
             "user_text": user_text,
             "goal_text": goal_text,
             "llm_draft": draft,
             "final_response": final,
-            "gate_decision": gate_decision,
-            "question_decision": q_decision,
-            "draft_decision": d_decision,
+            "gate_decision": evaluation.decision,
+            "gate_evaluation": {
+                "cognitive_decision": evaluation.cognitive_decision,
+                "scores": evaluation.scores,
+                "reasons": evaluation.reasons,
+            },
             "question_step": question_step,
             "draft_step": draft_step,
-            "gated": self.enable_gate and gate_decision != "commit",
+            "gated": self.enable_gate and evaluation.decision != "commit",
+            "use_unified_gate": self.use_unified_gate,
         }

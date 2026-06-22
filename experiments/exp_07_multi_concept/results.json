@@ -4,9 +4,9 @@
     "selected_associate": "fire",
     "hypothesis_label": "explain:fire",
     "correct_concept": true,
-    "early_recovery_full": 7.37488145017402,
-    "early_recovery_ablated": 7673.425118620455,
-    "improvement_percent": 99.90389061812465,
+    "early_recovery_full": 258.6404181371257,
+    "early_recovery_ablated": 295.9579144799644,
+    "improvement_percent": 12.609055043657227,
     "beats_ablation": true,
     "pass": true
   },
@@ -15,9 +15,9 @@
     "selected_associate": "water",
     "hypothesis_label": "explain:water",
     "correct_concept": true,
-    "early_recovery_full": 0.22816957068822452,
-    "early_recovery_ablated": 53.46695562543457,
-    "improvement_percent": 99.57325123897706,
+    "early_recovery_full": 168.960070114733,
+    "early_recovery_ablated": 16277.504613171937,
+    "improvement_percent": 98.96200262798261,
     "beats_ablation": true,
     "pass": true
   },
@@ -26,9 +26,9 @@
     "selected_associate": "smoke",
     "hypothesis_label": "explain:smoke",
     "correct_concept": true,
-    "early_recovery_full": 17.66137335538605,
-    "early_recovery_ablated": 11088.598623909942,
-    "improvement_percent": 99.84072492878133,
+    "early_recovery_full": 1.9485206079540789,
+    "early_recovery_ablated": 13191.54568617369,
+    "improvement_percent": 99.98522901975015,
     "beats_ablation": true,
     "pass": true
   }

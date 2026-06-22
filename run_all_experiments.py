@@ -30,6 +30,8 @@ EXPERIMENTS = [
     ("17", "exp_17_text_ambiguous_deferral", "Text goal-directed probe (v5.0)"),
     ("18", "exp_18_text_session_memory", "Text session memory (v5.0)"),
     ("19", "exp_19_hybrid_spike", "Hybrid LLM gate (spike)"),
+    ("20", "exp_20_unified_gate", "Unified gate draft–goal (v6.0)"),
+    ("21", "exp_21_sbert_embeddings", "SBERT embeddings (v6.0)"),
 ]
 
 

@@ -1,0 +1,26 @@
+{
+  "experiment": "exp_21_sbert_embeddings",
+  "description": "Semantic embeddings separate related vs unrelated phrases better than hash",
+  "hash": {
+    "scores": [
+      0.665076886332406,
+      0.30303188267385195
+    ],
+    "mean_separation": 0.484054384503129
+  },
+  "sbert": {
+    "available": true,
+    "scores": [
+      0.9281468207647428,
+      0.5531192308628551
+    ],
+    "mean_separation": 0.740633025813799,
+    "skip_reason": null
+  },
+  "checks": {
+    "hash_positive_separation": true,
+    "sbert_improves_over_hash": true,
+    "optional_dep_missing_ok": false
+  },
+  "pass": true
+}

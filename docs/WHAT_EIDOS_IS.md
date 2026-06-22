@@ -28,13 +28,13 @@ Large language models are fluent but can answer confidently when they should not
 | Memory | Sleep replay consolidates waking experience |
 | Meta-cognition | Detect misleading context; defer bad hypotheses |
 | Action | Active inference: observe, probe, or sleep |
-| Language | Text grounding bridge (v5) |
+| Language | Text grounding bridge (v5) + unified gate (v6) |
 
 Data flow: **input → predict → error → (reason / remember / doubt / act) → updated beliefs**
 
 ---
 
-## What it demonstrates (18 experiments)
+## What it demonstrates (21 experiments)
 
 | Claim | Evidence |
 |-------|----------|
@@ -48,6 +48,9 @@ Data flow: **input → predict → error → (reason / remember / doubt / act) �
 | It acts on doubt | Defer/sleep beats blind commit (Exp 14) |
 | It chooses actions | Epistemic probing beats passive observe (Exp 15–16) |
 | Text connects to cognition | Goal-directed text probe + session memory (Exp 17–18) |
+| LLM drafts get gated | Hybrid spike blocks blind commit (Exp 19) |
+| Unified gate policy | Draft↔goal alignment catches wrong LLM output (Exp 20) |
+| Semantic embeddings | Optional SBERT improves phrase separation (Exp 21) |
 
 ---
 
@@ -74,7 +77,8 @@ Python · numpy · matplotlib · pytest · no PyTorch · no API keys
 | v3 | Meta-cognition + consequential deferral |
 | v4 | Active inference (probe / sleep / observe) |
 | v5 | Text grounding bridge (phrases → vectors) |
-| hybrid | LLM + EIDOS gate spike (optional) |
+| v5.1 | Hybrid LLM + EIDOS gate spike |
+| v6 | Unified `GatePolicy` + optional SBERT embeddings |
 
 ---
 

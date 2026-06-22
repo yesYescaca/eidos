@@ -31,19 +31,23 @@ Final response
 
 ## Scope (spike only)
 
-| In scope | Out of scope (v6+) |
-|----------|-------------------|
-| `HybridEidosAgent` + gate policy | Unified v6 policy learner |
-| Mock LLM for Exp 19 (CI-safe) | Fine-tuning GPT-2 |
-| Optional GPT-2 demo script | Production API |
-| Exp 19: gate beats blind commit on ambiguity | Full chat product |
+| In scope | Out of scope |
+|----------|-------------|
+| `HybridEidosAgent` + gate policy | Fine-tuning GPT-2 |
+| Mock LLM for Exp 19 (CI-safe) | Production API |
+| Optional GPT-2 demo script | Full chat product |
+| Exp 19: gate beats blind commit on ambiguity | Learned gate policy |
 
-## v6 path (future)
+## v6.0 (shipped)
 
-1. **Unified gate** — single `GatePolicy` combining meta + EFE + text similarity
-2. **Richer embeddings** — optional sentence-transformers backend
-3. **Session API** — `HybridEidosAgent.respond()` as library entry point
-4. **Benchmark** — ambiguous QA set with defer/commit labels
+1. **`GatePolicy`** — unified cognitive + draft↔goal + concept ambiguity (`architecture/gate/`)
+2. **`create_grounding("hash" \| "sbert")`** — optional sentence-transformers (`requirements-embeddings.txt`)
+3. **Exp 20–21** — legacy merge vs unified gate; SBERT separation benchmark
+
+## Future
+
+1. **Learned gate thresholds** from experiment logs
+2. **Benchmark** — ambiguous QA set with defer/commit labels
 
 ## Dependencies
 

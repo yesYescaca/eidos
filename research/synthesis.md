@@ -214,16 +214,16 @@ EIDOS Experiment 06 continues as an active research prototype. Full writeup: `LA
 
 ---
 
-## v5.1 Hybrid Spike (LLM + EIDOS)
+## v6.0 Unified Gate + Embeddings
 
-1. **`HybridEidosAgent`** — LLM draft + EIDOS gate (`commit` / `defer` / `probe`)
-2. **Exp 19** — measurable gate vs blind LLM on ambiguous input
-3. **v6 path** — unified gate policy (`docs/HYBRID_SPIKE_PLAN.md`)
+1. **`GatePolicy`** — cognitive + draft↔goal alignment + concept ambiguity
+2. **`create_grounding("hash" | "sbert")`** — optional sentence-transformers backend
+3. **Exp 20–21** — unified gate vs legacy merge; SBERT separation
 
 ---
 
 ## Future: LLM Enhancement (Research Direction)
 
-EIDOS is orthogonal to LLMs: predictive memory, deliberation under surprise, and meta-cognitive deferral complement language fluency. The hybrid spike (v5.1) demonstrates this — see `demos/hybrid_qa/`.
+EIDOS is orthogonal to LLMs: predictive memory, deliberation under surprise, and meta-cognitive deferral complement language fluency. The hybrid spike (v5.1) and unified gate (v6.0) demonstrate this — see `demos/hybrid_qa/`.
 
-*Synthesis updated for v5.1 hybrid spike.*
+*Synthesis updated for v6.0 unified gate.*

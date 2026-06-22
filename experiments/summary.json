@@ -150,5 +150,21 @@
     "passed": true,
     "exit_code": 0,
     "ok": true
+  },
+  {
+    "num": "20",
+    "name": "Unified gate draft\u2013goal (v6.0)",
+    "folder": "exp_20_unified_gate",
+    "passed": true,
+    "exit_code": 0,
+    "ok": true
+  },
+  {
+    "num": "21",
+    "name": "SBERT embeddings (v6.0)",
+    "folder": "exp_21_sbert_embeddings",
+    "passed": true,
+    "exit_code": 0,
+    "ok": true
   }
 ]

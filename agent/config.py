@@ -66,5 +66,10 @@ TEXT_GROUNDING_SEED = 42
 TEXT_GROUNDING_BUCKETS = 256
 TEXT_ANOMALY_LABEL = "text_anomaly"
 
+# v6.0: unified gate policy — text alignment + cognitive fusion
+GATE_MIN_DRAFT_GOAL_ALIGN = 0.82
+GATE_CONCEPT_AMBIGUITY_EPS = 0.08
+SBERT_MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
+
 # Deprecated alias kept for backward compatibility in tests/docs
 REASONING_THRESHOLD = REASONING_ABSOLUTE_FLOOR
