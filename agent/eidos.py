@@ -23,6 +23,9 @@ from agent.config import (
     INPUT_DIM,
     CLOSE_HYPOTHESIS_EPSILON,
     EPISODIC_BUFFER_CAPACITY,
+    META_AUTO_SLEEP_ON_AMBIGUITY,
+    META_AUTO_SLEEP_ON_MISLEADING,
+    META_AUTO_SLEEP_REPLAYS,
     META_LOW_CONFIDENCE,
     MISLEADING_CONTEXT_RATIO,
     PREDICTION_LEARNING_RATE,
@@ -67,12 +70,14 @@ class EidosAgent:
         enable_reasoning: bool = True,
         apply_hypotheses: bool = True,
         enable_meta_cognition: bool = True,
+        enable_meta_consequential: bool = True,
     ) -> None:
         self.input_dim = input_dim
         self.hidden_dim = hidden_dim
         self.enable_reasoning = enable_reasoning
         self.apply_hypotheses = apply_hypotheses
         self.enable_meta_cognition = enable_meta_cognition
+        self.enable_meta_consequential = enable_meta_consequential
 
         self.workspace = WorkspaceBuffer(capacity=workspace_capacity)
         self.prediction = PredictionEngine(
@@ -420,6 +425,19 @@ class EidosAgent:
             self._resolve_recovery_probe(recovery_probe, input_label, active_labels)
         )
 
+        if (
+            self.enable_meta_cognition
+            and self.enable_meta_consequential
+            and META_AUTO_SLEEP_ON_MISLEADING
+            and self.meta_cognition.should_auto_sleep_on_context(meta_flags)
+        ):
+            self.sleep(n_replays=META_AUTO_SLEEP_REPLAYS)
+            meta_flags.append("auto_sleep_misleading")
+            effective_probe, inferred_label, inference_source, extra_flags = (
+                self._resolve_recovery_probe(recovery_probe, input_label, active_labels)
+            )
+            meta_flags = list(dict.fromkeys(meta_flags + extra_flags))
+
         episodic_dominant, _ = self.episodic_buffer.dominant_label(
             set(self._concept_vectors.keys())
         )
@@ -460,19 +478,49 @@ class EidosAgent:
                 )
                 meta_flags = list(dict.fromkeys(meta_flags + reasoning_flags))
 
+            should_defer = False
+            if hypothesis and self.enable_meta_cognition:
+                if self.enable_meta_consequential:
+                    should_defer = self.meta_cognition.should_defer_hypothesis(meta_flags)
+                else:
+                    should_defer = self.meta_cognition.should_suppress_hypothesis(meta_flags)
+
+            if (
+                should_defer
+                and self.enable_meta_consequential
+                and META_AUTO_SLEEP_ON_AMBIGUITY
+                and self.meta_cognition.should_auto_sleep_on_ambiguity(meta_flags)
+            ):
+                self.sleep(n_replays=META_AUTO_SLEEP_REPLAYS)
+                meta_flags.append("auto_sleep_ambiguity")
+                hypothesis = self.reasoner.run(
+                    prediction_error,
+                    concept_vectors=self._concept_vectors,
+                    probe_input=raw_input,
+                    recovery_probe=effective_probe,
+                    context=context,
+                    preview_steps=CONSOLIDATION_PREVIEW_STEPS,
+                    preview_lr=BELIEF_CONSOLIDATION_LR,
+                )
+                trace = self.reasoner.get_trace()
+                reasoning_flags = self.meta_cognition.evaluate_reasoning(
+                    hypothesis, trace[-1] if trace else None
+                )
+                meta_flags = list(dict.fromkeys(meta_flags + reasoning_flags))
+                should_defer = self.meta_cognition.should_defer_hypothesis(meta_flags)
+
             apply = (
                 hypothesis is not None
                 and self.apply_hypotheses
-                and not (
-                    self.enable_meta_cognition
-                    and self.meta_cognition.should_suppress_hypothesis(meta_flags)
-                )
+                and not should_defer
             )
             if apply:
                 hypothesis["recovery_inference_source"] = inference_source
                 hypothesis_applied = self._apply_hypothesis(
                     hypothesis, surprise_label=input_label
                 )
+            elif hypothesis and self.enable_meta_cognition and should_defer:
+                meta_flags.append("hypothesis_deferred")
             elif hypothesis and self.enable_meta_cognition:
                 meta_flags.append("hypothesis_suppressed")
 
@@ -529,13 +577,14 @@ class EidosAgent:
                 "content": self._serialise_content(slot["content"]),
             })
         state = {
-            "version": "3.0",
+            "version": "3.1",
             "input_dim": self.input_dim,
             "hidden_dim": self.hidden_dim,
             "workspace_capacity": self.workspace.capacity,
             "enable_reasoning": self.enable_reasoning,
             "apply_hypotheses": self.apply_hypotheses,
             "enable_meta_cognition": self.enable_meta_cognition,
+            "enable_meta_consequential": self.enable_meta_consequential,
             "workspace_slots": serialised_slots,
             "prediction_weights": self.prediction.get_weights_dict(),
             "associations": self.associations.to_dict(),
@@ -559,6 +608,7 @@ class EidosAgent:
         self.enable_reasoning = state.get("enable_reasoning", True)
         self.apply_hypotheses = state.get("apply_hypotheses", True)
         self.enable_meta_cognition = state.get("enable_meta_cognition", True)
+        self.enable_meta_consequential = state.get("enable_meta_consequential", True)
         self.workspace = WorkspaceBuffer(capacity=state["workspace_capacity"])
         for slot in state.get("workspace_slots", []):
             self.workspace.insert(

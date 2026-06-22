@@ -7,9 +7,12 @@
     "selected_associate": "fire",
     "meta_cognition_flags": [
       "misleading_context_detected",
-      "ambiguous_hypothesis"
+      "auto_sleep_misleading",
+      "ambiguous_hypothesis",
+      "auto_sleep_ambiguity",
+      "hypothesis_deferred"
     ],
-    "early_recovery_error": 89.01346864811167
+    "early_recovery_error": 115.78985247413993
   },
   "checks": {
     "misleading_context_detected": true,

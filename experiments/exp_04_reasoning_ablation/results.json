@@ -1,10 +1,10 @@
 {
-  "mean_recovery_error_full": 0.42171256666523615,
+  "mean_recovery_error_full": 0.46594604840838344,
   "mean_recovery_error_ablated": 4.470871776644553,
-  "mean_early_recovery_full": 0.41974883630722076,
+  "mean_early_recovery_full": 0.49368727941009805,
   "mean_early_recovery_ablated": 4.229352539656508,
-  "improvement_early_percent": 90.07534055457786,
-  "reasoning_episodes_full": 1,
+  "improvement_early_percent": 88.32711922732756,
+  "reasoning_episodes_full": 2,
   "reasoning_episodes_ablated": 0,
   "hypothesis_on_surprise": {
     "label": "explain:fire",
@@ -17,9 +17,7 @@
     "associate": "fire",
     "hypothesis_type": "consolidation_preview",
     "scoring": "consolidation_preview",
-    "path": null,
-    "recovery_inference_source": "recent_history",
-    "consolidated_error": 5.397856411266429e-05
+    "path": null
   },
   "correct_hypothesis_selected": true,
   "selective_reasoning": true,

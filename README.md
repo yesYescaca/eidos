@@ -2,7 +2,7 @@
 
 **Emergent Intelligence via Distributed Organisational Systems**
 
-**Status: Complete (v3.0)** — See [LAB_REPORT.md](LAB_REPORT.md) for full findings.
+**Status: Active (v3.1)** — See [LAB_REPORT.md](LAB_REPORT.md) and [CHANGELOG.md](CHANGELOG.md).
 
 EIDOS is a laboratory prototype reasoning agent built from cognitive science primitives — not from transformer architectures or token prediction. Instead of learning statistical text patterns, EIDOS implements mechanisms drawn from neuroscience: hierarchical predictive coding, global workspace broadcasting, Hebbian association learning, attentional gating, and intrinsic curiosity reward. It is a transparent, numpy-only system designed to explore how biological cognition might be computationally reconstructed.
 
@@ -26,9 +26,18 @@ eidos/
 ├── architecture/      # Component implementations
 ├── agent/             # Main EidosAgent class
 ├── tests/             # pytest suite
-├── experiments/       # Thirteen validation experiments (v1 → v3.0)
+├── experiments/       # Fourteen validation experiments (v1 → v3.1)
 └── run_all_experiments.py
 ```
+
+## v3.1 — Consequential Meta-Cognition
+
+Version 3.1 makes meta-cognition **act**, not only observe:
+
+- **`enable_meta_consequential`** — when off, v3.0 observe-only behaviour (Exp 14 ablation)
+- **Defer hypothesis** on `ambiguous_hypothesis` or `low_confidence` alone
+- **Auto `sleep()`** on misleading context and after ambiguous reasoning (retry)
+- **Exp 14** — v3.1 defer/sleep beats v3.0 blind commit on ambiguous recovery
 
 ## v3.0 — Meta-Cognition
 
@@ -116,6 +125,7 @@ python experiments/exp_10_cold_start/run.py            # failure: no context / c
 python experiments/exp_11_cls_recovery/run.py          # v2.0: sleep replay fixes 09+10
 python experiments/exp_12_meta_misleading_context/run.py  # v3.0 A: meta detects decoy context
 python experiments/exp_13_meta_ambiguous_reasoning/run.py # v3.0 B: ambiguous reasoning flags
+python experiments/exp_14_meta_consequential/run.py       # v3.1: defer/sleep beats commit
 ```
 
 ## Running Tests
@@ -157,11 +167,12 @@ Full entries in `research/primitives/` and index in `research/knowledge_base.jso
 
 EIDOS is a tool for understanding cognition computationally — a Kisamapa Labs experiment in building intelligence from first principles.
 
-## Future Expansion (out of scope for v2.0)
+## Future Expansion
 
-Potential directions when revisiting this project: meta-cognition (reasoning trace monitoring), active inference action selection, language-to-vector grounding, multi-agent shared workspace. See `SPEC.md` §12 and `LAB_REPORT.md` §5.2.
+- **Active inference** — action selection under expected surprise (v4 candidate)
+- **LLM enhancement layer** — EIDOS as System 2 sidecar (see LAB_REPORT §5.3); not substitution
 
 ---
 
-*KISAMAPA LABS — EXPERIMENT 06 — EIDOS v3.0*
-*Classification: Research Prototype — Complete*
+*KISAMAPA LABS — EXPERIMENT 06 — EIDOS v3.1*
+*Classification: Research Prototype — Active*

@@ -181,17 +181,18 @@ v2.0 implements the slow memory system that failure-mode analysis demanded:
 
 ---
 
-## Project Status: Complete (v3.0)
+## Project Status: Active (v3.1)
 
-EIDOS Experiment 06 is complete as a laboratory prototype. Full writeup: `LAB_REPORT.md`.
+EIDOS Experiment 06 continues as an active research prototype. Full writeup: `LAB_REPORT.md`.
 
 | Deliverable | Status |
 |-------------|--------|
 | 15 cognitive primitives | Done |
 | PAW architecture (12 components) | Done |
-| 13 experiments (success + failure + fix) | Done |
+| 14 experiments (success + failure + fix) | Done |
 | Meta-cognition (v3.0) | Done |
-| 41+ unit tests | Done |
+| Consequential meta (v3.1) | Done |
+| 43+ unit tests | Done |
 | Lab report | Done |
 
 ---
@@ -202,4 +203,17 @@ EIDOS Experiment 06 is complete as a laboratory prototype. Full writeup: `LAB_RE
 2. **Reasoning quality flags** — ambiguous/low-confidence hypothesis monitoring
 3. **Exp 12–13** — validate A and B respectively; Exp 09–10 use meta off for historical failure docs
 
-*Synthesis complete. Experiment 06 closed at v3.0.*
+---
+
+## v3.1 Update (Consequential Meta-Cognition)
+
+1. **`enable_meta_consequential`** — defer hypothesis on any reliability flag; auto-sleep on misleading/ambiguous context
+2. **Exp 14** — v3.1 defer/sleep beats v3.0 observe-only commit on ambiguous recovery
+
+---
+
+## Future: LLM Enhancement (Research Direction)
+
+EIDOS is orthogonal to LLMs: predictive memory, deliberation under surprise, and meta-cognitive deferral complement language fluency. A hybrid "System 2 sidecar" (surprise monitor + episodic/belief memory + deferral gate) is a plausible Kisamapa follow-on — see `LAB_REPORT.md` §5.3.
+
+*Synthesis updated for v3.1.*

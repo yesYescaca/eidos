@@ -200,5 +200,15 @@ class MetaCognitionMonitor:
         return flags
 
     def should_suppress_hypothesis(self, flags: list[str]) -> bool:
-        """Defer hypothesis application when reasoning is unreliable."""
+        """v3.0: defer only when both ambiguous and low-confidence."""
         return "ambiguous_hypothesis" in flags and "low_confidence" in flags
+
+    def should_defer_hypothesis(self, flags: list[str]) -> bool:
+        """v3.1: defer when any reliability flag is raised."""
+        return "ambiguous_hypothesis" in flags or "low_confidence" in flags
+
+    def should_auto_sleep_on_context(self, flags: list[str]) -> bool:
+        return "misleading_context_detected" in flags
+
+    def should_auto_sleep_on_ambiguity(self, flags: list[str]) -> bool:
+        return "ambiguous_hypothesis" in flags

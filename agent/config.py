@@ -48,5 +48,10 @@ MISLEADING_CONTEXT_RATIO = 2.0
 META_LOW_CONFIDENCE = 0.4
 CLOSE_HYPOTHESIS_EPSILON = 0.5
 
+# v3.1: consequential meta-cognition — act on flags (defer / auto-sleep)
+META_AUTO_SLEEP_REPLAYS = 25
+META_AUTO_SLEEP_ON_MISLEADING = True
+META_AUTO_SLEEP_ON_AMBIGUITY = True
+
 # Deprecated alias kept for backward compatibility in tests/docs
 REASONING_THRESHOLD = REASONING_ABSOLUTE_FLOOR

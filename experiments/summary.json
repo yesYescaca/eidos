@@ -83,9 +83,9 @@
     "num": "11",
     "name": "CLS recovery (v2.0)",
     "folder": "exp_11_cls_recovery",
-    "passed": false,
+    "passed": true,
     "exit_code": 0,
-    "ok": false
+    "ok": true
   },
   {
     "num": "12",
@@ -99,6 +99,14 @@
     "num": "13",
     "name": "Meta ambiguous reasoning (v3.0 B)",
     "folder": "exp_13_meta_ambiguous_reasoning",
+    "passed": true,
+    "exit_code": 0,
+    "ok": true
+  },
+  {
+    "num": "14",
+    "name": "Meta consequential (v3.1)",
+    "folder": "exp_14_meta_consequential",
     "passed": true,
     "exit_code": 0,
     "ok": true

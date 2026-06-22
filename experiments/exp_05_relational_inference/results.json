@@ -2,89 +2,88 @@
   "cat_top_associate": [
     [
       "dog",
-      8.56020325142035
+      26.179119003653458
     ]
   ],
   "dog_top_associate": [
     [
       "cat",
-      8.56020325142035
+      26.179119003653458
     ]
   ],
   "cat_bone_direct_learned": true,
   "cat_to_bone_path": [
     "cat",
+    "dog",
     "bone"
   ],
-  "surprise_error": 603.930712439466,
+  "surprise_error": 605.3779506336164,
   "reasoning_triggered": true,
   "selected_hypothesis": "explain:dog",
   "selected_associate": "dog",
-  "hypothesis_applied": true,
+  "hypothesis_applied": false,
   "last_trace_episode": {
-    "trigger_error": 603.930712439466,
+    "trigger_error": 605.3779506336164,
     "active_concepts": [
-      "dog",
-      "cat"
+      "cat",
+      "dog"
     ],
     "hypotheses": [
       {
         "label": "explain:dog",
-        "predicted_error": 0.12356020898244038,
+        "predicted_error": 0.0767025549726425,
         "type": "consolidation_preview",
         "scoring": "consolidation_preview"
       },
       {
         "label": "cat->dog",
-        "predicted_error": 0.12356020898244038,
+        "predicted_error": 0.0767025549726425,
         "type": "association_preview",
         "scoring": "consolidation_preview"
       },
       {
         "label": "explain:cat",
-        "predicted_error": 1.7605338383486713,
+        "predicted_error": 2.2576055561552923,
         "type": "consolidation_preview",
         "scoring": "consolidation_preview"
       },
       {
         "label": "dog->cat",
-        "predicted_error": 1.7605338383486713,
+        "predicted_error": 2.2576055561552923,
         "type": "association_preview",
         "scoring": "consolidation_preview"
       },
       {
         "label": "explain:bone",
-        "predicted_error": 3.452178889360786,
+        "predicted_error": 3.6838309659405475,
         "type": "consolidation_preview",
         "scoring": "consolidation_preview"
       },
       {
-        "label": "dog->bone",
-        "predicted_error": 3.452178889360786,
+        "label": "cat->bone",
+        "predicted_error": 3.6838309659405475,
         "type": "association_preview",
         "scoring": "consolidation_preview"
       },
       {
-        "label": "cat->bone",
-        "predicted_error": 3.452178889360786,
+        "label": "dog->bone",
+        "predicted_error": 3.6838309659405475,
         "type": "association_preview",
         "scoring": "consolidation_preview"
       }
     ],
     "selected": {
       "label": "explain:dog",
-      "confidence": 0.9997954066477538,
-      "predicted_error": 0.12356020898244038,
-      "preview_recovery_error": 0.12356020898244038,
-      "current_error": 603.930712439466,
+      "confidence": 0.9998732980695905,
+      "predicted_error": 0.0767025549726425,
+      "preview_recovery_error": 0.0767025549726425,
+      "current_error": 605.3779506336164,
       "hypotheses_evaluated": 7,
       "concept": "dog",
       "associate": "dog",
       "hypothesis_type": "consolidation_preview",
       "scoring": "consolidation_preview",
-      "path": null,
-      "recovery_inference_source": "recent_history",
-      "consolidated_error": 0.0003217899365079122
+      "path": null
     }
   },
   "pass": true

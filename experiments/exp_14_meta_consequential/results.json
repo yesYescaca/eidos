@@ -1,0 +1,39 @@
+{
+  "experiment": "exp_14_meta_consequential",
+  "description": "v3.1 defer/sleep beats v3.0 commit on ambiguous reasoning",
+  "v3_0_observational": {
+    "early_recovery_error": 0.581777450698882,
+    "meta_cognition_flags": [
+      "misleading_context_detected",
+      "ambiguous_hypothesis"
+    ],
+    "hypothesis_applied": true,
+    "hypothesis_deferred": false,
+    "auto_sleep_ambiguity": false,
+    "hypothesis_associate": "beta",
+    "wrong_associate": true
+  },
+  "v3_1_consequential": {
+    "early_recovery_error": 0.5753796597079817,
+    "meta_cognition_flags": [
+      "misleading_context_detected",
+      "auto_sleep_misleading",
+      "ambiguous_hypothesis",
+      "auto_sleep_ambiguity",
+      "hypothesis_deferred"
+    ],
+    "hypothesis_applied": false,
+    "hypothesis_deferred": true,
+    "auto_sleep_ambiguity": true,
+    "hypothesis_associate": "alpha",
+    "wrong_associate": false
+  },
+  "checks": {
+    "v31_better_recovery": true,
+    "v31_deferred": true,
+    "v30_committed": true,
+    "v30_wrong_or_high_error": true,
+    "ambiguous_flagged": true
+  },
+  "pass": true
+}

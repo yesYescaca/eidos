@@ -58,7 +58,8 @@ def main() -> None:
     )
     ambiguous = "ambiguous_hypothesis" in flags
     reasoning_ok = bool(result.get("reasoning_triggered"))
-    scenario_pass = bool(ambiguous and reasoning_ok and gap < 0.5)
+    deferred = "hypothesis_deferred" in flags or not result.get("hypothesis_applied")
+    scenario_pass = bool(ambiguous and reasoning_ok and gap < 0.5 and deferred)
 
     results = {
         "experiment": "exp_13_meta_ambiguous_reasoning",

@@ -77,17 +77,25 @@ def main() -> None:
         snapshot = Path(tmp) / "trained.json"
         trainer.save_state(snapshot)
 
-        agent_full = EidosAgent(seed=99)
+        agent_full = EidosAgent(
+            seed=99, enable_meta_cognition=False, enable_meta_consequential=False
+        )
         agent_full.load_state(snapshot)
         agent_full.enable_reasoning = True
         agent_full.apply_hypotheses = True
+        agent_full.enable_meta_cognition = False
+        agent_full.enable_meta_consequential = False
         agent_full.reasoner.clear_trace()
         agent_full.surprise._history.clear()
 
-        agent_ablated = EidosAgent(seed=99)
+        agent_ablated = EidosAgent(
+            seed=99, enable_meta_cognition=False, enable_meta_consequential=False
+        )
         agent_ablated.load_state(snapshot)
         agent_ablated.enable_reasoning = False
         agent_ablated.apply_hypotheses = False
+        agent_ablated.enable_meta_cognition = False
+        agent_ablated.enable_meta_consequential = False
         agent_ablated.reasoner.clear_trace()
         agent_ablated.surprise._history.clear()
 
