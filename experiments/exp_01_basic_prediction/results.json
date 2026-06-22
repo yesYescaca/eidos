@@ -1,0 +1,7 @@
+{
+  "experiment": "exp_01_basic_prediction",
+  "mean_error_first_50": 57.50152002870242,
+  "mean_error_last_50": 45.52087729460072,
+  "reduction_percent": 20.835349618795206,
+  "pass": true
+}

@@ -1,0 +1,21 @@
+{
+  "experiment": "exp_11_cls_recovery",
+  "description": "v2.0 sleep replay + BeliefGraph fixes misleading context and cold start",
+  "misleading_context": {
+    "inferred_recovery_label": "fire",
+    "recovery_inference_source": "belief_graph",
+    "selected_associate": "fire",
+    "early_recovery_error": 0.31172819999030543
+  },
+  "cold_start": {
+    "inferred_recovery_label": "fire",
+    "recovery_inference_source": "belief_graph",
+    "selected_associate": "fire",
+    "early_recovery_error": 0.2153004609303925
+  },
+  "checks": {
+    "misleading_fixed": true,
+    "cold_start_fixed": true
+  },
+  "pass": true
+}

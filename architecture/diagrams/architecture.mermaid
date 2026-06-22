@@ -1,0 +1,31 @@
+flowchart TD
+    INPUT["INPUT\n(raw vector + label)"]
+    AG["AttentionGate\nα·surprise + β·goal"]
+    WB["WorkspaceBuffer\n7 slots — global broadcast"]
+    PE["PredictionEngine\nLayer 1 + Layer 2"]
+    ERR{"prediction_error"}
+    RS["RewardSignal\nintrinsic: Δerror reduction"]
+    AS["AssociationStore\nHebbian fast memory"]
+    RL["ReasoningLoop\nSystem 2 deliberation"]
+    BG["BeliefGraph\nslow consolidation (v2.0)"]
+    EB["EpisodicBuffer\nhippocampal traces"]
+    SR["SleepReplay\noffline consolidation"]
+    OUT["OUTPUT / ACTION"]
+
+    INPUT -->|"signals + goal"| AG
+    AG -->|"salience-ranked signals"| WB
+    WB -->|"active context"| PE
+    PE -->|"prediction_error scalar"| ERR
+  ERR -->|"error history"| RS
+    ERR -->|"low error"| AS
+    ERR -->|"high error > threshold"| RL
+    RL -->|"selected hypothesis"| AS
+    RS -->|"reward signal"| OUT
+    AS -->|"association weights"| BG
+    EB -->|"sample traces"| SR
+    SR -->|"integrate"| BG
+    WB -->|"broadcast contents"| RL
+    BG -->|"recovery probe"| RL
+    PE -->|"surprise metric"| AG
+    BG --> OUT
+    AS --> OUT

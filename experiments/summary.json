@@ -1,0 +1,90 @@
+[
+  {
+    "num": "01",
+    "name": "Basic prediction",
+    "folder": "exp_01_basic_prediction",
+    "passed": true,
+    "exit_code": 0,
+    "ok": true
+  },
+  {
+    "num": "02",
+    "name": "Memory consolidation",
+    "folder": "exp_02_memory_consolidation",
+    "passed": true,
+    "exit_code": 0,
+    "ok": true
+  },
+  {
+    "num": "03",
+    "name": "Reasoning chain",
+    "folder": "exp_03_reasoning_chain",
+    "passed": true,
+    "exit_code": 0,
+    "ok": true
+  },
+  {
+    "num": "04",
+    "name": "Reasoning ablation",
+    "folder": "exp_04_reasoning_ablation",
+    "passed": true,
+    "exit_code": 0,
+    "ok": true
+  },
+  {
+    "num": "05",
+    "name": "Relational inference",
+    "folder": "exp_05_relational_inference",
+    "passed": true,
+    "exit_code": 0,
+    "ok": true
+  },
+  {
+    "num": "06",
+    "name": "Reasoning recovery",
+    "folder": "exp_06_reasoning_recovery",
+    "passed": true,
+    "exit_code": 0,
+    "ok": true
+  },
+  {
+    "num": "07",
+    "name": "Multi-concept",
+    "folder": "exp_07_multi_concept",
+    "passed": true,
+    "exit_code": 0,
+    "ok": true
+  },
+  {
+    "num": "08",
+    "name": "Autonomous recovery",
+    "folder": "exp_08_autonomous_recovery",
+    "passed": true,
+    "exit_code": 0,
+    "ok": true
+  },
+  {
+    "num": "09",
+    "name": "Misleading context (failure)",
+    "folder": "exp_09_misleading_context",
+    "passed": true,
+    "exit_code": 0,
+    "ok": true
+  },
+  {
+    "num": "10",
+    "name": "Cold start (failure)",
+    "folder": "exp_10_cold_start",
+    "passed": true,
+    "exit_code": 0,
+    "ok": true
+  },
+  {
+    "num": "11",
+    "name": "CLS recovery (v2.0)",
+    "folder": "exp_11_cls_recovery",
+    "passed": true,
+    "exit_code": 0,
+    "ok": true
+  }
+]

@@ -1,0 +1,38 @@
+[
+  {
+    "trigger_error": 1586.9273954889845,
+    "active_concepts": [
+      "fire",
+      "anomaly"
+    ],
+    "hypotheses": [
+      {
+        "label": "explain:fire",
+        "predicted_error": 0.031957068613027995,
+        "type": "consolidation_preview",
+        "scoring": "consolidation_preview"
+      },
+      {
+        "label": "anomaly->fire",
+        "predicted_error": 0.031957068613027995,
+        "type": "association_preview",
+        "scoring": "consolidation_preview"
+      }
+    ],
+    "selected": {
+      "label": "explain:fire",
+      "confidence": 0.9999798622994953,
+      "predicted_error": 0.031957068613027995,
+      "preview_recovery_error": 0.031957068613027995,
+      "current_error": 1586.9273954889845,
+      "hypotheses_evaluated": 2,
+      "concept": "fire",
+      "associate": "fire",
+      "hypothesis_type": "consolidation_preview",
+      "scoring": "consolidation_preview",
+      "path": null,
+      "recovery_inference_source": "recent_history",
+      "consolidated_error": 5.410940113014623e-06
+    }
+  }
+]

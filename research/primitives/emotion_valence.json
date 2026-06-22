@@ -1,0 +1,46 @@
+[
+  {
+    "id": "reward_prediction_error_v1",
+    "name": "Dopaminergic Reward Prediction Error",
+    "category": "emotion_valence",
+    "source": {
+      "author": "Wolfram Schultz, Peter Dayan, P. Read Montague",
+      "paper": "A neural substrate of prediction and reward",
+      "year": 1997,
+      "journal": "Science",
+      "doi": "10.1126/science.275.5306.1593"
+    },
+    "biological_basis": "Midbrain dopamine neurons fire in proportion to reward prediction error — the difference between received and expected reward. They encode a teaching signal for reinforcement learning.",
+    "core_claim": "Reward is not absolute but relative to expectation. Unexpected rewards produce positive RPE; omitted expected rewards produce negative RPE. This drives learning of value predictions.",
+    "implementable_mechanism": {
+      "description": "Track expected reward (value). On each step, RPE = actual_reward - expected_reward. Update value estimate toward actual. Use RPE as learning signal and intrinsic motivation metric.",
+      "inputs": ["received_reward", "expected_reward", "value_estimate"],
+      "outputs": ["reward_prediction_error", "updated_value"],
+      "pseudocode": "rpe = reward - value.predict(state); value.update(state, rpe); return rpe"
+    },
+    "relevance_score": 9,
+    "notes": "Maps to RewardSignal tracking prediction error reduction as intrinsic reward."
+  },
+  {
+    "id": "temporal_difference_learning_v1",
+    "name": "Temporal Difference Learning",
+    "category": "emotion_valence",
+    "source": {
+      "author": "Richard S. Sutton, Andrew G. Barto",
+      "paper": "Reinforcement Learning: An Introduction (2nd ed.), Chapter 6",
+      "year": 2018,
+      "journal": "MIT Press",
+      "doi": ""
+    },
+    "biological_basis": "TD learning combines bootstrapping from current value estimates with temporal credit assignment. The TD error δ = r + γV(s') - V(s) parallels dopaminergic RPE signals.",
+    "core_claim": "Learn value functions online without waiting for final outcomes. TD error provides a biologically plausible learning signal for sequential decision-making.",
+    "implementable_mechanism": {
+      "description": "Maintain value estimate V(s). At each step compute TD error: δ = reward + γ*V(next_state) - V(current_state). Update V toward reducing δ. Intrinsic variant: reward = surprise reduction.",
+      "inputs": ["current_state", "next_state", "immediate_reward", "gamma", "value_function"],
+      "outputs": ["td_error", "updated_value_function"],
+      "pseudocode": "delta = reward + gamma * V(next_state) - V(current_state); V(current_state) += alpha * delta; return delta"
+    },
+    "relevance_score": 9,
+    "notes": "EIDOS uses simplified intrinsic TD: reward = previous_prediction_error - current_prediction_error."
+  }
+]

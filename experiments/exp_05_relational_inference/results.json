@@ -1,0 +1,91 @@
+{
+  "cat_top_associate": [
+    [
+      "dog",
+      8.56020325142035
+    ]
+  ],
+  "dog_top_associate": [
+    [
+      "cat",
+      8.56020325142035
+    ]
+  ],
+  "cat_bone_direct_learned": true,
+  "cat_to_bone_path": [
+    "cat",
+    "bone"
+  ],
+  "surprise_error": 603.930712439466,
+  "reasoning_triggered": true,
+  "selected_hypothesis": "explain:dog",
+  "selected_associate": "dog",
+  "hypothesis_applied": true,
+  "last_trace_episode": {
+    "trigger_error": 603.930712439466,
+    "active_concepts": [
+      "dog",
+      "cat"
+    ],
+    "hypotheses": [
+      {
+        "label": "explain:dog",
+        "predicted_error": 0.12356020898244038,
+        "type": "consolidation_preview",
+        "scoring": "consolidation_preview"
+      },
+      {
+        "label": "cat->dog",
+        "predicted_error": 0.12356020898244038,
+        "type": "association_preview",
+        "scoring": "consolidation_preview"
+      },
+      {
+        "label": "explain:cat",
+        "predicted_error": 1.7605338383486713,
+        "type": "consolidation_preview",
+        "scoring": "consolidation_preview"
+      },
+      {
+        "label": "dog->cat",
+        "predicted_error": 1.7605338383486713,
+        "type": "association_preview",
+        "scoring": "consolidation_preview"
+      },
+      {
+        "label": "explain:bone",
+        "predicted_error": 3.452178889360786,
+        "type": "consolidation_preview",
+        "scoring": "consolidation_preview"
+      },
+      {
+        "label": "dog->bone",
+        "predicted_error": 3.452178889360786,
+        "type": "association_preview",
+        "scoring": "consolidation_preview"
+      },
+      {
+        "label": "cat->bone",
+        "predicted_error": 3.452178889360786,
+        "type": "association_preview",
+        "scoring": "consolidation_preview"
+      }
+    ],
+    "selected": {
+      "label": "explain:dog",
+      "confidence": 0.9997954066477538,
+      "predicted_error": 0.12356020898244038,
+      "preview_recovery_error": 0.12356020898244038,
+      "current_error": 603.930712439466,
+      "hypotheses_evaluated": 7,
+      "concept": "dog",
+      "associate": "dog",
+      "hypothesis_type": "consolidation_preview",
+      "scoring": "consolidation_preview",
+      "path": null,
+      "recovery_inference_source": "recent_history",
+      "consolidated_error": 0.0003217899365079122
+    }
+  },
+  "pass": true
+}

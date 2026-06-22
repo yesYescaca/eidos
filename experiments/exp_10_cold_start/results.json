@@ -1,0 +1,28 @@
+{
+  "experiment": "exp_10_cold_start",
+  "description": "Zero warmup, cleared workspace and recovery history",
+  "cold": {
+    "inferred": null,
+    "inference_source": "none",
+    "selected": null,
+    "early_recovery_error": 3436.890507032082,
+    "reasoning_triggered": false
+  },
+  "cold_ablated": {
+    "early_recovery_error": 3436.890507032082
+  },
+  "warm_baseline": {
+    "inferred": "fire",
+    "inference_source": "recent_history",
+    "selected": "fire",
+    "early_recovery_error": 0.23813755067766537
+  },
+  "checks": {
+    "no_context_inference": true,
+    "wrong_or_missing_inference": true,
+    "no_recovery_benefit_vs_ablation": true,
+    "warm_control_ok": true,
+    "failure_mode_observed": true
+  },
+  "pass": true
+}

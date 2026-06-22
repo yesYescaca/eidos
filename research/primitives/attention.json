@@ -1,0 +1,46 @@
+[
+  {
+    "id": "goal_directed_attention_v1",
+    "name": "Goal-Directed vs Stimulus-Driven Attention",
+    "category": "attention",
+    "source": {
+      "author": "Maurizio Corbetta, Gordon L. Shulman",
+      "paper": "Control of goal-directed and stimulus-driven attention in the brain",
+      "year": 2002,
+      "journal": "Nature Reviews Neuroscience",
+      "doi": "10.1038/nrn755"
+    },
+    "biological_basis": "Two attention networks: dorsal frontoparietal (goal-directed, top-down) and ventral temporoparietal (stimulus-driven, bottom-up salience). They interact to select behaviourally relevant information.",
+    "core_claim": "Attention is controlled by both internal goals (what you seek) and external salience (what surprises you). Effective selection requires balancing both signals.",
+    "implementable_mechanism": {
+      "description": "Compute salience as weighted combination of bottom-up surprise (deviation from expected) and top-down goal relevance (similarity to current goal vector). Route highest-salience signals to workspace.",
+      "inputs": ["incoming_signals", "goal_vector", "expected_state", "alpha", "beta"],
+      "outputs": ["ranked_signals_with_salience", "attention_weights"],
+      "pseudocode": "for s in signals: surprise = distance(s, expected); relevance = similarity(s, goal); salience = alpha*surprise + beta*relevance; return sort(signals, by=salience)"
+    },
+    "relevance_score": 9,
+    "notes": "Direct implementation in AttentionGate with alpha=0.6, beta=0.4."
+  },
+  {
+    "id": "biased_competition_v1",
+    "name": "Biased Competition Model",
+    "category": "attention",
+    "source": {
+      "author": "Robert Desimone, John Duncan",
+      "paper": "Neural mechanisms of selective visual attention",
+      "year": 1995,
+      "journal": "Annual Review of Neuroscience",
+      "doi": "10.1146/annurev.ne.18.030195.001105"
+    },
+    "biological_basis": "Multiple stimuli within a neuron's receptive field compete for representation. Top-down bias from prefrontal cortex shifts competition in favour of task-relevant stimuli, suppressing irrelevant ones.",
+    "core_claim": "Attention works by biasing competitive interactions — not amplifying targets alone but suppressing distractors through lateral inhibition and top-down bias.",
+    "implementable_mechanism": {
+      "description": "Limited workspace slots create competition. Signals compete via salience scores; losers are suppressed (not admitted). Top-down goal vector biases competition toward relevant content.",
+      "inputs": ["competing_representations", "top_down_bias", "capacity_limit"],
+      "outputs": ["winning_representations", "suppressed_representations"],
+      "pseudocode": "scores = [bias.dot(r) - inhibition(r, competitors) for r in reps]; winners = top_k(scores, capacity); suppressed = rest"
+    },
+    "relevance_score": 8,
+    "notes": "Informs workspace eviction policy: lowest salience*age loses competition."
+  }
+]

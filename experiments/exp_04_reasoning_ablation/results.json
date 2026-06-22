@@ -1,0 +1,28 @@
+{
+  "mean_recovery_error_full": 0.42171256666523615,
+  "mean_recovery_error_ablated": 4.470871776644553,
+  "mean_early_recovery_full": 0.41974883630722076,
+  "mean_early_recovery_ablated": 4.229352539656508,
+  "improvement_early_percent": 90.07534055457786,
+  "reasoning_episodes_full": 1,
+  "reasoning_episodes_ablated": 0,
+  "hypothesis_on_surprise": {
+    "label": "explain:fire",
+    "confidence": 0.9999232219576301,
+    "predicted_error": 0.11441817104141591,
+    "preview_recovery_error": 0.11441817104141591,
+    "current_error": 1490.24600666553,
+    "hypotheses_evaluated": 2,
+    "concept": "fire",
+    "associate": "fire",
+    "hypothesis_type": "consolidation_preview",
+    "scoring": "consolidation_preview",
+    "path": null,
+    "recovery_inference_source": "recent_history",
+    "consolidated_error": 5.397856411266429e-05
+  },
+  "correct_hypothesis_selected": true,
+  "selective_reasoning": true,
+  "recovery_better_with_reasoning": "True",
+  "pass": true
+}

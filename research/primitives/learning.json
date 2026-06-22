@@ -1,0 +1,68 @@
+[
+  {
+    "id": "hebbian_learning_v1",
+    "name": "Hebbian Association Learning",
+    "category": "learning",
+    "source": {
+      "author": "Donald O. Hebb",
+      "paper": "The Organization of Behavior: A Neuropsychological Theory",
+      "year": 1949,
+      "journal": "Wiley",
+      "doi": ""
+    },
+    "biological_basis": "When an axon of cell A repeatedly participates in firing cell B, synaptic efficacy increases. Co-activation strengthens connections; uncorrelated activity weakens them over time.",
+    "core_claim": "Learning is local and associative: neurons that fire together wire together. No external teacher signal required for basic association formation.",
+    "implementable_mechanism": {
+      "description": "Weighted graph of concept nodes. When two concepts co-activate in workspace, increment edge weight. Apply decay each cycle to prevent unbounded growth and enable forgetting.",
+      "inputs": ["active_concept_list", "learning_rate", "decay_factor"],
+      "outputs": ["updated_adjacency_weights"],
+      "pseudocode": "for (a, b) in pairs(active_concepts): graph[a][b] += lr; graph[b][a] += lr; for edge in graph: edge.weight *= decay; prune(edge.weight < threshold)"
+    },
+    "relevance_score": 10,
+    "notes": "Direct implementation in AssociationStore.hebbian_update()."
+  },
+  {
+    "id": "complementary_learning_systems_v1",
+    "name": "Complementary Learning Systems",
+    "category": "learning",
+    "source": {
+      "author": "James L. McClelland, Bruce L. McNaughton, Randall C. O'Reilly",
+      "paper": "Why there are complementary learning systems in the hippocampus and neocortex: Insights from the successes and failures of connectionist models of learning and memory",
+      "year": 1995,
+      "journal": "Psychological Review",
+      "doi": "10.1037/0033-295X.102.3.419"
+    },
+    "biological_basis": "Hippocampus rapidly encodes episodic memories with sparse representations; neocortex slowly integrates structured knowledge. Fast learning avoids interference; slow learning extracts statistical structure.",
+    "core_claim": "Two memory systems solve the stability-plasticity dilemma: fast episodic store (hippocampus) + slow semantic store (neocortex). Consolidation transfers knowledge from fast to slow.",
+    "implementable_mechanism": {
+      "description": "Fast store (AssociationStore) learns immediately from co-activation. Slow store (BeliefGraph) updates via periodic consolidation replaying episodic traces. Prevents catastrophic forgetting.",
+      "inputs": ["episodic_traces", "consolidation_schedule"],
+      "outputs": ["fast_memory_updates", "slow_semantic_updates"],
+      "pseudocode": "fast.learn(episode); if sleep_phase: for trace in fast.sample(): slow.integrate(trace, small_lr)"
+    },
+    "relevance_score": 9,
+    "notes": "Implemented in v2.0: EpisodicBuffer (fast) + BeliefGraph (slow) + SleepReplay."
+  },
+  {
+    "id": "hippocampal_replay_v1",
+    "name": "Hippocampal Sleep Replay",
+    "category": "learning",
+    "source": {
+      "author": "Matthew A. Wilson, Bruce L. McNaughton",
+      "paper": "Reactivation of hippocampal ensemble memories during sleep",
+      "year": 1994,
+      "journal": "Science",
+      "doi": "10.1126/science.7969954"
+    },
+    "biological_basis": "During slow-wave sleep, hippocampal place cell ensembles reactivate in temporal sequences matching prior waking experience, driving cortical consolidation.",
+    "core_claim": "Offline replay of waking experience strengthens memories and transfers them to long-term cortical storage without new sensory input.",
+    "implementable_mechanism": {
+      "description": "After training episodes, run offline pass: sample stored episodic sequences and replay through slow learning system with reduced learning rate. Strengthens associations without new input.",
+      "inputs": ["stored_episode_log", "replay_count"],
+      "outputs": ["consolidated_weights", "replay_trace"],
+      "pseudocode": "for episode in sample(episodes, n=replay_count): for step in episode: slow_store.hebbian_update(step.concepts, lr=small); association_store.reinforce(step.pairs)"
+    },
+    "relevance_score": 7,
+    "notes": "Implemented in v2.0 via SleepReplay.run() and agent.sleep()."
+  }
+]

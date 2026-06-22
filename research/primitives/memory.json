@@ -1,0 +1,68 @@
+[
+  {
+    "id": "baddeley_working_memory_v1",
+    "name": "Multicomponent Working Memory",
+    "category": "memory",
+    "source": {
+      "author": "Alan Baddeley",
+      "paper": "Working memory: looking back and looking forward",
+      "year": 2003,
+      "journal": "Nature Reviews Neuroscience",
+      "doi": "10.1038/nrn1201"
+    },
+    "biological_basis": "Working memory is a limited-capacity system with a central executive coordinating phonological and visuospatial slave systems. It holds information actively for manipulation during cognitive tasks.",
+    "core_claim": "Immediate conscious processing requires a small, actively maintained buffer (~4 items reliably). Capacity limits force selective attention and chunking strategies.",
+    "implementable_mechanism": {
+      "description": "Fixed-capacity slot buffer holding active representations. Each slot has content, activation level, and recency. Central executive routes information in/out and coordinates with long-term stores.",
+      "inputs": ["incoming_representations", "executive_control_signals"],
+      "outputs": ["active_buffer_contents", "eviction_events"],
+      "pseudocode": "if len(buffer) >= capacity: evict(least_active_or_oldest); buffer.insert(item, activation); return broadcast(buffer)"
+    },
+    "relevance_score": 9,
+    "notes": "Directly maps to WorkspaceBuffer with 7-slot default capacity."
+  },
+  {
+    "id": "global_workspace_theory_v1",
+    "name": "Global Workspace Broadcasting",
+    "category": "memory",
+    "source": {
+      "author": "Bernard J. Baars",
+      "paper": "A Cognitive Theory of Consciousness",
+      "year": 1988,
+      "journal": "Cambridge University Press",
+      "doi": ""
+    },
+    "biological_basis": "Conscious cognition arises when information wins a competition among specialised unconscious processors and is broadcast globally across the brain via a shared workspace, making it available to all modules.",
+    "core_claim": "Conscious access = global broadcasting. Unconscious processors work in parallel; only one coalition at a time gains workspace access and becomes globally readable.",
+    "implementable_mechanism": {
+      "description": "Competition among input signals for limited workspace slots. Winners are broadcast to all downstream modules (prediction, reasoning, memory). Losers remain local.",
+      "inputs": ["competing_signals", "attention_weights"],
+      "outputs": ["broadcast_contents", "global_availability_flag"],
+      "pseudocode": "winners = select_top_k(signals, capacity, by=salience); workspace.set(winners); for module in modules: module.receive(workspace.broadcast())"
+    },
+    "relevance_score": 10,
+    "notes": "Core architectural principle: WorkspaceBuffer.broadcast() makes contents globally available."
+  },
+  {
+    "id": "dehaene_neuronal_workspace_v1",
+    "name": "Neuronal Global Workspace",
+    "category": "memory",
+    "source": {
+      "author": "Stanislas Dehaene, Michel Kerszberg, Jean-Pierre Changeux",
+      "paper": "A neuronal model of a global workspace in effortful cognitive tasks",
+      "year": 1998,
+      "journal": "Proceedings of the National Academy of Sciences",
+      "doi": "10.1073/pnas.95.24.14529"
+    },
+    "biological_basis": "A network of long-range excitatory neurons with non-linear ignition dynamics creates a global workspace. Sustained activity requires recurrent amplification; only strong enough coalitions ignite.",
+    "core_claim": "Workspace access requires crossing an ignition threshold — weak signals decay, strong coalitions self-amplify and persist, enabling effortful cognition.",
+    "implementable_mechanism": {
+      "description": "Signals below salience threshold decay without entering workspace. Above threshold, signals enter slots with recurrent reinforcement (salience boost). Effortful tasks require sustained workspace occupancy.",
+      "inputs": ["local_processor_outputs", "ignition_threshold"],
+      "outputs": ["ignited_representations", "decayed_signals"],
+      "pseudocode": "for signal in inputs: if signal.salience > threshold: workspace.ignite(signal); signal.salience += recurrent_boost; else: signal.decay()"
+    },
+    "relevance_score": 8,
+    "notes": "Informs AttentionGate salience threshold (0.3) before workspace insertion in EIDOS."
+  }
+]

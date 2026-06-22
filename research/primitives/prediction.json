@@ -1,0 +1,68 @@
+[
+  {
+    "id": "free_energy_principle_v1",
+    "name": "Free Energy Minimisation",
+    "category": "prediction",
+    "source": {
+      "author": "Karl Friston",
+      "paper": "The free-energy principle: a unified brain theory?",
+      "year": 2010,
+      "journal": "Nature Reviews Neuroscience",
+      "doi": "10.1038/nrn2787"
+    },
+    "biological_basis": "The brain maintains an internal generative model of the world and continuously minimises variational free energy — a bound on surprise — by updating beliefs about hidden causes or by acting to change sensory input.",
+    "core_claim": "All adaptive biological systems minimise free energy (surprise) through perception (belief updating) and action (changing the world to match predictions). Cognition is fundamentally predictive, not reactive.",
+    "implementable_mechanism": {
+      "description": "Maintain a generative model that predicts sensory states. Compute prediction error as mismatch between predicted and observed states. Update model parameters to reduce error; optionally select actions that reduce expected future error.",
+      "inputs": ["sensory_observation", "prior_beliefs", "generative_model_params"],
+      "outputs": ["prediction_error", "updated_beliefs", "action_policy"],
+      "pseudocode": "prediction = model.predict(prior); error = observation - prediction; beliefs = beliefs + lr * gradient(error); action = argmin_a expected_future_error(a)"
+    },
+    "relevance_score": 10,
+    "notes": "Central unifying objective for EIDOS. PredictionEngine minimises surprise as its core loop."
+  },
+  {
+    "id": "active_inference_v1",
+    "name": "Active Inference",
+    "category": "prediction",
+    "source": {
+      "author": "Karl Friston, Thomas FitzGerald, Francesco Rigoli, Philipp Schwartenbeck, Giovanni Pezzulo",
+      "paper": "Active inference: a process theory",
+      "year": 2017,
+      "journal": "Neural Computation",
+      "doi": "10.1162/NECO_a_00912"
+    },
+    "biological_basis": "Perception and action are two sides of the same inference process: the agent selects actions that minimise expected free energy by fulfilling prior predictions about preferred states while updating beliefs from sensory evidence.",
+    "core_claim": "Action is not separate from perception — acting is a way of sampling the world to confirm predictions. Expected free energy combines ambiguity reduction and pragmatic value (goal fulfilment).",
+    "implementable_mechanism": {
+      "description": "At each timestep, compute expected free energy for candidate actions as sum of epistemic value (information gain) and pragmatic value (goal proximity). Select action minimising EFE; update beliefs from resulting observations.",
+      "inputs": ["current_beliefs", "candidate_actions", "preferred_states", "sensory_model"],
+      "outputs": ["selected_action", "updated_posterior", "expected_free_energy"],
+      "pseudocode": "for a in actions: EFE[a] = epistemic(a) + pragmatic(a); action = argmin(EFE); observe = world.step(action); beliefs = bayesian_update(beliefs, observe)"
+    },
+    "relevance_score": 9,
+    "notes": "Maps to EIDOS goal-directed attention (pragmatic) combined with surprise-driven exploration (epistemic)."
+  },
+  {
+    "id": "predictive_coding_visual_v1",
+    "name": "Hierarchical Predictive Coding",
+    "category": "prediction",
+    "source": {
+      "author": "Rajesh P.N. Rao, Dana H. Ballard",
+      "paper": "Predictive coding in the visual cortex: a functional interpretation of some extra-classical receptive-field effects",
+      "year": 1999,
+      "journal": "Nature Neuroscience",
+      "doi": "10.1038/4580"
+    },
+    "biological_basis": "Cortical hierarchy uses top-down predictions and bottom-up prediction errors. Higher areas predict activity in lower areas; only errors propagate upward. Extra-classical receptive field effects arise from contextual predictions.",
+    "core_claim": "Visual cortex implements a hierarchical predictive coding scheme where each level predicts the representation at the level below, and learning reduces prediction error via Hebbian-like updates.",
+    "implementable_mechanism": {
+      "description": "Two or more layers: lower layer receives input; higher layer predicts lower-layer activity. Error = input - prediction propagates up; predictions propagate down. Weights updated to minimise squared error at each layer.",
+      "inputs": ["sensory_input_vector", "context_vector"],
+      "outputs": ["layer1_prediction", "layer2_prediction", "hierarchical_prediction_error"],
+      "pseudocode": "L1_pred = W1 @ input + b1; L1_err = input - L1_pred; L2_pred = W2 @ context + b2; L2_err = L1_pred - L2_pred; update W1, W2 via SGD on errors"
+    },
+    "relevance_score": 10,
+    "notes": "Direct blueprint for PredictionEngine two-layer hierarchy in EIDOS."
+  }
+]

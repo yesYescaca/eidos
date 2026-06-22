@@ -1,0 +1,12 @@
+{
+  "experiment": "exp_02_memory_consolidation",
+  "cat_top_associate": "dog",
+  "cat_associates": [
+    {
+      "concept": "dog",
+      "weight": 7.825506237859989
+    }
+  ],
+  "water_in_fire_associates": false,
+  "pass": true
+}

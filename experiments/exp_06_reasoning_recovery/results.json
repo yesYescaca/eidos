@@ -1,0 +1,24 @@
+{
+  "early_recovery_full": 0.57791738140972,
+  "early_recovery_ablated": 563.4746237544754,
+  "improvement_percent": 99.89743683973575,
+  "surprise_hypothesis": {
+    "label": "explain:fire",
+    "confidence": 0.9999934685305949,
+    "predicted_error": 0.023766496025083322,
+    "preview_recovery_error": 0.023766496025083322,
+    "current_error": 3638.767105971582,
+    "hypotheses_evaluated": 2,
+    "concept": "fire",
+    "associate": "fire",
+    "hypothesis_type": "consolidation_preview",
+    "scoring": "consolidation_preview",
+    "path": null,
+    "recovery_inference_source": "recent_history",
+    "consolidated_error": 2.3401229380672444e-16
+  },
+  "belief_consolidated": true,
+  "correct_hypothesis": true,
+  "recovery_better": "True",
+  "pass": true
+}

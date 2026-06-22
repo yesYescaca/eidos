@@ -1,0 +1,46 @@
+[
+  {
+    "id": "dual_process_theory_v1",
+    "name": "Dual-Process Reasoning (System 1 / System 2)",
+    "category": "reasoning",
+    "source": {
+      "author": "Daniel Kahneman",
+      "paper": "Thinking, Fast and Slow",
+      "year": 2011,
+      "journal": "Farrar, Straus and Giroux",
+      "doi": ""
+    },
+    "biological_basis": "Cognition operates via two systems: System 1 (fast, automatic, associative, low effort) and System 2 (slow, deliberate, analytical, high effort). System 2 monitors and overrides System 1 when anomalies are detected.",
+    "core_claim": "Most cognition is fast and automatic. Deliberate reasoning is triggered by surprise, conflict, or high stakes — engaging slower hypothesis testing.",
+    "implementable_mechanism": {
+      "description": "Fast path: prediction engine handles routine inputs when error < threshold. Slow path: when error > threshold, ReasoningLoop generates hypotheses, simulates outcomes, selects best explanation.",
+      "inputs": ["prediction_error", "workspace_contents", "threshold"],
+      "outputs": ["fast_response_or_none", "deliberate_hypothesis"],
+      "pseudocode": "if prediction_error < threshold: return fast_predict(); else: hypotheses = generate(workspace, associations); return argmin_h simulate_error(h)"
+    },
+    "relevance_score": 10,
+    "notes": "Direct architecture split: PredictionEngine (System 1) + ReasoningLoop (System 2)."
+  },
+  {
+    "id": "structure_mapping_v1",
+    "name": "Structure-Mapping Analogy",
+    "category": "reasoning",
+    "source": {
+      "author": "Dedre Gentner",
+      "paper": "Structure-mapping: A theoretical framework for analogy",
+      "year": 1983,
+      "journal": "Cognitive Science",
+      "doi": "10.1207/s15516709cog0702_1"
+    },
+    "biological_basis": "Analogical reasoning maps relational structure from a familiar domain (base) to a novel domain (target). People prefer systematic, relation-rich mappings over superficial attribute matches.",
+    "core_claim": "Analogy is structure mapping: align relational roles between domains, project inferences from base to target. Core of human abstract reasoning.",
+    "implementable_mechanism": {
+      "description": "Given active concepts, retrieve associated concepts via graph structure. Map relational patterns (co-activation paths) to generate candidate hypotheses. Evaluate by predicted consistency (error reduction).",
+      "inputs": ["base_concepts", "association_graph", "target_context"],
+      "outputs": ["mapped_hypotheses", "structural_alignment_score"],
+      "pseudocode": "associates = graph.neighbors(active); for a in associates: hypothesis = align_structure(active, a); score = predict_consistency(hypothesis); return best(hypotheses, by=score)"
+    },
+    "relevance_score": 8,
+    "notes": "ReasoningLoop uses association paths to generate and evaluate hypotheses."
+  }
+]

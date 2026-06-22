@@ -1,0 +1,47 @@
+[
+  {
+    "target": "fire",
+    "selected_associate": "fire",
+    "inferred_recovery_label": "fire",
+    "recovery_inference_source": "recent_history",
+    "hypothesis_label": "explain:fire",
+    "correct_concept": true,
+    "inferred_correct": true,
+    "autonomous_inference": true,
+    "early_recovery_full": 7.748049484183508,
+    "early_recovery_ablated": 10.586833882442352,
+    "improvement_percent": 26.814290559208665,
+    "beats_ablation": true,
+    "pass": true
+  },
+  {
+    "target": "water",
+    "selected_associate": "water",
+    "inferred_recovery_label": "water",
+    "recovery_inference_source": "recent_history",
+    "hypothesis_label": "explain:water",
+    "correct_concept": true,
+    "inferred_correct": true,
+    "autonomous_inference": true,
+    "early_recovery_full": 0.23158438290469557,
+    "early_recovery_ablated": 11119.896730479713,
+    "improvement_percent": 99.99791738728769,
+    "beats_ablation": true,
+    "pass": true
+  },
+  {
+    "target": "smoke",
+    "selected_associate": "smoke",
+    "inferred_recovery_label": "smoke",
+    "recovery_inference_source": "recent_history",
+    "hypothesis_label": "explain:smoke",
+    "correct_concept": true,
+    "inferred_correct": true,
+    "autonomous_inference": true,
+    "early_recovery_full": 0.24464435971251822,
+    "early_recovery_ablated": 512.6267780198175,
+    "improvement_percent": 99.95227632066792,
+    "beats_ablation": true,
+    "pass": true
+  }
+]

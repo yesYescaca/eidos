@@ -1,0 +1,59 @@
+{
+  "version": "1.0",
+  "project": "EIDOS",
+  "lab": "Kisamapa Labs",
+  "experiment": "06",
+  "created": "2026-06-22",
+  "total_primitives": 15,
+  "categories": {
+    "prediction": {
+      "file": "research/primitives/prediction.json",
+      "count": 3,
+      "ids": ["free_energy_principle_v1", "active_inference_v1", "predictive_coding_visual_v1"]
+    },
+    "memory": {
+      "file": "research/primitives/memory.json",
+      "count": 3,
+      "ids": ["baddeley_working_memory_v1", "global_workspace_theory_v1", "dehaene_neuronal_workspace_v1"]
+    },
+    "learning": {
+      "file": "research/primitives/learning.json",
+      "count": 3,
+      "ids": ["hebbian_learning_v1", "complementary_learning_systems_v1", "hippocampal_replay_v1"]
+    },
+    "attention": {
+      "file": "research/primitives/attention.json",
+      "count": 2,
+      "ids": ["goal_directed_attention_v1", "biased_competition_v1"]
+    },
+    "reasoning": {
+      "file": "research/primitives/reasoning.json",
+      "count": 2,
+      "ids": ["dual_process_theory_v1", "structure_mapping_v1"]
+    },
+    "emotion_valence": {
+      "file": "research/primitives/emotion_valence.json",
+      "count": 2,
+      "ids": ["reward_prediction_error_v1", "temporal_difference_learning_v1"]
+    }
+  },
+  "architecture": "Predictive Active Workspace (PAW)",
+  "synthesis": "research/synthesis.md",
+  "sources": [
+    {"id": "free_energy_principle_v1", "author": "Friston", "year": 2010},
+    {"id": "active_inference_v1", "author": "Friston et al.", "year": 2017},
+    {"id": "predictive_coding_visual_v1", "author": "Rao & Ballard", "year": 1999},
+    {"id": "baddeley_working_memory_v1", "author": "Baddeley", "year": 2003},
+    {"id": "global_workspace_theory_v1", "author": "Baars", "year": 1988},
+    {"id": "dehaene_neuronal_workspace_v1", "author": "Dehaene et al.", "year": 1998},
+    {"id": "hebbian_learning_v1", "author": "Hebb", "year": 1949},
+    {"id": "complementary_learning_systems_v1", "author": "McClelland et al.", "year": 1995},
+    {"id": "hippocampal_replay_v1", "author": "Wilson & McNaughton", "year": 1994},
+    {"id": "goal_directed_attention_v1", "author": "Corbetta & Shulman", "year": 2002},
+    {"id": "biased_competition_v1", "author": "Desimone & Duncan", "year": 1995},
+    {"id": "dual_process_theory_v1", "author": "Kahneman", "year": 2011},
+    {"id": "structure_mapping_v1", "author": "Gentner", "year": 1983},
+    {"id": "reward_prediction_error_v1", "author": "Schultz et al.", "year": 1997},
+    {"id": "temporal_difference_learning_v1", "author": "Sutton & Barto", "year": 2018}
+  ]
+}

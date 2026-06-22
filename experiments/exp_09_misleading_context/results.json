@@ -1,0 +1,24 @@
+{
+  "experiment": "exp_09_misleading_context",
+  "description": "Recent history dominated by decoy concept after training on fire",
+  "baseline": {
+    "warmup_label": "fire",
+    "inferred": "fire",
+    "selected": "fire",
+    "early_recovery_error": 27.111390576320513
+  },
+  "misled": {
+    "warmup_label": "water",
+    "inferred": "water",
+    "selected": "water",
+    "early_recovery_error": 5528.745509069896
+  },
+  "checks": {
+    "wrong_inference": true,
+    "wrong_selection": true,
+    "worse_than_baseline": true,
+    "baseline_control_ok": true,
+    "failure_mode_observed": true
+  },
+  "pass": true
+}

@@ -1,0 +1,35 @@
+[
+  {
+    "target": "fire",
+    "selected_associate": "fire",
+    "hypothesis_label": "explain:fire",
+    "correct_concept": true,
+    "early_recovery_full": 19.352974087534346,
+    "early_recovery_ablated": 82.53688028862602,
+    "improvement_percent": 76.55233149125787,
+    "beats_ablation": true,
+    "pass": true
+  },
+  {
+    "target": "water",
+    "selected_associate": "water",
+    "hypothesis_label": "explain:water",
+    "correct_concept": true,
+    "early_recovery_full": 140.13693338703564,
+    "early_recovery_ablated": 5673.502163335398,
+    "improvement_percent": 97.52997479594421,
+    "beats_ablation": true,
+    "pass": true
+  },
+  {
+    "target": "smoke",
+    "selected_associate": "smoke",
+    "hypothesis_label": "explain:smoke",
+    "correct_concept": true,
+    "early_recovery_full": 0.2216655561266742,
+    "early_recovery_ablated": 20029.350965056707,
+    "improvement_percent": 99.99889329636036,
+    "beats_ablation": true,
+    "pass": true
+  }
+]

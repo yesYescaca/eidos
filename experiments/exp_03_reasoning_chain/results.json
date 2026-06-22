@@ -1,0 +1,8 @@
+{
+  "experiment": "exp_03_reasoning_chain",
+  "surprise_error": 1586.9273954889845,
+  "reasoning_triggered": true,
+  "trace_episodes": 1,
+  "selected_hypothesis": "explain:fire",
+  "pass": true
+}

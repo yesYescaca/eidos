@@ -1,0 +1,68 @@
+{
+  "concepts": [
+    "cat",
+    "dog",
+    "tree",
+    "car",
+    "sky",
+    "fire",
+    "water",
+    "stone",
+    "leaf",
+    "bird"
+  ],
+  "edges": [
+    {
+      "source": "cat",
+      "target": "dog",
+      "weight": 7.825506237859989
+    },
+    {
+      "source": "car",
+      "target": "tree",
+      "weight": 0.434767172594847
+    },
+    {
+      "source": "car",
+      "target": "sky",
+      "weight": 0.1332599162736423
+    },
+    {
+      "source": "car",
+      "target": "leaf",
+      "weight": 0.14152154694545332
+    },
+    {
+      "source": "car",
+      "target": "bird",
+      "weight": 0.14294744773662615
+    },
+    {
+      "source": "car",
+      "target": "stone",
+      "weight": 0.31493991269777427
+    },
+    {
+      "source": "tree",
+      "target": "bird",
+      "weight": 0.622697880182354
+    },
+    {
+      "source": "tree",
+      "target": "sky",
+      "weight": 0.18551379376366556
+    },
+    {
+      "source": "sky",
+      "target": "stone",
+      "weight": 0.3512339397656733
+    }
+  ],
+  "cat_associates": [
+    {
+      "concept": "dog",
+      "weight": 7.825506237859989
+    }
+  ],
+  "fire_associates": []
+}
