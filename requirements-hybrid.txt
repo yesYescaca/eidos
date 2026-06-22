@@ -1,0 +1,4 @@
+# Optional dependencies for hybrid LLM demo (CPU)
+# pip install -r requirements-hybrid.txt
+torch>=2.0.0
+transformers>=4.30.0

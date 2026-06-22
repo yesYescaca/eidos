@@ -214,8 +214,16 @@ EIDOS Experiment 06 continues as an active research prototype. Full writeup: `LA
 
 ---
 
+## v5.1 Hybrid Spike (LLM + EIDOS)
+
+1. **`HybridEidosAgent`** — LLM draft + EIDOS gate (`commit` / `defer` / `probe`)
+2. **Exp 19** — measurable gate vs blind LLM on ambiguous input
+3. **v6 path** — unified gate policy (`docs/HYBRID_SPIKE_PLAN.md`)
+
+---
+
 ## Future: LLM Enhancement (Research Direction)
 
-EIDOS is orthogonal to LLMs: predictive memory, deliberation under surprise, and meta-cognitive deferral complement language fluency. A hybrid "System 2 sidecar" (surprise monitor + episodic/belief memory + deferral gate) is a plausible Kisamapa follow-on — see `LAB_REPORT.md` §5.3.
+EIDOS is orthogonal to LLMs: predictive memory, deliberation under surprise, and meta-cognitive deferral complement language fluency. The hybrid spike (v5.1) demonstrates this — see `demos/hybrid_qa/`.
 
-*Synthesis updated for v5.0.*
+*Synthesis updated for v5.1 hybrid spike.*

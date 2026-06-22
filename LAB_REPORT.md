@@ -251,6 +251,9 @@ State serialisation version: **5.0**
 | 16 | Active inference ablation | Success | v4.0 |
 | 17 | Text goal-directed probe | Success | v5.0 |
 | 18 | Text session memory | Success | v5.0 |
+| 19 | Hybrid LLM gate | Success | hybrid spike |
+
+*Exp 01–18: core PAW lab. Exp 19: optional LLM + EIDOS gate demonstration.*
 
 ---
 

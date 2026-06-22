@@ -31,6 +31,15 @@ eidos/
 └── run_all_experiments.py
 ```
 
+## v5.1 / Hybrid Spike — LLM + EIDOS
+
+Optional layer (not required for core experiments):
+
+- **`HybridEidosAgent`** — LLM draft → EIDOS monitor → gate (`commit` / `defer` / `clarify` / `probe`)
+- **`MockLanguageModel`** — CI-safe; **`GPT2LanguageModel`** — CPU demo
+- **Exp 19** — gate blocks blind LLM commit on ambiguous input
+- **Demo:** `demos/hybrid_qa/run.py`
+
 ## v5.0 — Language Grounding Bridge
 
 Version 5.0 connects natural language to PAW **without** an LLM or GPU:
@@ -194,8 +203,20 @@ EIDOS is a tool for understanding cognition computationally — a Kisamapa Labs 
 
 ## Future Expansion
 
-- **Language grounding bridge** — sentence embeddings → PAW (v5 candidate)
-- **LLM enhancement layer** — EIDOS as System 2 sidecar (see LAB_REPORT §5.3)
+- **v6 unified gate** — single policy combining meta + active inference + text (see `docs/HYBRID_SPIKE_PLAN.md`)
+- **Richer embeddings** — optional sentence-transformers backend
+
+## Hybrid Spike (LLM + EIDOS)
+
+Optional demo — LLM generates, EIDOS gates (`demos/hybrid_qa/`):
+
+```bash
+py demos/hybrid_qa/run.py                    # mock LLM
+pip install -r requirements-hybrid.txt      # for GPT-2 CPU
+py demos/hybrid_qa/run.py --gpt2
+py experiments/exp_19_hybrid_spike/run.py   # measurable gate vs blind LLM
+```
+
 
 ---
 

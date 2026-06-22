@@ -74,6 +74,7 @@ Python · numpy · matplotlib · pytest · no PyTorch · no API keys
 | v3 | Meta-cognition + consequential deferral |
 | v4 | Active inference (probe / sleep / observe) |
 | v5 | Text grounding bridge (phrases → vectors) |
+| hybrid | LLM + EIDOS gate spike (optional) |
 
 ---
 

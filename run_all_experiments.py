@@ -29,6 +29,7 @@ EXPERIMENTS = [
     ("16", "exp_16_active_inference_ablation", "Active inference ablation (v4.0)"),
     ("17", "exp_17_text_ambiguous_deferral", "Text goal-directed probe (v5.0)"),
     ("18", "exp_18_text_session_memory", "Text session memory (v5.0)"),
+    ("19", "exp_19_hybrid_spike", "Hybrid LLM gate (spike)"),
 ]
 
 

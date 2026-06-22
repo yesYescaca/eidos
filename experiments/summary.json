@@ -142,5 +142,13 @@
     "passed": true,
     "exit_code": 0,
     "ok": true
+  },
+  {
+    "num": "19",
+    "name": "Hybrid LLM gate (spike)",
+    "folder": "exp_19_hybrid_spike",
+    "passed": true,
+    "exit_code": 0,
+    "ok": true
   }
 ]

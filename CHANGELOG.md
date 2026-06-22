@@ -1,5 +1,11 @@
 # Changelog
 
+## v5.1 — Hybrid Spike (LLM + EIDOS)
+- `HybridEidosAgent` — LLM proposes, EIDOS gates output
+- `MockLanguageModel` + optional `GPT2LanguageModel` (CPU)
+- Exp 19 + `demos/hybrid_qa/`
+- See `docs/HYBRID_SPIKE_PLAN.md` for v6 roadmap
+
 ## v5.0 — Language Grounding Bridge
 - `TextGroundingBridge` — deterministic hash embeddings (numpy only)
 - `EidosTextAgent` — `register_text_concept`, `step_text`, `text_decision`
