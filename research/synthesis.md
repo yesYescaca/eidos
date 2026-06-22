@@ -214,16 +214,16 @@ EIDOS Experiment 06 continues as an active research prototype. Full writeup: `LA
 
 ---
 
-## v6.1 — Ambiguous QA Benchmark + End-to-End
+## v6.2 Real-World Benchmark
 
-1. **`benchmark/ambiguous_qa/`** — labeled cases + `AmbiguousQABenchmark` metrics
-2. **Exp 22** — misleading context → sleep → full stack gates; baseline commits
-3. **Session API** — `respond(reset=False)` preserves episodic state across phases
+1. **`cases.json` v2.0** — 17 cases: lab + IT, support, security, finance, clinical, HR, legal, aviation, education, logistics
+2. **Per-category metrics** — `by_category`, `by_domain`, filter API
+3. **Exp 22 updated** — reports real-world subset safety alongside full benchmark
 
 ---
 
 ## Future: LLM Enhancement (Research Direction)
 
-EIDOS is orthogonal to LLMs: predictive memory, deliberation under surprise, and meta-cognitive deferral complement language fluency. The hybrid spike (v5.1), unified gate (v6.0), and benchmark (v6.1) demonstrate this — see `demos/hybrid_qa/`.
+EIDOS is orthogonal to LLMs: predictive memory, deliberation under surprise, and meta-cognitive deferral complement language fluency. The hybrid spike (v5.1), unified gate (v6.0), and benchmark (v6.1–v6.2) demonstrate this — see `demos/hybrid_qa/`.
 
-*Synthesis updated for v6.1 benchmark + end-to-end.*
+*Synthesis updated for v6.2 real-world benchmark.*

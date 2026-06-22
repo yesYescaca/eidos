@@ -2,7 +2,7 @@
 
 **Emergent Intelligence via Distributed Organisational Systems**
 
-**Status: Active (v6.1)** — See [LAB_REPORT.md](LAB_REPORT.md), [CHANGELOG.md](CHANGELOG.md), [docs/WHAT_EIDOS_IS.md](docs/WHAT_EIDOS_IS.md).
+**Status: Active (v6.2)** — See [LAB_REPORT.md](LAB_REPORT.md), [CHANGELOG.md](CHANGELOG.md), [docs/WHAT_EIDOS_IS.md](docs/WHAT_EIDOS_IS.md).
 
 EIDOS is a laboratory prototype reasoning agent built from cognitive science primitives — not from transformer architectures or token prediction. Instead of learning statistical text patterns, EIDOS implements mechanisms drawn from neuroscience: hierarchical predictive coding, global workspace broadcasting, Hebbian association learning, attentional gating, and intrinsic curiosity reward. It is a transparent, numpy-only system designed to explore how biological cognition might be computationally reconstructed.
 
@@ -26,7 +26,7 @@ eidos/
 ├── architecture/      # PAW components + gate + bridge + hybrid
 ├── agent/             # EidosAgent, EidosTextAgent
 ├── benchmark/         # Ambiguous QA benchmark (v6.1)
-├── tests/             # pytest suite (56+ tests)
+├── tests/             # pytest suite (63 tests)
 ├── docs/              # WHAT_EIDOS_IS.md, version plans
 ├── experiments/       # Twenty-two validation experiments (v1 → v6.1)
 └── run_all_experiments.py
@@ -36,8 +36,8 @@ eidos/
 
 Reusable labeled benchmark for hybrid gate evaluation:
 
-- **`benchmark/ambiguous_qa/cases.json`** — curated defer/commit scenarios
-- **`AmbiguousQABenchmark`** — decision match rate, false-commit rate, per-case audit
+- **`benchmark/ambiguous_qa/cases.json`** — 17 cases: lab (5) + real-world (12) domains
+- **`AmbiguousQABenchmark`** — decision match, false-commit, per-category/domain metrics
 - **Exp 22** — end-to-end: misleading context → sleep → meta + active inference + unified gate
 
 ```bash
@@ -165,7 +165,7 @@ Version 1.1 makes reasoning **consequential**:
 ```bash
 cd eidos
 pip install -r requirements.txt
-pytest tests/                      # 60 unit tests
+pytest tests/                      # 63 unit tests
 python run_all_experiments.py      # All 22 experiments + summary
 ```
 
@@ -254,5 +254,5 @@ py experiments/exp_19_hybrid_spike/run.py   # measurable gate vs blind LLM
 
 ---
 
-*KISAMAPA LABS — EXPERIMENT 06 — EIDOS v6.1*
+*KISAMAPA LABS — EXPERIMENT 06 — EIDOS v6.2*
 *Classification: Research Prototype — Active*

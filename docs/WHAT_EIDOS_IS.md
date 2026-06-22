@@ -51,7 +51,7 @@ Data flow: **input → predict → error → (reason / remember / doubt / act) �
 | LLM drafts get gated | Hybrid spike blocks blind commit (Exp 19) |
 | Unified gate policy | Draft↔goal alignment catches wrong LLM output (Exp 20) |
 | Semantic embeddings | Optional SBERT improves phrase separation (Exp 21) |
-| Ambiguous QA benchmark | Labeled defer/commit cases across domains (v6.1) |
+| Ambiguous QA benchmark | Labeled defer/commit cases — lab + 10 real-world domains (v6.2) |
 | Full-stack end-to-end | Meta + sleep + gate beats blind baseline (Exp 22) |
 
 ---
@@ -82,6 +82,7 @@ Python · numpy · matplotlib · pytest · no PyTorch · no API keys
 | v5.1 | Hybrid LLM + EIDOS gate spike |
 | v6 | Unified `GatePolicy` + optional SBERT embeddings |
 | v6.1 | Ambiguous QA benchmark + end-to-end Exp 22 |
+| v6.2 | Real-world benchmark expansion (12 professional domains) |
 
 ---
 

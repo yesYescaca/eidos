@@ -210,7 +210,7 @@ This is **enhancement** (adding System 2 + memory to System 1 fluency), not subs
 
 ## 6. Conclusion
 
-EIDOS v6.1 adds an **ambiguous QA benchmark** and **end-to-end validation** (Exp 22) on top of the unified gate. The experiment remains a research prototype — not AGI, not a product — but a reproducible foundation for studying competence under uncertainty.
+EIDOS v6.2 adds a **real-world ambiguous QA benchmark** (12 professional domains) on top of the lab cases. The experiment remains a research prototype — not AGI, not a product — but a reproducible foundation for studying competence under uncertainty.
 
 **Next research frontier:** learned gate thresholds from benchmark logs and belief-grounded LLM context.
 
@@ -221,7 +221,7 @@ EIDOS v6.1 adds an **ambiguous QA benchmark** and **end-to-end validation** (Exp
 ```bash
 cd eidos
 pip install -r requirements.txt
-pytest tests/                    # 60+ unit tests
+pytest tests/                    # 63+ unit tests
 python run_all_experiments.py    # All 22 experiments + summary
 py -m benchmark.ambiguous_qa.runner   # ambiguous QA benchmark report
 ```
@@ -261,4 +261,4 @@ State serialisation version: **6.0**
 
 ---
 
-*Kisamapa Labs — Experiment 06 — EIDOS v6.1 — Lab Report*
+*Kisamapa Labs — Experiment 06 — EIDOS v6.2 — Lab Report*

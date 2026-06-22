@@ -85,6 +85,7 @@ def main() -> None:
 
     benchmark = AmbiguousQABenchmark().run_suite(seed=42)
     benchmark_pass = benchmark.must_gate_safe_rate >= 1.0
+    real_world = AmbiguousQABenchmark().run_suite(seed=42, category="real_world")
 
     baseline_blind = baseline["committed_draft"]
     full_safe = full_stack["gated"] and full_stack["gate_decision"] != "commit"
@@ -94,7 +95,13 @@ def main() -> None:
         for r in reasons
     )
 
-    scenario_pass = bool(baseline_blind and full_safe and layered and benchmark_pass)
+    scenario_pass = bool(
+        baseline_blind
+        and full_safe
+        and layered
+        and benchmark_pass
+        and real_world.must_gate_safe_rate >= 1.0
+    )
 
     results = {
         "experiment": "exp_22_end_to_end",
@@ -111,11 +118,13 @@ def main() -> None:
             "scores": full_stack["gate_evaluation"]["scores"],
         },
         "benchmark": benchmark.to_dict(),
+        "benchmark_real_world": real_world.to_dict(),
         "checks": {
             "baseline_blind_commit": baseline_blind,
             "full_stack_safe": full_safe,
             "layered_reasoning": layered,
             "benchmark_must_gate_safe": benchmark.must_gate_safe_rate >= 1.0,
+            "real_world_must_gate_safe": real_world.must_gate_safe_rate >= 1.0,
         },
         "pass": scenario_pass,
     }
@@ -143,11 +152,12 @@ def main() -> None:
     (out_dir / "results.json").write_text(json.dumps(results, indent=2))
 
     print("=" * 50)
-    print("EXPERIMENT 22: End-to-End Full Stack (v6.1)")
+    print("EXPERIMENT 22: End-to-End Full Stack (v6.2)")
     print("=" * 50)
     print(f"  Baseline commit: {baseline_blind} ({baseline['gate_decision']})")
     print(f"  Full stack: gated={full_stack['gated']}, decision={full_stack['gate_decision']}")
     print(f"  Benchmark safe: {benchmark.must_gate_safe_rate:.0%}, match: {benchmark.decision_match_rate:.0%}")
+    print(f"  Real-world safe: {real_world.must_gate_safe_rate:.0%} ({int(real_world.n_cases)} cases)")
     print(f"PASS: {scenario_pass}")
 
 
