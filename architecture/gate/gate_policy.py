@@ -125,9 +125,11 @@ class GatePolicy:
         reasons: list[str] = [f"cognitive:{cognitive}"]
 
         draft_goal_align = 1.0
+        misaligned = False
         if grounding and draft_text and goal_text:
             draft_goal_align = grounding.similarity(draft_text, goal_text)
             scores["draft_goal_alignment"] = draft_goal_align
+            misaligned = draft_goal_align < self.min_draft_goal_align
 
         concept_gap, top_concept_sim = self._concept_ambiguity(
             user_text or "", text_concepts or {}, grounding
@@ -138,10 +140,7 @@ class GatePolicy:
         decision: GateDecision = cognitive
 
         if (
-            grounding
-            and draft_text
-            and goal_text
-            and draft_goal_align < self.min_draft_goal_align
+            misaligned
             and decision in ("observe", "commit")
         ):
             decision = "clarify"
@@ -158,10 +157,16 @@ class GatePolicy:
             decision = "clarify"
             reasons.append(f"concept_ambiguity:gap={concept_gap:.3f}")
 
-        if decision == "observe" and draft_text and goal_text and grounding:
-            if draft_goal_align >= self.min_draft_goal_align:
-                decision = "commit"
-                reasons.append("observe_promoted_to_commit:aligned_draft")
+        if (
+            not misaligned
+            and grounding
+            and draft_text
+            and goal_text
+            and draft_goal_align >= self.min_draft_goal_align
+            and decision in ("observe", "clarify")
+        ):
+            decision = "commit"
+            reasons.append("aligned_draft_promoted_to_commit")
 
         return GateEvaluation(
             decision=decision,

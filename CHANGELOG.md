@@ -1,5 +1,16 @@
 # Changelog
 
+## v7.0 — EIDOS-Eval + Metacognitive Injection
+- **`eval/eidos_eval/`** — graded questions, LLM-alone vs gate vs meta comparison harness
+- **`OpenAICompatibleLLM`** — optional API backend (stdlib urllib, `OPENAI_API_KEY`)
+- **`RoundRobinMockLLM`** — CI-safe revision simulation
+- **Metacognitive injection** — `enable_meta_injection` revision loop in `HybridEidosAgent`
+- **`create_hybrid_grounding()`** — SBERT default for hybrid path, hash fallback
+- **`GatePolicy`** — promote aligned drafts to commit after concept-ambiguity clarify
+- **`docs/POSITIONING.md`** — EIDOS Core vs Sidecar narrative
+- **Exp 23** — EIDOS-Eval proves gate reduces false commits vs LLM-alone
+- State version **7.0**
+
 ## v6.2 — Real-World Benchmark Expansion
 - **`cases.json` v2.0** — 12 real-world cases across IT, support, security, finance, clinical, HR, legal, aviation, education, logistics
 - **Per-category/domain metrics** in `AmbiguousQABenchmark` (`by_category`, `by_domain`, filters)

@@ -34,7 +34,7 @@ Data flow: **input → predict → error → (reason / remember / doubt / act) �
 
 ---
 
-## What it demonstrates (22 experiments)
+## What it demonstrates (23 experiments)
 
 | Claim | Evidence |
 |-------|----------|
@@ -53,6 +53,7 @@ Data flow: **input → predict → error → (reason / remember / doubt / act) �
 | Semantic embeddings | Optional SBERT improves phrase separation (Exp 21) |
 | Ambiguous QA benchmark | Labeled defer/commit cases — lab + 10 real-world domains (v6.2) |
 | Full-stack end-to-end | Meta + sleep + gate beats blind baseline (Exp 22) |
+| EIDOS-Eval (v7) | LLM-alone vs gate vs meta on graded questions (Exp 23) |
 
 ---
 
@@ -82,7 +83,8 @@ Python · numpy · matplotlib · pytest · optional sentence-transformers / GPT-
 | v5.1 | Hybrid LLM + EIDOS gate spike |
 | v6 | Unified `GatePolicy` + optional SBERT embeddings |
 | v6.1 | Ambiguous QA benchmark + end-to-end Exp 22 |
-| v6.2 | Real-world benchmark expansion (12 professional domains) |
+| v6.2 | Real-world benchmark expansion (10 professional domains) |
+| v7.0 | EIDOS-Eval + metacognitive injection + API LLM backend |
 
 ---
 
@@ -92,4 +94,4 @@ Researchers, students, and builders exploring **how minds might work computation
 
 **Repository:** [github.com/yesYescaca/eidos](https://github.com/yesYescaca/eidos)
 
-*Kisamapa Labs — Experiment 06 — EIDOS v6.2*
+*Kisamapa Labs — Experiment 06 — EIDOS v7.0*

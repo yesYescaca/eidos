@@ -1,0 +1,2 @@
+# Optional API LLM eval — stdlib urllib, no extra packages
+# Set OPENAI_API_KEY and optionally OPENAI_BASE_URL, EIDOS_LLM_MODEL

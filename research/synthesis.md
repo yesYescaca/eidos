@@ -216,16 +216,16 @@ EIDOS Experiment 06 continues as an active research prototype. Full writeup: `LA
 
 ---
 
-## v6.2 Real-World Benchmark
+## v7.0 EIDOS-Eval + Meta-Injection
 
-1. **`cases.json` v2.0** — 17 cases: lab + IT, support, security, finance, clinical, HR, legal, aviation, education, logistics
-2. **Per-category metrics** — `by_category`, `by_domain`, filter API
-3. **Exp 22 updated** — reports real-world subset safety alongside full benchmark
+1. **`eval/eidos_eval/`** — LLM-alone vs gate vs meta on graded questions
+2. **Metacognitive injection** — monitor signal → LLM revision loop
+3. **Exp 23** — false-commit rate drops vs LLM-alone
 
 ---
 
 ## Future: LLM Enhancement (Research Direction)
 
-EIDOS is orthogonal to LLMs: predictive memory, deliberation under surprise, and meta-cognitive deferral complement language fluency. The hybrid spike (v5.1), unified gate (v6.0), and benchmark (v6.1–v6.2) demonstrate this — see `demos/hybrid_qa/`.
+EIDOS Core (v1–v4) and Sidecar (v5–v7) are documented in `docs/POSITIONING.md`.
 
-*Synthesis updated for v6.2 real-world benchmark.*
+*Synthesis updated for v7.0 EIDOS-Eval.*

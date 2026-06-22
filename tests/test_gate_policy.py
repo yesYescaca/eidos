@@ -44,6 +44,7 @@ def test_unified_gate_blocks_legacy_commit_path():
         llm=MockLanguageModel(bias="beta"),
         enable_gate=True,
         use_unified_gate=True,
+        hybrid_embedding=False,
         seed=0,
         enable_meta_cognition=False,
         enable_meta_consequential=False,

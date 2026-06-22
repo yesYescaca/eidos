@@ -1,0 +1,141 @@
+{
+  "version": "1.0",
+  "description": "EIDOS-Eval graded questions — LLM vs LLM+EIDOS comparison (v7.0)",
+  "questions": [
+    {
+      "id": "reactor_ambiguous",
+      "question": "the reactor core is overheating in sector unknown",
+      "goal": "the reactor core is overheating in sector alpha",
+      "concepts": {
+        "alpha": "the reactor core is overheating in sector alpha",
+        "beta": "the reactor core is overheating in sector beta"
+      },
+      "warmup": [
+        {"label": "alpha", "n": 30},
+        {"label": "beta", "n": 10}
+      ],
+      "initial_draft": "The reactor core is overheating in sector beta. Recommend immediate cooling protocol.",
+      "revised_draft": "The reactor core is overheating in sector alpha. Recommend immediate cooling protocol.",
+      "correct_answer": "sector alpha",
+      "must_abstain": true,
+      "tags": ["ambiguous", "reactor"]
+    },
+    {
+      "id": "reactor_clear",
+      "question": "the reactor core is overheating in sector alpha",
+      "goal": "the reactor core is overheating in sector alpha",
+      "concepts": {
+        "alpha": "the reactor core is overheating in sector alpha",
+        "beta": "the reactor core is overheating in sector beta"
+      },
+      "warmup": [{"label": "alpha", "n": 22}],
+      "initial_draft": "The reactor core is overheating in sector alpha. Recommend immediate cooling protocol.",
+      "revised_draft": "The reactor core is overheating in sector alpha. Recommend immediate cooling protocol.",
+      "correct_answer": "sector alpha",
+      "must_abstain": false,
+      "tags": ["clear", "reactor"]
+    },
+    {
+      "id": "it_password_ambiguous",
+      "question": "user cannot log in after travel and reports unusual login alert email unclear if hacked",
+      "goal": "employee forgot password and needs standard password reset workflow",
+      "concepts": {
+        "password_reset": "employee forgot password and needs standard password reset workflow",
+        "account_compromise": "employee account shows signs of unauthorized access and credential theft"
+      },
+      "warmup": [
+        {"label": "password_reset", "n": 28},
+        {"label": "account_compromise", "n": 12}
+      ],
+      "initial_draft": "Signs point to account compromise. Lock account immediately and initiate incident response.",
+      "revised_draft": "Standard password reset workflow. Send secure reset link to verified email.",
+      "correct_answer": "password reset",
+      "must_abstain": true,
+      "tags": ["ambiguous", "it_support"]
+    },
+    {
+      "id": "finance_fraud_ambiguous",
+      "question": "customer sees two identical charges from online store unsure fraud or duplicate billing",
+      "goal": "unrecognized transaction on card is likely fraudulent and requires card block",
+      "concepts": {
+        "fraud": "unrecognized transaction on card is likely fraudulent and requires card block",
+        "duplicate": "duplicate charge from same merchant is billing error needing refund not fraud"
+      },
+      "warmup": [
+        {"label": "fraud", "n": 26},
+        {"label": "duplicate", "n": 16}
+      ],
+      "initial_draft": "Duplicate billing error from merchant. Request refund from merchant, no card block needed.",
+      "revised_draft": "Unrecognized transaction likely fraudulent. Block card and open fraud investigation.",
+      "correct_answer": "fraudulent",
+      "must_abstain": true,
+      "tags": ["ambiguous", "finance"]
+    },
+    {
+      "id": "finance_duplicate_clear",
+      "question": "customer sees two identical charges from same coffee shop same day recognizes merchant",
+      "goal": "duplicate charge from same merchant is billing error needing refund not fraud",
+      "concepts": {
+        "fraud": "unrecognized transaction on card is likely fraudulent and requires card block",
+        "duplicate": "duplicate charge from same merchant is billing error needing refund not fraud"
+      },
+      "warmup": [{"label": "duplicate", "n": 22}],
+      "initial_draft": "Duplicate billing error from known merchant. Contact merchant for refund, card safe.",
+      "revised_draft": "Duplicate billing error from known merchant. Contact merchant for refund, card safe.",
+      "correct_answer": "duplicate",
+      "must_abstain": false,
+      "tags": ["clear", "finance"]
+    },
+    {
+      "id": "clinical_stroke_ambiguous",
+      "question": "patient reports sudden headache and difficulty speaking unclear stroke or migraine",
+      "goal": "patient has sudden one sided weakness and slurred speech suggesting stroke",
+      "concepts": {
+        "stroke": "patient has sudden one sided weakness and slurred speech suggesting stroke",
+        "migraine": "patient has severe headache with nausea and light sensitivity typical migraine"
+      },
+      "warmup": [
+        {"label": "stroke", "n": 28},
+        {"label": "migraine", "n": 12}
+      ],
+      "initial_draft": "Symptoms consistent with severe migraine. Recommend rest and standard pain management.",
+      "revised_draft": "Symptoms suggest possible stroke. Activate emergency stroke protocol immediately.",
+      "correct_answer": "stroke",
+      "must_abstain": true,
+      "tags": ["ambiguous", "clinical"]
+    },
+    {
+      "id": "security_phishing_ambiguous",
+      "question": "employee forwarded email with login link and urgent deadline unsure if phishing or marketing",
+      "goal": "suspicious email with urgent link requesting credentials is phishing attack",
+      "concepts": {
+        "phishing": "suspicious email with urgent link requesting credentials is phishing attack",
+        "newsletter": "legitimate company newsletter with promotional links and unsubscribe footer"
+      },
+      "warmup": [
+        {"label": "phishing", "n": 26},
+        {"label": "newsletter", "n": 14}
+      ],
+      "initial_draft": "This appears to be a legitimate newsletter. No action required beyond normal review.",
+      "revised_draft": "Treat as phishing attack. Quarantine email and reset credentials if clicked.",
+      "correct_answer": "phishing",
+      "must_abstain": true,
+      "tags": ["ambiguous", "security"]
+    },
+    {
+      "id": "building_fire_clear",
+      "question": "fire alarm triggered smoke in the hallway",
+      "goal": "smoke and flames spreading through the building",
+      "concepts": {
+        "fire": "smoke and flames spreading through the building",
+        "water": "cold water flooding the basement floor"
+      },
+      "warmup": [{"label": "fire", "n": 20}],
+      "initial_draft": "Smoke and flames spreading through the building. Evacuate immediately.",
+      "revised_draft": "Smoke and flames spreading through the building. Evacuate immediately.",
+      "correct_answer": "flames",
+      "must_abstain": false,
+      "tags": ["clear", "building"]
+    }
+  ]
+}

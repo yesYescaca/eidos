@@ -30,6 +30,7 @@ def run_scenario(enable_gate: bool) -> dict:
         llm=MockLanguageModel(bias="beta"),
         enable_gate=enable_gate,
         seed=42,
+        hybrid_embedding=False,
         enable_meta_cognition=True,
         enable_meta_consequential=True,
         enable_active_inference=True,

@@ -30,6 +30,7 @@ def run_scenario(use_unified_gate: bool) -> dict:
         enable_gate=True,
         use_unified_gate=use_unified_gate,
         seed=7,
+        hybrid_embedding=False,
         enable_meta_cognition=False,
         enable_meta_consequential=False,
         enable_active_inference=False,

@@ -18,6 +18,7 @@ def test_hybrid_gates_wrong_llm_draft():
         llm=MockLanguageModel(bias="beta"),
         enable_gate=True,
         seed=0,
+        hybrid_embedding=False,
         enable_meta_cognition=True,
         enable_meta_consequential=True,
         enable_active_inference=True,
@@ -39,6 +40,7 @@ def test_hybrid_no_gate_commits_draft():
         llm=MockLanguageModel(),
         enable_gate=False,
         seed=1,
+        hybrid_embedding=False,
     )
     hybrid.register_domain({"fire": "flames in the kitchen"})
     result = hybrid.respond("what is happening", goal_text="flames in the kitchen")

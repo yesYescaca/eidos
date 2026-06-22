@@ -46,6 +46,90 @@ class CaseMockLLM:
         return self.draft
 
 
+class RoundRobinMockLLM:
+    """
+    Returns drafts in sequence — simulates LLM revising after meta-injection.
+
+    First call: wrong draft; subsequent calls: revised drafts from list.
+    """
+
+    def __init__(self, drafts: list[str]) -> None:
+        if not drafts:
+            raise ValueError("RoundRobinMockLLM requires at least one draft")
+        self._drafts = list(drafts)
+        self._index = 0
+
+    def generate(self, prompt: str, max_new_tokens: int = 48) -> str:
+        draft = self._drafts[min(self._index, len(self._drafts) - 1)]
+        self._index += 1
+        return draft
+
+
+class OpenAICompatibleLLM:
+    """
+    OpenAI-compatible chat API (optional — requires OPENAI_API_KEY).
+
+    Also works with local servers (Ollama, vLLM) via OPENAI_BASE_URL.
+    """
+
+    def __init__(
+        self,
+        model: str | None = None,
+        api_key: str | None = None,
+        base_url: str | None = None,
+        max_tokens: int = 256,
+        temperature: float = 0.2,
+    ) -> None:
+        import os
+
+        self.model = model or os.environ.get("EIDOS_LLM_MODEL", "gpt-4o-mini")
+        self.api_key = api_key or os.environ.get("OPENAI_API_KEY", "")
+        self.base_url = base_url or os.environ.get(
+            "OPENAI_BASE_URL", "https://api.openai.com/v1"
+        )
+        self.max_tokens = max_tokens
+        self.temperature = temperature
+        if not self.api_key:
+            raise ValueError(
+                "OpenAICompatibleLLM requires OPENAI_API_KEY or explicit api_key"
+            )
+
+    def generate(self, prompt: str, max_new_tokens: int | None = None) -> str:
+        import json
+        import urllib.error
+        import urllib.request
+
+        tokens = max_new_tokens if max_new_tokens is not None else self.max_tokens
+        payload = json.dumps(
+            {
+                "model": self.model,
+                "messages": [{"role": "user", "content": prompt}],
+                "max_tokens": tokens,
+                "temperature": self.temperature,
+            }
+        ).encode("utf-8")
+        req = urllib.request.Request(
+            f"{self.base_url.rstrip('/')}/chat/completions",
+            data=payload,
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {self.api_key}",
+            },
+            method="POST",
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=120) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+        except urllib.error.HTTPError as exc:
+            body = exc.read().decode("utf-8", errors="replace")
+            raise RuntimeError(f"LLM API error {exc.code}: {body}") from exc
+        choices = data.get("choices", [])
+        if not choices:
+            raise RuntimeError(f"LLM API returned no choices: {data}")
+        message = choices[0].get("message", {})
+        return str(message.get("content", "")).strip()
+
+
 class GPT2LanguageModel:
     """Small GPT-2 text generation on CPU (optional — requires transformers)."""
 

@@ -169,8 +169,16 @@
   },
   {
     "num": "22",
-    "name": "End-to-end full stack (v6.1)",
+    "name": "End-to-end full stack (v6.2)",
     "folder": "exp_22_end_to_end",
+    "passed": true,
+    "exit_code": 0,
+    "ok": true
+  },
+  {
+    "num": "23",
+    "name": "EIDOS-Eval LLM comparison (v7.0)",
+    "folder": "exp_23_eidos_eval",
     "passed": true,
     "exit_code": 0,
     "ok": true

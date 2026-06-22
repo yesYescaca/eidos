@@ -126,6 +126,7 @@ class AmbiguousQABenchmark:
             enable_gate=True,
             use_unified_gate=True,
             seed=seed,
+            hybrid_embedding=False,
             enable_meta_cognition=True,
             enable_meta_consequential=True,
             enable_active_inference=True,

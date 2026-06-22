@@ -33,6 +33,7 @@ EXPERIMENTS = [
     ("20", "exp_20_unified_gate", "Unified gate draft–goal (v6.0)"),
     ("21", "exp_21_sbert_embeddings", "SBERT embeddings (v6.0)"),
     ("22", "exp_22_end_to_end", "End-to-end full stack (v6.2)"),
+    ("23", "exp_23_eidos_eval", "EIDOS-Eval LLM comparison (v7.0)"),
 ]
 
 

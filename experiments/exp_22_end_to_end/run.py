@@ -59,6 +59,7 @@ def run_hybrid(
         enable_gate=enable_gate,
         use_unified_gate=True,
         seed=seed,
+        hybrid_embedding=False,
         enable_meta_cognition=enable_meta,
         enable_meta_consequential=enable_meta,
         enable_active_inference=enable_active,

@@ -230,9 +230,9 @@ See `demos/hybrid_qa/` and `benchmark/ambiguous_qa/`.
 
 ## 6. Conclusion
 
-EIDOS v6.2 adds a **real-world ambiguous QA benchmark** (12 professional domains) on top of the lab cases. The experiment remains a research prototype — not AGI, not a product — but a reproducible foundation for studying competence under uncertainty.
+EIDOS v7.0 adds **EIDOS-Eval** — external comparison of LLM-alone vs gated vs meta-injection Sidecar — on top of the real-world benchmark. State version **7.0**.
 
-**Next research frontier:** learned gate thresholds from benchmark logs and belief-grounded LLM context.
+**Next research frontier:** live API eval on TruthfulQA subset; belief-grounded LLM context.
 
 ---
 
@@ -241,12 +241,13 @@ EIDOS v6.2 adds a **real-world ambiguous QA benchmark** (12 professional domains
 ```bash
 cd eidos
 pip install -r requirements.txt
-pytest tests/                    # 63+ unit tests
-python run_all_experiments.py    # All 22 experiments + summary
-py -m benchmark.ambiguous_qa.runner   # ambiguous QA benchmark report
+pytest tests/                    # 70 unit tests
+python run_all_experiments.py    # All 23 experiments + summary
+py -m benchmark.ambiguous_qa.runner
+py -m eval.eidos_eval.runner
 ```
 
-State serialisation version: **6.0**
+State serialisation version: **7.0**
 
 ---
 
@@ -276,9 +277,10 @@ State serialisation version: **6.0**
 | 20 | Unified gate draft–goal | Success | v6.0 |
 | 21 | SBERT embeddings | Success | v6.0 |
 | 22 | End-to-end full stack | Success | v6.2 |
+| 23 | EIDOS-Eval LLM comparison | Success | v7.0 |
 
-*Exp 01–18: core PAW lab. Exp 19–22: hybrid gate + benchmark.*
+*Exp 01–18: core PAW lab. Exp 19–23: hybrid Sidecar + eval.*
 
 ---
 
-*Kisamapa Labs — Experiment 06 — EIDOS v6.2 — Lab Report*
+*Kisamapa Labs — Experiment 06 — EIDOS v7.0 — Lab Report*

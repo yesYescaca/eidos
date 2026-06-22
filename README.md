@@ -2,7 +2,7 @@
 
 **Emergent Intelligence via Distributed Organisational Systems**
 
-**Status: Active (v6.2)** — [Lab report](LAB_REPORT.md) · [Changelog](CHANGELOG.md) · [What EIDOS is](docs/WHAT_EIDOS_IS.md) · [Releases](https://github.com/yesYescaca/eidos/releases)
+**Status: Active (v7.0)** — [Lab report](LAB_REPORT.md) · [Changelog](CHANGELOG.md) · [Positioning](docs/POSITIONING.md) · [What EIDOS is](docs/WHAT_EIDOS_IS.md) · [Releases](https://github.com/yesYescaca/eidos/releases)
 
 EIDOS is a laboratory prototype reasoning agent built from cognitive science primitives — not from transformer architectures or token prediction. Instead of learning statistical text patterns, EIDOS implements mechanisms drawn from neuroscience: hierarchical predictive coding, global workspace broadcasting, Hebbian association learning, attentional gating, and intrinsic curiosity reward. It is a transparent, numpy-only system designed to explore how biological cognition might be computationally reconstructed.
 
@@ -10,10 +10,10 @@ EIDOS is a laboratory prototype reasoning agent built from cognitive science pri
 
 | | |
 |---|---|
-| **Experiments** | 22 controlled tests (v1 → v6.2) |
-| **Unit tests** | 63 (pytest) |
-| **Benchmark** | 17 ambiguous QA cases — lab + 10 real-world domains |
-| **Latest** | v6.2 — real-world benchmark expansion |
+| **Experiments** | 23 controlled tests (v1 → v7.0) |
+| **Unit tests** | 70 (pytest) |
+| **Benchmark** | 17 ambiguous QA cases + 8 graded EIDOS-Eval questions |
+| **Latest** | v7.0 — EIDOS-Eval + metacognitive injection |
 | **Hybrid** | LLM proposes → EIDOS gates (`HybridEidosAgent`) |
 
 ```bash
@@ -21,6 +21,21 @@ git clone https://github.com/yesYescaca/eidos.git && cd eidos
 pip install -r requirements.txt
 pytest tests/ && python run_all_experiments.py
 py -m benchmark.ambiguous_qa.runner
+py -m benchmark.ambiguous_qa.runner
+py -m eval.eidos_eval.runner
+```
+
+## v7.0 — EIDOS-Eval + Metacognitive Injection
+
+- **`eval/eidos_eval/`** — LLM-alone vs EIDOS gate vs meta-injection comparison
+- **`enable_meta_injection`** — feed cognitive monitor signal back into LLM revision
+- **`OpenAICompatibleLLM`** — optional API eval (`OPENAI_API_KEY`)
+- **Exp 23** — gate reduces false commits vs LLM-alone on graded questions
+
+See [docs/POSITIONING.md](docs/POSITIONING.md) for Core vs Sidecar.
+
+```bash
+py experiments/exp_23_eidos_eval/run.py
 ```
 
 ## Biological Frameworks
@@ -44,9 +59,10 @@ eidos/
 ├── agent/             # EidosAgent, EidosTextAgent
 ├── benchmark/         # Ambiguous QA benchmark (v6.1–v6.2)
 ├── demos/             # Hybrid QA demo (LLM + EIDOS gate)
-├── tests/             # pytest suite (63 tests)
-├── docs/              # WHAT_EIDOS_IS.md, version plans (V4–V6_2)
-├── experiments/       # Twenty-two validation experiments (v1 → v6.2)
+├── tests/             # pytest suite (70 tests)
+├── docs/              # WHAT_EIDOS_IS.md, POSITIONING.md, version plans
+├── eval/              # EIDOS-Eval harness (v7.0)
+├── experiments/       # Twenty-three validation experiments (v1 → v7.0)
 └── run_all_experiments.py
 ```
 
@@ -201,8 +217,8 @@ Version 1.1 makes reasoning **consequential**:
 ```bash
 cd eidos
 pip install -r requirements.txt
-pytest tests/                      # 63 unit tests
-python run_all_experiments.py      # All 22 experiments + summary
+pytest tests/                      # 70 unit tests
+python run_all_experiments.py      # All 23 experiments + summary
 ```
 
 ## Running Experiments (individual)
@@ -229,7 +245,8 @@ python experiments/exp_18_text_session_memory/run.py        # v5.0: text + sleep
 python experiments/exp_19_hybrid_spike/run.py                 # v5.1: hybrid LLM gate
 python experiments/exp_20_unified_gate/run.py                 # v6.0: unified gate
 python experiments/exp_21_sbert_embeddings/run.py             # v6.0: SBERT embeddings
-python experiments/exp_22_end_to_end/run.py                     # v6.2: full-stack E2E + benchmark
+python experiments/exp_22_end_to_end/run.py                     # v6.2: full-stack E2E
+python experiments/exp_23_eidos_eval/run.py                     # v7.0: EIDOS-Eval
 ```
 
 ## Running Tests
@@ -290,5 +307,5 @@ py experiments/exp_19_hybrid_spike/run.py   # measurable gate vs blind LLM
 
 ---
 
-*KISAMAPA LABS — EXPERIMENT 06 — EIDOS v6.2*
+*KISAMAPA LABS — EXPERIMENT 06 — EIDOS v7.0*
 *Classification: Research Prototype — Active*

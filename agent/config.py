@@ -71,5 +71,9 @@ GATE_MIN_DRAFT_GOAL_ALIGN = 0.82
 GATE_CONCEPT_AMBIGUITY_EPS = 0.08
 SBERT_MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
 
+# v7.0: hybrid sidecar defaults + metacognitive injection
+HYBRID_DEFAULT_EMBEDDING = "sbert"
+META_INJECTION_MAX_ROUNDS = 2
+
 # Deprecated alias kept for backward compatibility in tests/docs
 REASONING_THRESHOLD = REASONING_ABSOLUTE_FLOOR
