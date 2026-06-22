@@ -2,7 +2,7 @@
 
 **Emergent Intelligence via Distributed Organisational Systems**
 
-**Status: Active (v5.0)** — See [LAB_REPORT.md](LAB_REPORT.md), [CHANGELOG.md](CHANGELOG.md), [docs/WHAT_EIDOS_IS.md](docs/WHAT_EIDOS_IS.md).
+**Status: Active (v6.1)** — See [LAB_REPORT.md](LAB_REPORT.md), [CHANGELOG.md](CHANGELOG.md), [docs/WHAT_EIDOS_IS.md](docs/WHAT_EIDOS_IS.md).
 
 EIDOS is a laboratory prototype reasoning agent built from cognitive science primitives — not from transformer architectures or token prediction. Instead of learning statistical text patterns, EIDOS implements mechanisms drawn from neuroscience: hierarchical predictive coding, global workspace broadcasting, Hebbian association learning, attentional gating, and intrinsic curiosity reward. It is a transparent, numpy-only system designed to explore how biological cognition might be computationally reconstructed.
 
@@ -23,12 +23,40 @@ EIDOS is a laboratory prototype reasoning agent built from cognitive science pri
 eidos/
 ├── LAB_REPORT.md      # Full experiment writeup (Kisamapa Labs)
 ├── research/          # Cognitive primitives (JSON) + synthesis
-├── architecture/      # Component implementations
-├── agent/             # Main EidosAgent class
-├── tests/             # pytest suite
+├── architecture/      # PAW components + gate + bridge + hybrid
+├── agent/             # EidosAgent, EidosTextAgent
+├── benchmark/         # Ambiguous QA benchmark (v6.1)
+├── tests/             # pytest suite (56+ tests)
 ├── docs/              # WHAT_EIDOS_IS.md, version plans
-├── experiments/       # Twenty-one validation experiments (v1 → v6.0)
+├── experiments/       # Twenty-two validation experiments (v1 → v6.1)
 └── run_all_experiments.py
+```
+
+## v6.1 — Ambiguous QA Benchmark
+
+Reusable labeled benchmark for hybrid gate evaluation:
+
+- **`benchmark/ambiguous_qa/cases.json`** — curated defer/commit scenarios
+- **`AmbiguousQABenchmark`** — decision match rate, false-commit rate, per-case audit
+- **Exp 22** — end-to-end: misleading context → sleep → meta + active inference + unified gate
+
+```bash
+py -m benchmark.ambiguous_qa.runner          # run benchmark report
+py experiments/exp_22_end_to_end/run.py      # full-stack vs baseline
+```
+
+## v6.0 — Unified Gate
+
+Single `GatePolicy` fuses meta-cognition, active inference, and text alignment:
+
+- **`GatePolicy`** — draft↔goal alignment + concept ambiguity + cognitive merge
+- **`create_grounding("hash" | "sbert")`** — optional sentence-transformers backend
+- **Exp 20–21** — unified gate vs legacy merge; SBERT separation
+
+```bash
+py experiments/exp_20_unified_gate/run.py
+pip install -r requirements-embeddings.txt  # optional SBERT
+py experiments/exp_21_sbert_embeddings/run.py
 ```
 
 ## v5.1 / Hybrid Spike — LLM + EIDOS
@@ -137,8 +165,8 @@ Version 1.1 makes reasoning **consequential**:
 ```bash
 cd eidos
 pip install -r requirements.txt
-pytest tests/                      # 38 unit tests
-python run_all_experiments.py      # All 21 experiments + summary
+pytest tests/                      # 60 unit tests
+python run_all_experiments.py      # All 22 experiments + summary
 ```
 
 ## Running Experiments (individual)
@@ -165,6 +193,7 @@ python experiments/exp_18_text_session_memory/run.py        # v5.0: text + sleep
 python experiments/exp_19_hybrid_spike/run.py                 # v5.1: hybrid LLM gate
 python experiments/exp_20_unified_gate/run.py                 # v6.0: unified gate
 python experiments/exp_21_sbert_embeddings/run.py             # v6.0: SBERT embeddings
+python experiments/exp_22_end_to_end/run.py                     # v6.1: full-stack E2E
 ```
 
 ## Running Tests
@@ -208,18 +237,8 @@ EIDOS is a tool for understanding cognition computationally — a Kisamapa Labs 
 
 ## Future Expansion
 
-- **Richer grounding** — trainable or domain-specific embeddings beyond hash/SBERT
-- **Learned gate policy** — tune thresholds from experiment logs
-
-## v6.0 — Unified Gate
-
-Single `GatePolicy` fuses meta-cognition, active inference, and text alignment:
-
-```bash
-py experiments/exp_20_unified_gate/run.py   # v6 vs legacy v5.1 merge
-pip install -r requirements-embeddings.txt  # optional SBERT
-py experiments/exp_21_sbert_embeddings/run.py
-```
+- **Learned gate policy** — tune thresholds from benchmark logs
+- **Richer grounding** — domain-specific embeddings beyond hash/SBERT
 
 ## Hybrid Spike (LLM + EIDOS)
 
@@ -235,5 +254,5 @@ py experiments/exp_19_hybrid_spike/run.py   # measurable gate vs blind LLM
 
 ---
 
-*KISAMAPA LABS — EXPERIMENT 06 — EIDOS v6.0*
+*KISAMAPA LABS — EXPERIMENT 06 — EIDOS v6.1*
 *Classification: Research Prototype — Active*

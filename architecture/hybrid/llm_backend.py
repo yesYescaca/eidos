@@ -18,10 +18,13 @@ class MockLanguageModel:
     simulating a confidently wrong small model.
     """
 
-    def __init__(self, bias: str = "beta") -> None:
+    def __init__(self, bias: str = "beta", draft: str | None = None) -> None:
         self.bias = bias
+        self._draft_override = draft
 
     def generate(self, prompt: str, max_new_tokens: int = 48) -> str:
+        if self._draft_override is not None:
+            return self._draft_override
         if self.bias == "beta":
             return (
                 "The reactor core is overheating in sector beta. "
@@ -31,6 +34,16 @@ class MockLanguageModel:
             "The reactor core is overheating in sector alpha. "
             "Recommend immediate cooling protocol."
         )
+
+
+class CaseMockLLM:
+    """Alias used by benchmark — configured draft per case."""
+
+    def __init__(self, draft: str) -> None:
+        self.draft = draft
+
+    def generate(self, prompt: str, max_new_tokens: int = 48) -> str:
+        return self.draft
 
 
 class GPT2LanguageModel:

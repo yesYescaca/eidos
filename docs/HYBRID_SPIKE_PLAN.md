@@ -46,8 +46,8 @@ Final response
 
 ## Future
 
-1. **Learned gate thresholds** from experiment logs
-2. **Benchmark** — ambiguous QA set with defer/commit labels
+1. **Learned gate thresholds** from benchmark logs (`benchmark/ambiguous_qa/`)
+2. **Belief-grounded LLM context** — retrieve consolidated beliefs instead of raw chat
 
 ## Dependencies
 

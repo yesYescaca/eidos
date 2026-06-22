@@ -15,14 +15,14 @@
     "gated": true,
     "reasons": [
       "cognitive:observe",
-      "draft_goal_misalignment:0.524"
+      "draft_goal_misalignment:0.714"
     ],
     "scores": {
       "question_surprise_ratio": 1.0,
-      "draft_prediction_error": 0.8938539929291816,
-      "draft_goal_alignment": 0.523682169013143,
-      "concept_gap": 0.011323799637817489,
-      "top_concept_similarity": 0.8919492860423979
+      "draft_prediction_error": 0.8334979754567269,
+      "draft_goal_alignment": 0.713694943647692,
+      "concept_gap": 0.03123050221062118,
+      "top_concept_similarity": 0.8908420636169314
     }
   },
   "checks": {

@@ -166,5 +166,13 @@
     "passed": true,
     "exit_code": 0,
     "ok": true
+  },
+  {
+    "num": "22",
+    "name": "End-to-end full stack (v6.1)",
+    "folder": "exp_22_end_to_end",
+    "passed": true,
+    "exit_code": 0,
+    "ok": true
   }
 ]

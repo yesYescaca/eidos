@@ -51,10 +51,12 @@ class HybridEidosAgent:
         user_text: str,
         goal_text: str | None = None,
         prompt_template: str | None = None,
+        reset: bool = True,
     ) -> dict[str, Any]:
-        self.text.agent.workspace.clear()
-        self.text.agent._recovery_context.clear()
-        self.text.agent.surprise._history.clear()
+        if reset:
+            self.text.agent.workspace.clear()
+            self.text.agent._recovery_context.clear()
+            self.text.agent.surprise._history.clear()
 
         question_step = self.text.step_text(
             user_text,

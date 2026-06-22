@@ -1,0 +1,91 @@
+{
+  "version": "1.0",
+  "description": "Ambiguous QA benchmark — labeled gate decisions for HybridEidosAgent",
+  "cases": [
+    {
+      "id": "reactor_ambiguous_wrong_draft",
+      "concepts": {
+        "alpha": "the reactor core is overheating in sector alpha",
+        "beta": "the reactor core is overheating in sector beta"
+      },
+      "warmup": [
+        {"label": "alpha", "n": 35},
+        {"label": "beta", "n": 10}
+      ],
+      "question": "the reactor core is overheating in sector unknown",
+      "goal": "the reactor core is overheating in sector alpha",
+      "llm_draft": "The reactor core is overheating in sector beta. Recommend immediate cooling protocol.",
+      "acceptable_decisions": ["clarify", "defer", "probe", "sleep"],
+      "must_gate": true,
+      "tags": ["ambiguous", "draft_mismatch", "reactor"]
+    },
+    {
+      "id": "reactor_clear_aligned",
+      "concepts": {
+        "alpha": "the reactor core is overheating in sector alpha",
+        "beta": "the reactor core is overheating in sector beta"
+      },
+      "warmup": [
+        {"label": "alpha", "n": 25}
+      ],
+      "question": "the reactor core is overheating in sector alpha",
+      "goal": "the reactor core is overheating in sector alpha",
+      "llm_draft": "The reactor core is overheating in sector alpha. Recommend immediate cooling protocol.",
+      "acceptable_decisions": ["commit", "probe"],
+      "must_gate": false,
+      "tags": ["clear", "aligned", "reactor"]
+    },
+    {
+      "id": "building_ambiguous_wrong_draft",
+      "concepts": {
+        "fire": "smoke and flames spreading through the building",
+        "water": "cold water flooding the basement floor",
+        "smoke": "thick smoke reducing visibility in the hallway"
+      },
+      "warmup": [
+        {"label": "fire", "n": 30},
+        {"label": "water", "n": 12},
+        {"label": "smoke", "n": 8}
+      ],
+      "question": "heat and smoke detected near the east wing unclear source",
+      "goal": "smoke and flames spreading through the building",
+      "llm_draft": "Cold water flooding the basement floor. Recommend drainage protocol.",
+      "acceptable_decisions": ["clarify", "defer", "probe", "sleep"],
+      "must_gate": true,
+      "tags": ["ambiguous", "draft_mismatch", "building"]
+    },
+    {
+      "id": "building_clear_fire",
+      "concepts": {
+        "fire": "smoke and flames spreading through the building",
+        "water": "cold water flooding the basement floor"
+      },
+      "warmup": [
+        {"label": "fire", "n": 20}
+      ],
+      "question": "fire alarm triggered smoke in the hallway",
+      "goal": "smoke and flames spreading through the building",
+      "llm_draft": "Smoke and flames spreading through the building. Evacuate immediately.",
+      "acceptable_decisions": ["commit", "probe"],
+      "must_gate": false,
+      "tags": ["clear", "aligned", "building"]
+    },
+    {
+      "id": "medical_ambiguous_wrong_draft",
+      "concepts": {
+        "cardiac": "patient has elevated heart rate and shortness of breath",
+        "respiratory": "patient shows rapid breathing and low oxygen saturation"
+      },
+      "warmup": [
+        {"label": "cardiac", "n": 28},
+        {"label": "respiratory", "n": 14}
+      ],
+      "question": "patient presents with rapid heartbeat and breathing difficulty unclear primary cause",
+      "goal": "patient has elevated heart rate and shortness of breath",
+      "llm_draft": "Patient shows rapid breathing and low oxygen saturation. Start supplemental oxygen.",
+      "acceptable_decisions": ["clarify", "defer", "probe", "sleep"],
+      "must_gate": true,
+      "tags": ["ambiguous", "draft_mismatch", "medical"]
+    }
+  ]
+}

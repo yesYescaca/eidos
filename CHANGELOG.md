@@ -1,5 +1,11 @@
 # Changelog
 
+## v6.1 — Ambiguous QA Benchmark + End-to-End Exp 22
+- **`benchmark/ambiguous_qa/`** — labeled cases, `AmbiguousQABenchmark` runner, metrics
+- **Exp 22** — misleading context → sleep → full stack (meta + active + gate) vs baseline
+- **`HybridEidosAgent.respond(reset=...)`** — session-preserving respond for multi-phase flows
+- **`CaseMockLLM`** — per-case deterministic LLM drafts for benchmark
+
 ## v6.0 — Unified Gate + Semantic Embeddings
 - `GatePolicy` — fuses cognitive steps, draft↔goal alignment, concept ambiguity
 - `gate_response()` + `GateEvaluation` audit trail (`scores`, `reasons`)

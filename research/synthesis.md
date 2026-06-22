@@ -214,16 +214,16 @@ EIDOS Experiment 06 continues as an active research prototype. Full writeup: `LA
 
 ---
 
-## v6.0 Unified Gate + Embeddings
+## v6.1 — Ambiguous QA Benchmark + End-to-End
 
-1. **`GatePolicy`** — cognitive + draft↔goal alignment + concept ambiguity
-2. **`create_grounding("hash" | "sbert")`** — optional sentence-transformers backend
-3. **Exp 20–21** — unified gate vs legacy merge; SBERT separation
+1. **`benchmark/ambiguous_qa/`** — labeled cases + `AmbiguousQABenchmark` metrics
+2. **Exp 22** — misleading context → sleep → full stack gates; baseline commits
+3. **Session API** — `respond(reset=False)` preserves episodic state across phases
 
 ---
 
 ## Future: LLM Enhancement (Research Direction)
 
-EIDOS is orthogonal to LLMs: predictive memory, deliberation under surprise, and meta-cognitive deferral complement language fluency. The hybrid spike (v5.1) and unified gate (v6.0) demonstrate this — see `demos/hybrid_qa/`.
+EIDOS is orthogonal to LLMs: predictive memory, deliberation under surprise, and meta-cognitive deferral complement language fluency. The hybrid spike (v5.1), unified gate (v6.0), and benchmark (v6.1) demonstrate this — see `demos/hybrid_qa/`.
 
-*Synthesis updated for v6.0 unified gate.*
+*Synthesis updated for v6.1 benchmark + end-to-end.*
