@@ -38,6 +38,7 @@ def main() -> None:
         seed=42,
         modes=DEFAULT_LIVE_MODES,
     )
+    reports.pop("_embedding_backend", None)
 
     summary = EidosEvalHarness.summarize_comparison(reports)
     alone = reports[EvalMode.LLM_ALONE.value]

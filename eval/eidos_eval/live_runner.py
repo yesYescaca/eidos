@@ -7,6 +7,7 @@ import json
 import sys
 from pathlib import Path
 
+from architecture.bridge.embedding_factory import create_live_grounding, resolve_active_backend
 from architecture.hybrid.hybrid_agent import HybridEidosAgent
 from architecture.hybrid.llm_backend import LanguageModelBackend
 from architecture.hybrid.llm_factory import create_live_llm, live_llm_available
@@ -32,6 +33,7 @@ def run_live_comparison(
     llm: LanguageModelBackend | None = None,
     use_cache: bool = True,
     cache_path: Path | None = None,
+    embedding: str = "auto",
 ) -> dict:
     """Run EIDOS-Eval with a live LLM for all modes."""
     path = questions_path or LIVE_QUESTIONS_PATH
@@ -40,8 +42,16 @@ def run_live_comparison(
     if use_cache:
         backend = CachedLLM(backend, cache_path or DEFAULT_CACHE_PATH)
 
+    prefer_sbert = embedding != "hash"
+    if embedding == "sbert":
+        prefer_sbert = True
+    shared_grounding = create_live_grounding(prefer_sbert=prefer_sbert)
+    backend_label = resolve_active_backend(shared_grounding)
+
     def hybrid_factory(**kwargs: object) -> HybridEidosAgent:
         kwargs["llm"] = backend
+        kwargs["grounding"] = shared_grounding
+        kwargs["hybrid_embedding"] = False
         return HybridEidosAgent(**kwargs)
 
     selected = modes or DEFAULT_LIVE_MODES
@@ -51,6 +61,7 @@ def run_live_comparison(
         live_llm=backend,
         modes=selected,
     )
+    reports["_embedding_backend"] = backend_label  # type: ignore[assignment]
     return reports
 
 
@@ -86,6 +97,12 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Disable live response disk cache",
     )
+    parser.add_argument(
+        "--embedding",
+        choices=("auto", "hash", "sbert"),
+        default="auto",
+        help="Embedding backend for gate (auto=SBERT with hash fallback)",
+    )
     args = parser.parse_args(argv)
 
     if not live_llm_available(args.provider):
@@ -100,13 +117,16 @@ def main(argv: list[str] | None = None) -> int:
         seed=args.seed,
         modes=modes,
         use_cache=not args.no_cache,
+        embedding=args.embedding,
     )
+    emb = reports.pop("_embedding_backend", "unknown")
     summary = EidosEvalHarness.summarize_comparison(reports)
 
     print("=" * 55)
     print(f"EIDOS-EVAL LIVE ({args.provider}) — v7.2")
+    print(f"Embedding: {emb}")
     print("=" * 55)
-    payload: dict = {"reports": {}, "summary": summary.to_dict()}
+    payload: dict = {"embedding_backend": emb, "reports": {}, "summary": summary.to_dict()}
     for mode, report in reports.items():
         print(
             f"  [{mode}] task_acc={report.task_accuracy:.1%} "

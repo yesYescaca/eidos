@@ -21,7 +21,7 @@ class SentenceTransformerGrounding:
         seed: int = TEXT_GROUNDING_SEED,
     ) -> None:
         try:
-            from sentence_transformers import SentenceTransformer
+            from sentence_transformers import SentenceTransformer  # noqa: F401
         except ImportError as exc:
             raise ImportError(
                 "SentenceTransformerGrounding requires sentence-transformers. "
@@ -30,7 +30,7 @@ class SentenceTransformerGrounding:
 
         self.dim = dim
         self.model_name = model_name
-        self._model = SentenceTransformer(model_name)
+        self._model = self._load_model(model_name)
         get_dim = getattr(self._model, "get_embedding_dimension", None)
         if get_dim is None:
             get_dim = self._model.get_sentence_embedding_dimension
@@ -56,3 +56,13 @@ class SentenceTransformerGrounding:
         a = self.embed(text_a)
         b = self.embed(text_b)
         return float(np.dot(a, b))
+
+    @staticmethod
+    def _load_model(model_name: str):
+        """Load SBERT, preferring local cache when Hub is flaky."""
+        from sentence_transformers import SentenceTransformer
+
+        try:
+            return SentenceTransformer(model_name, local_files_only=True)
+        except Exception:
+            return SentenceTransformer(model_name)

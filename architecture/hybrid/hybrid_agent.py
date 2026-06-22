@@ -8,6 +8,8 @@ from agent.config import META_INJECTION_MAX_ROUNDS, TEXT_ANOMALY_LABEL
 from agent.text_agent import EidosTextAgent
 from architecture.bridge.embedding_factory import (
     create_hybrid_grounding,
+    create_live_grounding,
+    resolve_active_backend,
     resolve_hybrid_embedding_backend,
 )
 from architecture.gate.gate_policy import GateEvaluation, GatePolicy, gate_response

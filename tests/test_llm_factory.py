@@ -26,6 +26,21 @@ def test_create_live_llm_groq_with_key(monkeypatch):
     assert "groq.com" in llm.base_url
 
 
+def test_create_live_grounding_hash_fallback():
+    from architecture.bridge.embedding_factory import (
+        create_live_grounding,
+        get_hash_grounding,
+        reset_grounding_cache,
+        resolve_active_backend,
+    )
+
+    reset_grounding_cache()
+    g = create_live_grounding(prefer_sbert=False)
+    assert resolve_active_backend(g) == "hash"
+    assert g is get_hash_grounding()
+    reset_grounding_cache()
+
+
 def test_openai_compatible_llm_includes_user_agent():
     from architecture.hybrid.llm_backend import OpenAICompatibleLLM
 

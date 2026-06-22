@@ -37,6 +37,12 @@ Uses **SBERT** + calibrated gate (`GATE_LIVE_MIN_DRAFT_GOAL_ALIGN=0.72`). Report
 
 Modes: `llm_alone`, `eidos_gate`, `eidos_belief`, `eidos_meta`.
 
+If HuggingFace Hub fails (SBERT download), the runner **falls back to hash** automatically, or force hash:
+
+```bash
+py -m eval.eidos_eval.live_runner --provider groq --embedding hash
+```
+
 OpenAI still supported via `--provider openai` and `OPENAI_API_KEY`.
 
 ## Mock eval (CI-safe)
