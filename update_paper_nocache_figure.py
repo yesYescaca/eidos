@@ -59,7 +59,7 @@ def main() -> int:
     for mode, c_val, n_val in zip(MODES, cached, nocache, strict=True):
         label = LABELS[mode]
         row_pat = (
-            rf'(<tr><td class="td-mode">{re.escape(label)}</td><td>)\d+%(</td><td>)\d+%(</td><td>)[^<]*(</td></tr>)'
+            rf'(<tr><td class="td-mode">{re.escape(label)}</td><td>)[^<]*(</td><td>)[^<]*(</td><td>)[^<]*(</td></tr>)'
         )
 
         def _repl_row(m: re.Match[str], cv: int = c_val, nv: int = n_val) -> str:
