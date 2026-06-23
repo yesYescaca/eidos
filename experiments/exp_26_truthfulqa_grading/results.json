@@ -1,4 +1,5 @@
 {
+  "pass": true,
   "alone_ti": 0.0,
   "meta_ti": 0.4,
   "summary": {
@@ -13,6 +14,9 @@
     "truthful_informative_delta_belief": 0.0,
     "truthful_informative_delta_cot": 0.0,
     "belief_beats_cot_ti": false,
-    "misconception_reduction_belief": 0.4
+    "misconception_reduction_belief": 0.4,
+    "misconception_commit_ti_belief": 0.0,
+    "misconception_commit_ti_cot": 0.0,
+    "belief_beats_cot_misconception_commits": false
   }
 }

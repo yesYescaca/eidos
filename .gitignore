@@ -9,3 +9,4 @@ venv/
 Thumbs.db
 eval/eidos_eval/live_cache.json
 eval/eidos_eval/live_truthfulqa_report.json
+eval/eidos_eval/live_mixed_report.json

@@ -2,7 +2,7 @@
 
 **Emergent Intelligence via Distributed Organisational Systems**
 
-**Status: Active (v7.4)** — [Lab report](LAB_REPORT.md) · [Changelog](CHANGELOG.md) · [Positioning](docs/POSITIONING.md) · [What EIDOS is](docs/WHAT_EIDOS_IS.md) · [Live pilot](docs/LIVE_EVAL_PILOT.md) · [TruthfulQA eval](docs/TRUTHFULQA_EVAL.md) · [Releases](https://github.com/yesYescaca/eidos/releases)
+**Status: Active (v7.5)** — [Lab report](LAB_REPORT.md) · [Changelog](CHANGELOG.md) · [TruthfulQA eval](docs/TRUTHFULQA_EVAL.md) · [Live pilot](docs/LIVE_EVAL_PILOT.md) · [Releases](https://github.com/yesYescaca/eidos/releases)
 
 EIDOS is a laboratory prototype reasoning agent built from cognitive science primitives — not from transformer architectures or token prediction. Instead of learning statistical text patterns, EIDOS implements mechanisms drawn from neuroscience: hierarchical predictive coding, global workspace broadcasting, Hebbian association learning, attentional gating, and intrinsic curiosity reward. It is a transparent, numpy-only system designed to explore how biological cognition might be computationally reconstructed.
 
@@ -10,10 +10,10 @@ EIDOS is a laboratory prototype reasoning agent built from cognitive science pri
 
 | | |
 |---|---|
-| **Experiments** | 26 controlled tests (v1 → v7.4) |
-| **Unit tests** | 91 (pytest) |
-| **Benchmark** | 17 ambiguous QA + EIDOS-Eval + TruthfulQA N=50 |
-| **Latest** | v7.4 — TruthfulQA T/I/TI grading + belief beats CoT (N=50 Groq) |
+| **Experiments** | 27 controlled tests (v1 → v7.5) |
+| **Unit tests** | 96 (pytest) |
+| **Benchmark** | 17 ambiguous QA + EIDOS-Eval + TruthfulQA + mixed N=50 |
+| **Latest** | v7.5 — mixed benchmark + abstention calibration |
 | **Hybrid** | LLM proposes → EIDOS gates (`HybridEidosAgent`) |
 
 ```bash
@@ -22,6 +22,21 @@ pip install -r requirements.txt
 pytest tests/ && python run_all_experiments.py
 py -m benchmark.ambiguous_qa.runner
 py -m eval.eidos_eval.runner
+py -m eval.eidos_eval.live_runner --provider groq --truthfulqa
+```
+
+py -m eval.eidos_eval.live_runner --provider groq --mixed
+```
+
+## v7.5 — Mixed Benchmark + Abstention Calibration
+
+- **`LIVE_TRUTHFULQA_V75`** — only abstain on genuine underdetermination
+- **`questions_mixed_50.json`** — 25 misconceptions + 25 ambiguous
+- **Headline metric** — `misconception_commit_ti_rate` (belief vs CoT on commits)
+
+```bash
+py -m eval.eidos_eval.build_mixed_eval_50
+py -m eval.eidos_eval.live_runner --provider groq --mixed --limit 10
 py -m eval.eidos_eval.live_runner --provider groq --truthfulqa
 ```
 

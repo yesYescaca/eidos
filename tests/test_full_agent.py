@@ -72,5 +72,5 @@ def test_save_load_roundtrip():
         assert agent2.enable_reasoning == agent.enable_reasoning
 
         saved = json.loads(path.read_text())
-        assert saved["version"] == "7.4"
+        assert saved["version"] == "7.5"
         assert "surprise" in saved

@@ -660,7 +660,7 @@ class EidosAgent:
                 "content": self._serialise_content(slot["content"]),
             })
         state = {
-            "version": "7.4",
+            "version": "7.5",
             "input_dim": self.input_dim,
             "hidden_dim": self.hidden_dim,
             "workspace_capacity": self.workspace.capacity,

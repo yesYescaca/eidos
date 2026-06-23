@@ -1,4 +1,4 @@
-"""Live EIDOS-Eval — Groq API comparison (v7.4)."""
+"""Live EIDOS-Eval — Groq API comparison (v7.5)."""
 
 from __future__ import annotations
 
@@ -16,25 +16,31 @@ from eval.eidos_eval.runner import EidosEvalHarness, EvalMode, LIVE_COMPARISON_M
 
 LIVE_QUESTIONS_PATH = Path(__file__).resolve().parent / "questions_live.json"
 TRUTHFULQA_50_PATH = Path(__file__).resolve().parent / "questions_truthfulqa_50.json"
+MIXED_50_PATH = Path(__file__).resolve().parent / "questions_mixed_50.json"
 
 DEFAULT_LIVE_MODES = list(LIVE_COMPARISON_MODES)
 
 
 def _print_report(mode: str, report: object) -> None:
-    """Print mode summary — TruthfulQA metrics when available."""
+    """Print mode summary — TruthfulQA / mixed metrics when available."""
     r = report
     line = (
         f"  [{mode}] task_acc={r.task_accuracy:.1%} "
         f"commit_acc={r.accuracy_when_commit:.1%} "
         f"abstain={r.abstention_rate:.1%}"
     )
-    if getattr(r, "grading_mode", None) == "truthfulqa":
+    if getattr(r, "grading_mode", None) in ("truthfulqa", "mixed"):
         line += (
-            f" T={r.truthfulness_rate:.1%}"
-            f" I={r.informativeness_rate:.1%}"
-            f" TI={r.truthful_informative_rate:.1%}"
-            f" misc={r.misconception_commit_rate:.1%}"
+            f" miscon_TI={r.misconception_ti_rate:.1%}"
+            f" commit_TI={r.misconception_commit_ti_rate:.1%}"
         )
+        if r.grading_mode == "truthfulqa":
+            line += (
+                f" TI={r.truthful_informative_rate:.1%}"
+                f" misc={r.misconception_commit_rate:.1%}"
+            )
+        if r.grading_mode == "mixed" and r.ambiguous_safe_rate is not None:
+            line += f" ambig_safe={r.ambiguous_safe_rate:.1%}"
     else:
         line += (
             f" false_commit={r.false_commit_rate:.1%} "
@@ -135,6 +141,11 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Use TruthfulQA Misconceptions N=50 set",
     )
+    parser.add_argument(
+        "--mixed",
+        action="store_true",
+        help="Use mixed N=50 (25 misconceptions + 25 ambiguous)",
+    )
     args = parser.parse_args(argv)
 
     if not live_llm_available(args.provider):
@@ -143,10 +154,19 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     modes = [EvalMode(m) for m in args.modes]
-    questions_path = TRUTHFULQA_50_PATH if args.truthfulqa else args.questions
+    if args.mixed:
+        questions_path = MIXED_50_PATH
+    elif args.truthfulqa:
+        questions_path = TRUTHFULQA_50_PATH
+    else:
+        questions_path = args.questions
+
     default_out = None
-    if args.truthfulqa and args.out is None:
-        default_out = Path(__file__).resolve().parent / "live_truthfulqa_report.json"
+    if args.out is None:
+        if args.mixed:
+            default_out = Path(__file__).resolve().parent / "live_mixed_report.json"
+        elif args.truthfulqa:
+            default_out = Path(__file__).resolve().parent / "live_truthfulqa_report.json"
 
     reports = run_live_comparison(
         provider=args.provider,
@@ -162,7 +182,7 @@ def main(argv: list[str] | None = None) -> int:
     summary = EidosEvalHarness.summarize_comparison(reports)
 
     print("=" * 55)
-    print(f"EIDOS-EVAL LIVE ({args.provider}) — v7.4")
+    print(f"EIDOS-EVAL LIVE ({args.provider}) — v7.5")
     print(f"Embedding: {emb}")
     if grading_mode:
         print(f"Grading: {grading_mode}")
@@ -196,11 +216,17 @@ def main(argv: list[str] | None = None) -> int:
             f"  Δ TI (CoT vs alone): {summary.truthful_informative_delta_cot:+.1%}"
         )
         print(f"  Belief beats CoT (TI): {summary.belief_beats_cot_ti}")
-        if summary.misconception_reduction_belief is not None:
-            print(
-                f"  Misconception reduction (belief): "
-                f"{summary.misconception_reduction_belief:+.1%}"
-            )
+    if summary.misconception_commit_ti_belief is not None:
+        print(
+            f"  Miscon commit TI (belief): {summary.misconception_commit_ti_belief:.1%}"
+        )
+        print(
+            f"  Miscon commit TI (CoT): {summary.misconception_commit_ti_cot:.1%}"
+        )
+        print(
+            f"  Belief beats CoT (miscon commits): "
+            f"{summary.belief_beats_cot_misconception_commits}"
+        )
     print(
         f"  false_commit reduction (gate): {summary.false_commit_reduction_gate:.1%}"
     )

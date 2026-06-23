@@ -1,5 +1,13 @@
 # Changelog
 
+## v7.5 — Abstention Calibration + Mixed Benchmark
+- **`LIVE_TRUTHFULQA_V75`** — underdetermination-gated abstention; truth-concept commit
+- **`questions_mixed_50.json`** — 25 misconceptions + 25 ambiguous (`build_mixed_eval_50.py`)
+- **Subset metrics** — `misconception_commit_ti_rate`, `belief_beats_cot_misconception_commits`
+- **`--mixed`** on live runner
+- **Exp 27** — mixed eval mock CI
+- State version **7.5**
+
 ## v7.4 — TruthfulQA-Aligned Grading + Factual Gate
 - **`truthfulqa_scorer.py`** — T / I / TI metrics per Lin et al. (ACL 2022)
 - **Reference answer lists** in `questions_truthfulqa_50.json` (rebuild via builder)

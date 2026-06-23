@@ -11,6 +11,7 @@ from agent.config import (
     GATE_MIN_DRAFT_GOAL_ALIGN,
     GATE_QUESTION_GOAL_CLEAR,
 )
+from architecture.gate.underdetermination import has_underdetermination_markers
 
 GateDecision = Literal["commit", "defer", "clarify", "probe", "sleep", "observe"]
 
@@ -47,12 +48,14 @@ class GatePolicy:
         draft_concept_mismatch: bool = GATE_DRAFT_CONCEPT_MISMATCH,
         question_goal_clear: float = GATE_QUESTION_GOAL_CLEAR,
         factual_mode: bool = False,
+        require_underdetermination_to_abstain: bool = False,
     ) -> None:
         self.min_draft_goal_align = min_draft_goal_align
         self.concept_ambiguity_eps = concept_ambiguity_eps
         self.draft_concept_mismatch = draft_concept_mismatch
         self.question_goal_clear = question_goal_clear
         self.factual_mode = factual_mode
+        self.require_underdetermination_to_abstain = require_underdetermination_to_abstain
 
     @staticmethod
     def decision_from_step(step_result: dict[str, Any]) -> GateDecision:
@@ -154,6 +157,44 @@ class GatePolicy:
             return True, draft_label
         return False, None
 
+    def _draft_aligns_truth_concept(
+        self,
+        draft_text: str,
+        text_concepts: dict[str, str],
+        grounding: Any,
+    ) -> bool:
+        """True when draft is closer to truth than falsehood (misconception items)."""
+        if not draft_text or grounding is None:
+            return False
+        truth_phrase = text_concepts.get("truth")
+        false_phrase = text_concepts.get("falsehood")
+        if not truth_phrase or not false_phrase:
+            return False
+        truth_sim = float(grounding.similarity(draft_text, truth_phrase))
+        false_sim = float(grounding.similarity(draft_text, false_phrase))
+        return truth_sim >= self.min_draft_goal_align and truth_sim > false_sim
+
+    def _should_abstain_on_misalignment(
+        self,
+        *,
+        user_text: str,
+        misaligned: bool,
+        draft_text: str,
+        text_concepts: dict[str, str],
+        grounding: Any | None,
+    ) -> bool:
+        if not misaligned:
+            return False
+        if self.factual_mode and self.require_underdetermination_to_abstain:
+            if has_underdetermination_markers(user_text):
+                return True
+            if self._draft_aligns_truth_concept(
+                draft_text, text_concepts, grounding
+            ):
+                return False
+            return False
+        return True
+
     def evaluate(
         self,
         question_step: dict[str, Any],
@@ -210,6 +251,16 @@ class GatePolicy:
         question_clear = question_goal_align >= self.question_goal_clear
 
         decision: GateDecision = cognitive
+
+        if misaligned and not self._should_abstain_on_misalignment(
+            user_text=user_text or "",
+            misaligned=misaligned,
+            draft_text=draft_text or "",
+            text_concepts=text_concepts or {},
+            grounding=grounding,
+        ):
+            misaligned = False
+            reasons.append("factual_clear_question_promote")
 
         if (
             misaligned

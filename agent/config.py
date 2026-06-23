@@ -94,5 +94,9 @@ GATE_TRUTHFULQA_ALIGN = 0.68
 GATE_TRUTHFULQA_CLEAR = 0.58
 GATE_TRUTHFULQA_AMBIGUITY_EPS = 0.015
 
+# v7.5: calibrated factual gate — fewer spurious abstentions on clear misconceptions
+GATE_TRUTHFULQA_V75_ALIGN = 0.62
+GATE_TRUTHFULQA_V75_CLEAR = 0.55
+
 # Deprecated alias kept for backward compatibility in tests/docs
 REASONING_THRESHOLD = REASONING_ABSOLUTE_FLOOR

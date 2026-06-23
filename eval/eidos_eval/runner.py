@@ -8,7 +8,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Callable
 
-from architecture.gate.gate_profiles import policy_for_live_mode
+from architecture.gate.gate_profiles import policy_for_live_mode, policy_for_question
 from architecture.hybrid.hybrid_agent import HybridEidosAgent
 from architecture.hybrid.llm_backend import CaseMockLLM, LanguageModelBackend, RoundRobinMockLLM
 from eval.eidos_eval.prompts import resolve_prompt_template
@@ -62,6 +62,7 @@ class QuestionResult:
     informative: bool | None = None
     truthful_informative: bool | None = None
     misconception_commit: bool | None = None
+    question_type: str | None = None
 
 
 @dataclass
@@ -81,6 +82,9 @@ class EvalReport:
     informativeness_rate: float | None = None
     truthful_informative_rate: float | None = None
     misconception_commit_rate: float | None = None
+    misconception_ti_rate: float | None = None
+    misconception_commit_ti_rate: float | None = None
+    ambiguous_safe_rate: float | None = None
 
     def to_dict(self) -> dict[str, Any]:
         payload: dict[str, Any] = {
@@ -115,11 +119,15 @@ class EvalReport:
                 for q in self.questions
             ],
         }
-        if self.grading_mode == "truthfulqa":
+        if self.grading_mode in ("truthfulqa", "mixed"):
             payload["truthfulness_rate"] = self.truthfulness_rate
             payload["informativeness_rate"] = self.informativeness_rate
             payload["truthful_informative_rate"] = self.truthful_informative_rate
             payload["misconception_commit_rate"] = self.misconception_commit_rate
+            payload["misconception_ti_rate"] = self.misconception_ti_rate
+            payload["misconception_commit_ti_rate"] = self.misconception_commit_ti_rate
+        if self.grading_mode == "mixed":
+            payload["ambiguous_safe_rate"] = self.ambiguous_safe_rate
         return payload
 
 
@@ -139,6 +147,9 @@ class ComparisonSummary:
     truthful_informative_delta_cot: float | None = None
     belief_beats_cot_ti: bool | None = None
     misconception_reduction_belief: float | None = None
+    misconception_commit_ti_belief: float | None = None
+    misconception_commit_ti_cot: float | None = None
+    belief_beats_cot_misconception_commits: bool | None = None
 
     def to_dict(self) -> dict[str, float | bool | None]:
         return {
@@ -154,6 +165,9 @@ class ComparisonSummary:
             "truthful_informative_delta_cot": self.truthful_informative_delta_cot,
             "belief_beats_cot_ti": self.belief_beats_cot_ti,
             "misconception_reduction_belief": self.misconception_reduction_belief,
+            "misconception_commit_ti_belief": self.misconception_commit_ti_belief,
+            "misconception_commit_ti_cot": self.misconception_commit_ti_cot,
+            "belief_beats_cot_misconception_commits": self.belief_beats_cot_misconception_commits,
         }
 
 
@@ -179,6 +193,14 @@ class EidosEvalHarness:
         self.questions: list[dict[str, Any]] = (
             questions[:limit] if limit is not None else questions
         )
+
+    @staticmethod
+    def _uses_truthfulqa_scoring(question: dict[str, Any], grading_mode: str | None) -> bool:
+        if grading_mode == "truthfulqa":
+            return True
+        if grading_mode == "mixed":
+            return question.get("question_type") == "misconception"
+        return False
 
     @staticmethod
     def _mock_draft(question: dict[str, Any], mode: EvalMode | None = None) -> str:
@@ -228,9 +250,11 @@ class EidosEvalHarness:
             belief = False
 
         gate_policy = None
-        if enable_gate and (live or self.grading_mode == "truthfulqa"):
-            gate_policy = policy_for_live_mode(
-                mode.value, grading_mode=self.grading_mode
+        if enable_gate and (live or self.grading_mode in ("truthfulqa", "mixed")):
+            gate_policy = policy_for_question(
+                mode.value,
+                question,
+                grading_mode=self.grading_mode,
             )
 
         factory = hybrid_factory or (lambda **kw: HybridEidosAgent(**kw))
@@ -267,7 +291,9 @@ class EidosEvalHarness:
             question, mode, seed, hybrid_factory, live_llm=live_llm
         )
         prompt_template = resolve_prompt_template(
-            mode.value, grading_mode=self.grading_mode
+            mode.value,
+            grading_mode=self.grading_mode,
+            question_type=question.get("question_type"),
         )
         result = hybrid.respond(
             question["question"],
@@ -280,7 +306,7 @@ class EidosEvalHarness:
         is_committed = committed(response, gate_decision, gated)
 
         tqa_score = None
-        if self.grading_mode == "truthfulqa":
+        if self._uses_truthfulqa_scoring(question, self.grading_mode):
             tqa_score = score_truthfulqa(
                 response,
                 correct_answers=list(question.get("correct_answers", [])),
@@ -303,7 +329,7 @@ class EidosEvalHarness:
         if tqa_score is not None and tqa_score.misconception_commit:
             false_commit = True
 
-        if self.grading_mode == "truthfulqa" and tqa_score is not None:
+        if self._uses_truthfulqa_scoring(question, self.grading_mode) and tqa_score is not None:
             task_ok = tqa_score.truthful_and_informative
         else:
             task_ok = task_handled_correctly(
@@ -313,7 +339,7 @@ class EidosEvalHarness:
                 answer_ok=answer_ok,
             )
 
-        if self.grading_mode == "truthfulqa" and tqa_score is not None:
+        if self._uses_truthfulqa_scoring(question, self.grading_mode) and tqa_score is not None:
             correct_flag = tqa_score.truthful_and_informative
         else:
             correct_flag = answer_ok if (
@@ -340,6 +366,7 @@ class EidosEvalHarness:
             misconception_commit=tqa_score.misconception_commit
             if tqa_score
             else None,
+            question_type=question.get("question_type"),
         )
 
     def run_mode(
@@ -382,18 +409,39 @@ class EidosEvalHarness:
             questions=results,
             grading_mode=self.grading_mode,
         )
-        if self.grading_mode == "truthfulqa":
+        if self.grading_mode in ("truthfulqa", "mixed"):
+            miscon = [r for r in results if r.question_type != "ambiguous"]
+            if self.grading_mode == "truthfulqa":
+                miscon = list(results)
+            mn = len(miscon) or 1
             report.truthfulness_rate = (
-                sum(1 for r in results if r.truthful) / n
+                sum(1 for r in miscon if r.truthful) / mn
             )
             report.informativeness_rate = (
-                sum(1 for r in results if r.informative) / n
+                sum(1 for r in miscon if r.informative) / mn
             )
-            report.truthful_informative_rate = (
-                sum(1 for r in results if r.truthful_informative) / n
+            report.misconception_ti_rate = (
+                sum(1 for r in miscon if r.truthful_informative) / mn
+            )
+            miscon_commits = [r for r in miscon if r.committed]
+            mc = len(miscon_commits) or 1
+            report.misconception_commit_ti_rate = (
+                sum(1 for r in miscon_commits if r.truthful_informative) / mc
             )
             report.misconception_commit_rate = (
-                sum(1 for r in results if r.misconception_commit) / n
+                sum(1 for r in miscon if r.misconception_commit) / mn
+            )
+            if self.grading_mode == "truthfulqa":
+                report.truthful_informative_rate = (
+                    sum(1 for r in results if r.truthful_informative) / n
+                )
+            else:
+                report.truthful_informative_rate = report.task_accuracy
+        if self.grading_mode == "mixed":
+            ambig = [r for r in results if r.question_type == "ambiguous"]
+            an = len(ambig) or 1
+            report.ambiguous_safe_rate = (
+                sum(1 for r in ambig if r.task_correct) / an
             )
         return report
 
@@ -453,6 +501,12 @@ class EidosEvalHarness:
         if ti_belief is not None and ti_cot is not None:
             beats_cot_ti = ti_belief > ti_cot
 
+        misc_commit_belief = belief_report.misconception_commit_ti_rate if belief_report else None
+        misc_commit_cot = cot.misconception_commit_ti_rate if cot else None
+        beats_cot_misc = None
+        if misc_commit_belief is not None and misc_commit_cot is not None:
+            beats_cot_misc = misc_commit_belief > misc_commit_cot
+
         return ComparisonSummary(
             selective_accuracy_delta_gate=delta(gate),
             selective_accuracy_delta_belief=delta(belief),
@@ -468,6 +522,9 @@ class EidosEvalHarness:
             truthful_informative_delta_cot=ti_delta_cot,
             belief_beats_cot_ti=beats_cot_ti,
             misconception_reduction_belief=misc_reduction,
+            misconception_commit_ti_belief=misc_commit_belief,
+            misconception_commit_ti_cot=misc_commit_cot,
+            belief_beats_cot_misconception_commits=beats_cot_misc,
         )
 
 
