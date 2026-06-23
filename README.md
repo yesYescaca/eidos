@@ -2,7 +2,7 @@
 
 **Emergent Intelligence via Distributed Organisational Systems**
 
-**Status: Active (v7.6)** — [Lab report](LAB_REPORT.md) · [Changelog](CHANGELOG.md) · [TruthfulQA eval](docs/TRUTHFULQA_EVAL.md) · [Live pilot](docs/LIVE_EVAL_PILOT.md) · [Multi-model eval](docs/MULTIMODEL_EVAL.md) · [Releases](https://github.com/yesYescaca/eidos/releases)
+**Status: Active (v7.7)** — [Lab report](LAB_REPORT.md) · [Changelog](CHANGELOG.md) · [Research paper (HTML)](docs/EIDOS_Research_Paper.html) · [TruthfulQA eval](docs/TRUTHFULQA_EVAL.md) · [Live pilot](docs/LIVE_EVAL_PILOT.md) · [Multi-model eval](docs/MULTIMODEL_EVAL.md) · [Paper eval commands](docs/PAPER_EVAL_COMMANDS.md) · [Releases](https://github.com/yesYescaca/eidos/releases)
 
 EIDOS is a laboratory prototype reasoning agent built from cognitive science primitives — not from transformer architectures or token prediction. Instead of learning statistical text patterns, EIDOS implements mechanisms drawn from neuroscience: hierarchical predictive coding, global workspace broadcasting, Hebbian association learning, attentional gating, and intrinsic curiosity reward. It is a transparent, numpy-only system designed to explore how biological cognition might be computationally reconstructed.
 
@@ -10,10 +10,10 @@ EIDOS is a laboratory prototype reasoning agent built from cognitive science pri
 
 | | |
 |---|---|
-| **Experiments** | 28 controlled tests (v1 → v7.6) |
-| **Unit tests** | 105+ (pytest) |
+| **Experiments** | 29 controlled tests (v1 → v7.7) |
+| **Unit tests** | 111+ (pytest) |
 | **Benchmark** | 17 ambiguous QA + EIDOS-Eval + TruthfulQA + mixed N=50 |
-| **Latest** | v7.6 — multi-model live eval |
+| **Latest** | v7.7 — reflection baseline + 6-model mixed eval |
 | **Hybrid** | LLM proposes → EIDOS gates (`HybridEidosAgent`) |
 
 ```bash
@@ -26,6 +26,16 @@ py -m eval.eidos_eval.live_runner --provider groq --truthfulqa
 py -m eval.eidos_eval.live_runner --provider groq --mixed
 py -m eval.eidos_eval.run_multimodel_eval --provider groq
 ```
+
+py run_live_eval.py --provider groq --mixed --modes llm_alone llm_cot llm_reflection eidos_belief
+```
+
+## v7.7 — Reflection Baseline + Extended Models
+
+- **`llm_reflection`** — two-call self-critique baseline (draft → revise)
+- **`run_live_eval.py`** — run from repo root with `--modes`
+- **`GROQ_EXTENDED_EVAL_MODELS`** — GPT-OSS-120B, Qwen3.6-27B, Llama 4 Scout
+- See [docs/PAPER_EVAL_COMMANDS.md](docs/PAPER_EVAL_COMMANDS.md) and [docs/EIDOS_Research_Paper.html](docs/EIDOS_Research_Paper.html)
 
 ## v7.6 — Multi-Model Live Eval
 

@@ -39,6 +39,7 @@ EXPERIMENTS = [
     ("26", "exp_26_truthfulqa_grading", "TruthfulQA grading + factual gate (v7.4)"),
     ("27", "exp_27_mixed_eval", "Mixed eval misconceptions + ambiguous (v7.5)"),
     ("28", "exp_28_multimodel_eval", "Multi-model live eval registry (v7.6)"),
+    ("29", "exp_29_reflection_baseline", "Reflection self-critique baseline (v7.7)"),
 ]
 
 

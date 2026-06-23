@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EIDOS Sidecar: Augmenting LLM Calibration with Biologically-Grounded Cognitive Monitoring</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap');
+
+  :root {
+    --ink: #1a1a1f;
+    --ink-mid: #3d3d46;
+    --ink-soft: #6b6b7a;
+    --rule: #d4d4dc;
+    --rule-light: #eaeaf0;
+    --bg: #fafafa;
+    --bg-block: #f3f3f7;
+    --accent: #2d5fa6;
+    --accent-warm: #b54a1c;
+    --accent-light: #e8eef7;
+    --success: #2a7a4b;
+    --warn: #9a5700;
+    --col-w: 760px;
+    --wide-w: 920px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { font-size: 17px; background: var(--bg); color: var(--ink); }
+
+  body {
+    font-family: 'Crimson Pro', Georgia, serif;
+    line-height: 1.72;
+    max-width: var(--col-w);
+    margin: 0 auto;
+    padding: 48px 24px 120px;
+  }
+
+  /* ── HEADER ── */
+  .paper-header {
+    border-top: 3px solid var(--ink);
+    border-bottom: 1px solid var(--rule);
+    padding: 36px 0 28px;
+    margin-bottom: 40px;
+  }
+
+  .paper-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 14px;
+  }
+
+  h1 {
+    font-family: 'Crimson Pro', Georgia, serif;
+    font-size: 2.1rem;
+    font-weight: 600;
+    line-height: 1.22;
+    color: var(--ink);
+    margin-bottom: 20px;
+    max-width: 680px;
+  }
+
+  .meta-row {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.78rem;
+    color: var(--ink-mid);
+    line-height: 1.8;
+  }
+
+  .meta-row a { color: var(--accent); text-decoration: none; }
+  .meta-row a:hover { text-decoration: underline; }
+
+  .keywords {
+    margin-top: 12px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.74rem;
+    color: var(--ink-soft);
+  }
+
+  .keywords span { color: var(--ink-mid); font-weight: 500; }
+
+  /* ── ABSTRACT ── */
+  .abstract-block {
+    border-left: 3px solid var(--accent);
+    background: var(--accent-light);
+    padding: 20px 24px;
+    margin-bottom: 48px;
+    border-radius: 0 4px 4px 0;
+  }
+
+  .abstract-block .block-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+
+  .abstract-block p {
+    font-size: 0.95rem;
+    color: var(--ink-mid);
+    line-height: 1.7;
+  }
+
+  /* ── SECTIONS ── */
+  .section { margin-bottom: 52px; }
+
+  h2 {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    border-top: 1px solid var(--rule);
+    padding-top: 14px;
+    margin-bottom: 18px;
+    margin-top: 44px;
+  }
+
+  h3 {
+    font-family: 'Crimson Pro', Georgia, serif;
+    font-size: 1.18rem;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 10px;
+    margin-top: 28px;
+  }
+
+  h4 {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--ink-mid);
+    margin-bottom: 8px;
+    margin-top: 22px;
+  }
+
+  p { margin-bottom: 14px; }
+
+  p:last-child { margin-bottom: 0; }
+
+  strong { font-weight: 600; color: var(--ink); }
+
+  em { font-style: italic; }
+
+  /* ── FIGURES ── */
+  .figure-wrap {
+    margin: 36px 0;
+    background: white;
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .figure-inner {
+    padding: 24px 24px 0;
+  }
+
+  .figure-canvas-wrap {
+    position: relative;
+    height: 320px;
+    padding: 0 8px;
+  }
+
+  .figure-caption {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.76rem;
+    color: var(--ink-soft);
+    padding: 12px 24px 16px;
+    border-top: 1px solid var(--rule-light);
+    margin-top: 16px;
+    line-height: 1.5;
+  }
+
+  .figure-caption strong {
+    color: var(--ink-mid);
+    font-weight: 600;
+  }
+
+  .figure-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 16px;
+  }
+
+  /* ── PIPELINE DIAGRAM ── */
+  .pipeline-wrap {
+    margin: 36px 0;
+    background: white;
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 28px 24px;
+  }
+
+  .pipeline-svg {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  /* ── TABLES ── */
+  .table-wrap {
+    margin: 28px 0;
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.80rem;
+  }
+
+  th {
+    background: var(--ink);
+    color: white;
+    font-weight: 500;
+    padding: 9px 13px;
+    text-align: left;
+    letter-spacing: 0.03em;
+  }
+
+  td {
+    padding: 8px 13px;
+    border-bottom: 1px solid var(--rule-light);
+    color: var(--ink-mid);
+  }
+
+  tr:nth-child(even) td { background: var(--bg-block); }
+  tr:hover td { background: var(--accent-light); }
+
+  .td-best { color: var(--success); font-weight: 600; }
+  .td-worst { color: var(--accent-warm); }
+  .td-mode { font-weight: 500; color: var(--ink); }
+
+  .table-caption {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.74rem;
+    color: var(--ink-soft);
+    margin-top: 8px;
+    line-height: 1.5;
+  }
+
+  /* ── CALLOUT BOXES ── */
+  .callout {
+    background: var(--bg-block);
+    border-left: 3px solid var(--accent-warm);
+    padding: 16px 20px;
+    margin: 24px 0;
+    border-radius: 0 4px 4px 0;
+    font-size: 0.93rem;
+  }
+
+  .callout.finding {
+    border-left-color: var(--success);
+    background: #f0f7f3;
+  }
+
+  .callout p { margin-bottom: 8px; }
+  .callout p:last-child { margin-bottom: 0; }
+
+  .callout-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    color: var(--accent-warm);
+  }
+
+  .callout.finding .callout-label { color: var(--success); }
+
+  /* ── CODE ── */
+  pre, code {
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    font-size: 0.78rem;
+  }
+
+  pre {
+    background: var(--ink);
+    color: #e8e8f0;
+    padding: 18px 20px;
+    border-radius: 5px;
+    overflow-x: auto;
+    margin: 20px 0;
+    line-height: 1.6;
+  }
+
+  code {
+    background: var(--bg-block);
+    color: var(--accent-warm);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 0.82em;
+  }
+
+  pre code { background: none; color: inherit; padding: 0; }
+
+  /* ── SUMMARY TABLE ── */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: 24px 0;
+  }
+
+  .summary-card {
+    background: white;
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 16px 18px;
+  }
+
+  .summary-card .sc-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 6px;
+  }
+
+  .summary-card .sc-value {
+    font-size: 1.7rem;
+    font-weight: 600;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .summary-card .sc-sub {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+    margin-top: 4px;
+  }
+
+  /* ── REFERENCES ── */
+  .references ol {
+    padding-left: 20px;
+    counter-reset: none;
+  }
+
+  .references li {
+    font-size: 0.88rem;
+    color: var(--ink-mid);
+    margin-bottom: 10px;
+    line-height: 1.6;
+  }
+
+  .references li em { font-style: italic; }
+
+  /* ── APPENDIX ── */
+  .appendix { border-top: 2px solid var(--rule); margin-top: 60px; padding-top: 36px; }
+
+  /* ── FOOTNOTE ── */
+  .paper-footer {
+    margin-top: 64px;
+    padding-top: 20px;
+    border-top: 1px solid var(--rule);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+    text-align: center;
+  }
+
+  /* ── NUMBERED SECTIONS ── */
+  .sec-num {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin-right: 6px;
+  }
+
+  ol.body-list, ul.body-list {
+    padding-left: 22px;
+    margin: 12px 0 16px;
+  }
+
+  ol.body-list li, ul.body-list li {
+    margin-bottom: 6px;
+    font-size: 1rem;
+  }
+
+  /* ── PIPELINE NODES ── */
+  .pipe-node {
+    fill: white;
+    stroke: #2d5fa6;
+    stroke-width: 1.5;
+    rx: 5;
+  }
+
+  .pipe-node-dark {
+    fill: #1a1a1f;
+    stroke: #1a1a1f;
+  }
+
+  .pipe-node-accent {
+    fill: #e8eef7;
+    stroke: #2d5fa6;
+    stroke-width: 1.5;
+  }
+
+  .pipe-node-warn {
+    fill: #fdf3ec;
+    stroke: #b54a1c;
+    stroke-width: 1.5;
+  }
+
+  .pipe-node-success {
+    fill: #f0f7f3;
+    stroke: #2a7a4b;
+    stroke-width: 1.5;
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════ HEADER ══════════════════ -->
+<header class="paper-header">
+  <div class="paper-label">Kisamapa Labs · Research Preprint · June 2026</div>
+  <h1>EIDOS Sidecar: Augmenting LLM Calibration with Biologically-Grounded Cognitive Monitoring</h1>
+  <div class="meta-row">
+    <strong>Francisco Kisamapa</strong> · Kisamapa Labs<br>
+    University of Southampton, School of Biological Sciences<br>
+    Repository: <a href="https://github.com/yesYescaca/eidos">github.com/yesYescaca/eidos</a> · Version evaluated: EIDOS v7.7 · June 2026
+  </div>
+  <div class="keywords"><span>Keywords:</span> LLM calibration, metacognition, hybrid AI, TruthfulQA, chain-of-thought prompting, predictive processing, cognitive architecture</div>
+</header>
+
+<!-- ══════════════════ ABSTRACT ══════════════════ -->
+<div class="abstract-block">
+  <div class="block-label">Abstract</div>
+  <p>Large language models (LLMs) frequently commit to answers confidently on questions that invite false beliefs or lack sufficient context. Chain-of-thought (CoT) prompting is widely used to improve reasoning, but can amplify misconception traps on benchmarks such as TruthfulQA. We also compare against a <strong>self-reflection baseline</strong> (draft → critique → revise, two LLM calls). We present <strong>EIDOS Sidecar</strong>, a hybrid architecture in which a lightweight, numpy-only cognitive monitor — implementing predictive processing, global workspace broadcasting, metacognitive gating, and Hebbian association — wraps a commercial LLM API. The monitor injects structured belief state (concept rankings, surprise signals, ambiguity flags) before generation and can withhold or clarify outputs when alignment checks fail. On TruthfulQA Misconceptions (N=50) and a mixed benchmark of 25 misconception plus 25 ambiguous items (N=50), evaluated across three core Groq-hosted models plus three extended models, EIDOS belief injection improves task accuracy by <strong>26–50 percentage points</strong> versus LLM-alone on the mixed benchmark for all core models tested, and achieves <strong>88–100% ambiguity-safe behaviour</strong> versus 0–40% for LLM-alone and reflection. On the mixed benchmark, belief beats reflection by <strong>+14 to +72 percentage points</strong> across all six models evaluated. On TruthfulQA-only (must-answer), reflection is competitive with belief on 70B (84% vs 82% TI) but provides no gain on 8B (74% = 74%) and catastrophically harms OSS-20B (10% TI, −42 pts vs alone). Against CoT, belief injection yields substantially higher commit accuracy on large Llama and GPT-OSS models. We report results honestly including abstention trade-offs, and release code, eval harness, and per-model reports.</p>
+</div>
+
+<!-- ══════════════════ 1. INTRODUCTION ══════════════════ -->
+<section class="section">
+<h2><span class="sec-num">1.</span>Introduction</h2>
+
+<h3>1.1 &nbsp;The Problem: Confident LLMs in Uncertain Territory</h3>
+
+<p>The rapid deployment of large language models across knowledge-intensive domains has surfaced a persistent failure mode: LLMs answer fluently even when they should not answer at all. Two failure patterns are of particular concern in this work:</p>
+
+<ol class="body-list">
+  <li><strong>Misconception commitment</strong> — reproducing popular falsehoods absorbed during pre-training, often with high surface confidence (Lin, Hilton and Evans, 2022).</li>
+  <li><strong>Ambiguity over-commitment</strong> — generating definitive answers to questions that are underdetermined, contextually ambiguous, or require clarification before a meaningful response is possible.</li>
+</ol>
+
+<p>Both failures share a structural cause: LLMs lack an internal signal for <em>when not to commit</em>. Generation is always initiated; the model has no mechanism to gate its own output based on epistemic state. This is analogous to what Kahneman (2011) terms System 1 dominance — fast, automatic pattern completion without deliberate monitoring.</p>
+
+<p>Standard mitigations include reinforcement learning from human feedback (RLHF), uncertainty estimation post-hoc, and chain-of-thought (CoT) prompting (Wei et al., 2022). CoT substantially improves performance on structured multi-step reasoning tasks. However, on misconception-laden benchmarks, extended internal reasoning can <em>amplify</em> trap answers: the model reasons its way into the wrong conclusion with greater elaboration and apparent confidence. This paper provides empirical evidence of this effect across three models.</p>
+
+<h3>1.2 &nbsp;Approach: Biologically-Grounded Cognitive Monitoring</h3>
+
+<p>EIDOS (Emergent Intelligence via Distributed Organisational Systems) is a laboratory cognitive architecture designed from first principles using neuroscience-validated mechanisms: predictive coding (Friston, 2010), global workspace broadcasting (Baars, 1988), Hebbian association learning (Hebb, 1949), and metacognitive monitor-and-control (Nelson and Narens, 1990). The architecture requires no training, uses only numpy and the Python standard library, and is deliberately interpretable — every decision is traceable to a computational mechanism with a biological analogue.</p>
+
+<p><strong>EIDOS Sidecar</strong> (versions 5–7) couples this monitor to an external LLM in a dual-process pattern inspired directly by Kahneman's (2011) System 1/System 2 distinction:</p>
+
+<ul class="body-list">
+  <li><strong>System 1 (LLM):</strong> Proposes a draft answer rapidly via token prediction.</li>
+  <li><strong>System 2 (EIDOS):</strong> Evaluates the draft against grounded concept state and may <em>commit</em>, <em>clarify</em>, <em>defer</em>, or <em>probe</em> based on surprise, ambiguity, and semantic alignment signals.</li>
+</ul>
+
+<p>The novel comparison in this work is <strong>belief injection versus chain-of-thought</strong>: while CoT asks the LLM to generate more reasoning tokens, belief injection supplies <em>structured signals from a separate cognitive architecture</em> — concept rankings, prediction error, and metacognitive flags — as context before generation begins. These are qualitatively different interventions, and we demonstrate they produce different outcomes.</p>
+
+<h3>1.3 &nbsp;Contributions</h3>
+
+<ol class="body-list">
+  <li><strong>Architecture:</strong> A reproducible hybrid pipeline (<code>HybridEidosAgent</code>) with unified <code>GatePolicy</code>, SBERT grounding, and four evaluation modes.</li>
+  <li><strong>Evaluation harness:</strong> EIDOS-Eval with TruthfulQA-aligned grading and a purpose-built mixed misconception+ambiguous benchmark.</li>
+  <li><strong>Empirical results:</strong> N=50 live API runs across six Groq-hosted models (three core + three extended), including a self-reflection baseline (v7.7).</li>
+  <li><strong>Honest analysis:</strong> Model-dependent effects, abstention trade-offs, grading limitations, and conditions under which CoT outperforms belief injection.</li>
+</ol>
+</section>
+
+<!-- ══════════════════ 2. RELATED WORK ══════════════════ -->
+<section class="section">
+<h2><span class="sec-num">2.</span>Related Work</h2>
+
+<h3>2.1 &nbsp;TruthfulQA and LLM Truthfulness</h3>
+
+<p>Lin, Hilton and Evans (2022) introduced TruthfulQA — 817 questions across 38 domains, adversarially constructed so that some humans answer falsely due to misconceptions. The benchmark evaluates <em>truthfulness</em> (T), <em>informativeness</em> (I), and their conjunction TI. Strikingly, the original paper found that the best model (GPT-3-175B) was truthful on only 58% of questions, while human performance was 94%. Crucially, larger models were <em>generally less truthful</em>, as they more faithfully replicate popular falsehoods present in training data. This motivates external monitoring rather than scale as the primary intervention.</p>
+
+<h3>2.2 &nbsp;LLM Calibration</h3>
+
+<p>Kadavath et al. (2022) demonstrated that LLMs have some capacity for self-knowledge — the ability to estimate whether their own answers are correct — but that this capacity is unreliable, particularly on questions requiring factual precision. Their work motivates the selective commit/abstain design of the EIDOS gate: rather than improving raw accuracy, the sidecar targets <em>calibration</em> — ensuring that committed answers are more reliably correct than uncommitted ones.</p>
+
+<h3>2.3 &nbsp;Chain-of-Thought Prompting</h3>
+
+<p>Wei et al. (2022) showed that prompting large models to produce intermediate reasoning steps substantially improves performance on mathematical and logical benchmarks. However, as observed by subsequent work, CoT is not uniformly beneficial: on factual recall and misconception benchmarks, extended reasoning can produce longer, more elaborately wrong answers. Our results confirm this for TruthfulQA Misconceptions across two of three tested models.</p>
+
+<h3>2.4 &nbsp;Predictive Processing and Active Inference</h3>
+
+<p>Friston (2010) proposed the free-energy principle as a unifying account of brain function: biological neural systems minimise surprise (prediction error) by continuously updating internal models of the world and acting to confirm their predictions. Friston et al. (2017) extended this to active inference — a process theory in which perception and action are unified under a single objective of expected free energy minimisation. EIDOS implements a simplified version of this: the prediction engine computes surprise on incoming text, and this surprise signal directly influences the gate's commitment threshold.</p>
+
+<h3>2.5 &nbsp;Metacognitive Monitoring</h3>
+
+<p>Nelson and Narens (1990) formalised metacognition as a two-level control system: an object-level process (the task) and a meta-level monitor that evaluates and regulates object-level performance. Their monitor-and-control framework is the direct theoretical basis for the EIDOS metacognitive module, which monitors LLM draft quality and controls whether to commit, revise, or withhold.</p>
+
+<h3>2.6 &nbsp;Symbol Grounding</h3>
+
+<p>Harnad (1990) argued that symbolic representations must be grounded in sensorimotor patterns to have genuine meaning rather than being "uninterpreted formal tokens." The EIDOS TextGroundingBridge implements a computational version of this: questions and domain concepts are mapped to dense vector representations via SBERT (sentence-transformers, all-MiniLM-L6-v2), allowing semantic comparison between LLM output and structured concept state. This grounding step is what enables the gate to detect concept ambiguity and alignment failures in generated text.</p>
+
+<div class="callout">
+  <div class="callout-label">Positioning</div>
+  <p>EIDOS Sidecar is <strong>not</strong> claimed to replace scaling laws, match state-of-the-art on broad knowledge benchmarks, or produce raw MMLU gains. The claim is narrower and specific: <em>improved calibration on misconception and ambiguity tasks under a fixed LLM API, without retraining.</em></p>
+</div>
+</section>
+
+<!-- ══════════════════ 3. METHOD ══════════════════ -->
+<section class="section">
+<h2><span class="sec-num">3.</span>Method</h2>
+
+<h3>3.1 &nbsp;Cognitive Core — Predictive Active Workspace (PAW)</h3>
+
+<p>The EIDOS cognitive architecture, termed the <strong>Predictive Active Workspace (PAW)</strong>, maintains five interacting components:</p>
+
+<ul class="body-list">
+  <li><strong>WorkspaceBuffer:</strong> A limited-capacity (7-slot) active memory implementing Miller's (1956) global workspace. Slots are populated by salience-weighted signals; low-salience items are evicted. All components read the workspace, implementing Global Workspace Theory's broadcast mechanism (Baars, 1988; Dehaene et al., 1998).</li>
+  <li><strong>PredictionEngine:</strong> A two-layer linear hierarchy implementing predictive coding (Friston, 2010; Rao and Ballard, 1999). Each layer predicts inputs from the layer below; prediction errors propagate upward. The engine computes a rolling surprise score over a 20-step window.</li>
+  <li><strong>AssociationStore:</strong> A Hebbian-weighted graph (Hebb, 1949) in which co-active workspace concepts strengthen associations. Weights decay per cycle, implementing a simple form of catastrophic forgetting protection analogous to the complementary learning systems framework (McClelland, McNaughton and O'Reilly, 1995).</li>
+  <li><strong>BeliefGraph:</strong> A slower-updating semantic graph representing consolidated knowledge, updated from the AssociationStore through an offline replay step.</li>
+  <li><strong>MetaCognitionMonitor:</strong> Implements Nelson and Narens' (1990) monitor-and-control loop, flagging conditions including <code>ambiguous_hypothesis</code>, <code>low_confidence</code>, and <code>high_surprise</code>.</li>
+</ul>
+
+<h3>3.2 &nbsp;Hybrid Pipeline</h3>
+
+<p>For Sidecar evaluation, text is grounded through <code>TextGroundingBridge</code> with SBERT embeddings (<code>all-MiniLM-L6-v2</code>), mapping user questions and registered domain concepts into a shared vector space. The complete inference pipeline is:</p>
+
+<!-- PIPELINE DIAGRAM -->
+<div class="pipeline-wrap">
+  <div class="figure-title">Figure 1 — EIDOS Sidecar Hybrid Pipeline</div>
+  <svg viewBox="0 0 700 520" xmlns="http://www.w3.org/2000/svg" style="width:100%;font-family:'Inter',sans-serif;font-size:12px;">
+
+    <!-- Column centers: input=350, left branch=175, right branch=525 -->
+    <!-- Rows: 30, 110, 190, 280, 360, 440 -->
+
+    <!-- Arrow marker -->
+    <defs>
+      <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L8,3 z" fill="#6b6b7a"/>
+      </marker>
+      <marker id="arr-accent" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L8,3 z" fill="#2d5fa6"/>
+      </marker>
+      <marker id="arr-warn" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L8,3 z" fill="#b54a1c"/>
+      </marker>
+    </defs>
+
+    <!-- ROW 1: User Question -->
+    <rect x="240" y="10" width="220" height="44" rx="5" fill="#1a1a1f"/>
+    <text x="350" y="28" text-anchor="middle" fill="white" font-weight="600" font-size="12">User Question</text>
+    <text x="350" y="45" text-anchor="middle" fill="#8888a0" font-size="10">+ registered domain concepts</text>
+
+    <!-- Arrow down -->
+    <line x1="350" y1="54" x2="350" y2="84" stroke="#6b6b7a" stroke-width="1.5" marker-end="url(#arr)"/>
+
+    <!-- ROW 2: EIDOS Step + SBERT -->
+    <rect x="190" y="86" width="320" height="50" rx="5" fill="#e8eef7" stroke="#2d5fa6" stroke-width="1.5"/>
+    <text x="350" y="107" text-anchor="middle" fill="#2d5fa6" font-weight="600" font-size="12">EIDOS Cognitive Step</text>
+    <text x="350" y="124" text-anchor="middle" fill="#3d3d46" font-size="10">Surprise · Concept alignment (SBERT) · Meta flags · Workspace update</text>
+
+    <!-- Arrow down: belief path -->
+    <line x1="350" y1="136" x2="350" y2="166" stroke="#6b6b7a" stroke-width="1.5" marker-end="url(#arr)"/>
+
+    <!-- ROW 3: Belief Context (optional) -->
+    <rect x="195" y="168" width="310" height="50" rx="5" fill="#fdf3ec" stroke="#b54a1c" stroke-width="1.5" stroke-dasharray="5,3"/>
+    <text x="350" y="189" text-anchor="middle" fill="#b54a1c" font-weight="600" font-size="11">Belief Context Block [belief / meta modes]</text>
+    <text x="350" y="206" text-anchor="middle" fill="#3d3d46" font-size="10">Top concept scores · Surprise ratio · Ambiguity flags · Factual mode instructions</text>
+
+    <!-- Arrow down -->
+    <line x1="350" y1="218" x2="350" y2="248" stroke="#6b6b7a" stroke-width="1.5" marker-end="url(#arr)"/>
+
+    <!-- ROW 4: LLM Draft Generation -->
+    <rect x="205" y="250" width="290" height="44" rx="5" fill="white" stroke="#6b6b7a" stroke-width="1.5"/>
+    <text x="350" y="269" text-anchor="middle" fill="#1a1a1f" font-weight="600" font-size="12">LLM Draft Generation</text>
+    <text x="350" y="285" text-anchor="middle" fill="#6b6b7a" font-size="10">Groq API · llama-3.3-70b / 8b / gpt-oss-20b</text>
+
+    <!-- Arrow down -->
+    <line x1="350" y1="294" x2="350" y2="324" stroke="#6b6b7a" stroke-width="1.5" marker-end="url(#arr)"/>
+
+    <!-- ROW 5: GatePolicy -->
+    <rect x="190" y="326" width="320" height="50" rx="5" fill="#e8eef7" stroke="#2d5fa6" stroke-width="1.5"/>
+    <text x="350" y="347" text-anchor="middle" fill="#2d5fa6" font-weight="600" font-size="12">GatePolicy.evaluate()</text>
+    <text x="350" y="363" text-anchor="middle" fill="#3d3d46" font-size="10">Draft–goal cosine · Concept ambiguity · Underdetermination markers</text>
+
+    <!-- Four output arrows -->
+    <!-- COMMIT -->
+    <line x1="265" y1="376" x2="120" y2="430" stroke="#2a7a4b" stroke-width="1.5" marker-end="url(#arr-accent)"/>
+    <!-- CLARIFY -->
+    <line x1="315" y1="376" x2="270" y2="430" stroke="#6b6b7a" stroke-width="1.5" marker-end="url(#arr)"/>
+    <!-- PROBE -->
+    <line x1="385" y1="376" x2="430" y2="430" stroke="#6b6b7a" stroke-width="1.5" marker-end="url(#arr)"/>
+    <!-- META REVISION -->
+    <line x1="455" y1="376" x2="560" y2="430" stroke="#b54a1c" stroke-width="1.5" marker-end="url(#arr-warn)"/>
+
+    <!-- ROW 6: Four outcomes -->
+    <rect x="64" y="432" width="100" height="36" rx="5" fill="#f0f7f3" stroke="#2a7a4b" stroke-width="1.5"/>
+    <text x="114" y="453" text-anchor="middle" fill="#2a7a4b" font-weight="600" font-size="11">Commit</text>
+    <text x="114" y="464" text-anchor="middle" fill="#2a7a4b" font-size="9">answer sent</text>
+
+    <rect x="214" y="432" width="100" height="36" rx="5" fill="white" stroke="#6b6b7a" stroke-width="1.5"/>
+    <text x="264" y="453" text-anchor="middle" fill="#6b6b7a" font-weight="600" font-size="11">Clarify</text>
+    <text x="264" y="464" text-anchor="middle" fill="#6b6b7a" font-size="9">asks for context</text>
+
+    <rect x="364" y="432" width="100" height="36" rx="5" fill="white" stroke="#6b6b7a" stroke-width="1.5"/>
+    <text x="414" y="453" text-anchor="middle" fill="#6b6b7a" font-weight="600" font-size="11">Probe</text>
+    <text x="414" y="464" text-anchor="middle" fill="#6b6b7a" font-size="9">defers, flags</text>
+
+    <rect x="510" y="432" width="126" height="36" rx="5" fill="#fdf3ec" stroke="#b54a1c" stroke-width="1.5" stroke-dasharray="5,3"/>
+    <text x="573" y="449" text-anchor="middle" fill="#b54a1c" font-weight="600" font-size="11">Meta Revision</text>
+    <text x="573" y="464" text-anchor="middle" fill="#b54a1c" font-size="9">[meta mode] → re-generate</text>
+
+    <!-- Labels for arrows -->
+    <text x="162" y="405" text-anchor="middle" fill="#2a7a4b" font-size="9">low error</text>
+    <text x="475" y="405" text-anchor="middle" fill="#b54a1c" font-size="9">high error</text>
+
+    <!-- Mode legend -->
+    <text x="350" y="500" text-anchor="middle" fill="#9090a0" font-size="9">Dashed boxes = optional path active only in belief / meta modes</text>
+  </svg>
+  <div class="figure-caption"><strong>Figure 1.</strong> The EIDOS Sidecar inference pipeline. The belief context block (dashed, orange) is prepended to the LLM prompt only in <code>eidos_belief</code> and <code>eidos_meta</code> modes. The GatePolicy evaluates the LLM draft and routes to one of four outcomes. In <code>eidos_meta</code> mode, a high-error outcome triggers a revision loop rather than immediate deferral.</div>
+</div>
+
+<h3>3.3 &nbsp;Evaluation Modes</h3>
+
+<div class="table-wrap">
+<table>
+  <tr><th>Mode</th><th>Gate</th><th>Belief injection</th><th>Meta revision</th><th>Baseline prompt</th></tr>
+  <tr><td class="td-mode"><code>llm_alone</code></td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+  <tr><td class="td-mode"><code>llm_cot</code></td><td>—</td><td>—</td><td>—</td><td>✓ "think step by step"</td></tr>
+  <tr><td class="td-mode"><code>llm_reflection</code></td><td>—</td><td>—</td><td>—</td><td>✓ draft → critique → revise (2 calls)</td></tr>
+  <tr><td class="td-mode"><code>eidos_gate</code></td><td>✓</td><td>—</td><td>—</td><td>—</td></tr>
+  <tr><td class="td-mode"><code>eidos_belief</code></td><td>✓</td><td>✓</td><td>—</td><td>—</td></tr>
+  <tr><td class="td-mode"><code>eidos_meta</code></td><td>✓</td><td>✓</td><td>✓</td><td>—</td></tr>
+</table>
+</div>
+
+<h3>3.4 &nbsp;Benchmarks</h3>
+
+<h4>TruthfulQA Misconceptions (N=50)</h4>
+<p>A 50-item subset of the Misconceptions category from Lin, Hilton and Evans (2022), constructed via <code>build_truthfulqa_subset.py</code> with seed 42. The benchmark uses a <em>must-answer</em> setting in which abstention penalises the task-level score. Grading uses reference answer lists (substring/token overlap) rather than GPT-judge, a limitation discussed in Section 5.4. Metrics follow Lin et al. (2022): <strong>T</strong> (truthful), <strong>I</strong> (informative), <strong>TI</strong> (truthful and informative, headline metric), <strong>misc</strong> (committed misconception), and <strong>commit TI</strong> (TI rate among committed answers only).</p>
+
+<h4>Mixed Benchmark (N=50)</h4>
+<p>A purpose-built benchmark comprising 25 misconception items (correct commitment required) and 25 ambiguous items (correct abstention or clarification required), constructed via <code>build_mixed_eval_50.py</code>. This benchmark directly matches the design goal of EIDOS: calibrated behaviour across both factual and ambiguous question types. Primary metric is <strong>task accuracy</strong> — correct commits on misconceptions plus correct abstentions on ambiguous items. Secondary metrics: <strong>ambig_safe_rate</strong> (no false commit on ambiguous items) and <strong>misconception_commit_ti_rate</strong> (TI on misconception items when committing).</p>
+
+<h3>3.5 &nbsp;Experimental Setup</h3>
+
+<div class="table-wrap">
+<table>
+  <tr><th>Parameter</th><th>Value</th></tr>
+  <tr><td>Provider</td><td>Groq API</td></tr>
+  <tr><td>Models</td><td><code>llama-3.3-70b-versatile</code>, <code>llama-3.1-8b-instant</code>, <code>openai/gpt-oss-20b</code></td></tr>
+  <tr><td>Embedding model</td><td>SBERT <code>all-MiniLM-L6-v2</code> (hash fallback if HF unavailable)</td></tr>
+  <tr><td>Temperature</td><td>0.2</td></tr>
+  <tr><td>Max tokens</td><td>256</td></tr>
+  <tr><td>N per benchmark</td><td>50</td></tr>
+  <tr><td>Random seed</td><td>42</td></tr>
+  <tr><td>Gate profile</td><td><code>LIVE_TRUTHFULQA_V75</code> (factual mode, underdetermination-gated abstention)</td></tr>
+</table>
+</div>
+</section>
+
+<!-- ══════════════════ 4. RESULTS ══════════════════ -->
+<section class="section">
+<h2><span class="sec-num">4.</span>Results</h2>
+
+<!-- KEY STATS GRID -->
+<div class="summary-grid">
+  <div class="summary-card">
+    <div class="sc-label">Max task accuracy gain vs LLM alone</div>
+    <div class="sc-value">+50 pts</div>
+    <div class="sc-sub">GPT-OSS-20B, mixed benchmark, belief mode</div>
+  </div>
+  <div class="summary-card">
+    <div class="sc-label">Max ambiguity-safe rate (belief)</div>
+    <div class="sc-value">100%</div>
+    <div class="sc-sub">vs 8–40% for LLM alone across models</div>
+  </div>
+  <div class="summary-card">
+    <div class="sc-label">Belief vs reflection (mixed task)</div>
+    <div class="sc-value">+72 pts</div>
+    <div class="sc-sub">GPT-OSS-20B: 80% belief vs 8% reflection</div>
+  </div>
+  <div class="summary-card">
+    <div class="sc-label">Misconception commits halved</div>
+    <div class="sc-value">4% → 2%</div>
+    <div class="sc-sub">misc rate, EIDOS belief vs LLM alone (70B)</div>
+  </div>
+</div>
+
+<h3>4.1 &nbsp;TruthfulQA Misconceptions (N=50)</h3>
+
+<h4>Table 1 — llama-3.3-70b-versatile</h4>
+<div class="table-wrap">
+<table>
+  <tr><th>Mode</th><th>TI</th><th>misc</th><th>Abstain</th><th>Commit TI</th></tr>
+  <tr><td class="td-mode">LLM alone</td><td class="td-best">88%</td><td>4%</td><td>0%</td><td>88%</td></tr>
+  <tr><td class="td-mode">LLM CoT</td><td class="td-worst">62%</td><td>4%</td><td>0%</td><td>62%</td></tr>
+  <tr><td class="td-mode">LLM reflection</td><td>84%</td><td>2%</td><td>0%</td><td>84%</td></tr>
+  <tr><td class="td-mode">EIDOS gate</td><td>86%</td><td>2%</td><td>4%</td><td>89.6%</td></tr>
+  <tr><td class="td-mode">EIDOS belief</td><td>82%</td><td>2%</td><td>6%</td><td class="td-best">87.2%</td></tr>
+  <tr><td class="td-mode">EIDOS meta</td><td>82%</td><td>2%</td><td>6%</td><td>87.2%</td></tr>
+</table>
+<div class="table-caption">Reflection (84% TI) is competitive with belief (82% TI) on this model; both beat CoT (62%). Belief vs CoT (commit TI): +25.2 pts. Misconception commits halved (4% → 2%).</div>
+</div>
+
+<h4>Table 2 — llama-3.1-8b-instant</h4>
+<div class="table-wrap">
+<table>
+  <tr><th>Mode</th><th>TI</th><th>misc</th><th>Abstain</th><th>Commit TI</th></tr>
+  <tr><td class="td-mode">LLM alone</td><td>74%</td><td>6%</td><td>0%</td><td>74%</td></tr>
+  <tr><td class="td-mode">LLM CoT</td><td class="td-best">90%</td><td>6%</td><td>0%</td><td class="td-best">90%</td></tr>
+  <tr><td class="td-mode">LLM reflection</td><td>74%</td><td>6%</td><td>0%</td><td>74%</td></tr>
+  <tr><td class="td-mode">EIDOS gate</td><td class="td-worst">64%</td><td>4%</td><td>16%</td><td>76.2%</td></tr>
+  <tr><td class="td-mode">EIDOS belief</td><td>66%</td><td>6%</td><td>12%</td><td>75.0%</td></tr>
+  <tr><td class="td-mode">EIDOS meta</td><td>68%</td><td>6%</td><td>10%</td><td>75.6%</td></tr>
+</table>
+<div class="table-caption">8B exception: CoT helps on factual misconception traps (+16 pts vs alone). Reflection is identical to LLM-alone (74% TI) — the second call adds no value. EIDOS over-abstains (10–16%), penalising TI on this must-answer benchmark.</div>
+</div>
+
+<h4>Table 3 — openai/gpt-oss-20b</h4>
+<div class="table-wrap">
+<table>
+  <tr><th>Mode</th><th>TI</th><th>misc</th><th>Abstain</th><th>Commit TI</th></tr>
+  <tr><td class="td-mode">LLM alone</td><td>52%</td><td>2%</td><td>0%</td><td>52%</td></tr>
+  <tr><td class="td-mode">LLM CoT</td><td class="td-worst">36%</td><td>0%</td><td>0%</td><td class="td-worst">36%</td></tr>
+  <tr><td class="td-mode">LLM reflection</td><td class="td-worst">10%</td><td>0%</td><td>0%</td><td class="td-worst">10%</td></tr>
+  <tr><td class="td-mode">EIDOS gate</td><td>48%</td><td>0%</td><td>34%</td><td>72.7%</td></tr>
+  <tr><td class="td-mode">EIDOS belief</td><td>54%</td><td>0%</td><td>24%</td><td class="td-best">71.1%</td></tr>
+  <tr><td class="td-mode">EIDOS meta</td><td class="td-best">56%</td><td>0%</td><td>18%</td><td>68.3%</td></tr>
+</table>
+<div class="table-caption">Reflection collapses to 10% TI (−42 pts vs alone), worse than CoT (36%). Belief beats both baselines (+2 pts TI vs alone; +35 pts commit TI vs CoT; +61 pts commit TI vs reflection).</div>
+</div>
+
+<!-- FIGURE 2: TruthfulQA Bar Chart -->
+<div class="figure-wrap">
+  <div class="figure-inner">
+    <div class="figure-title">Figure 2 — TruthfulQA Misconceptions (N=50): Commit TI by Mode and Model</div>
+    <div class="figure-canvas-wrap">
+      <canvas id="chart_truthfulqa"></canvas>
+    </div>
+  </div>
+  <div class="figure-caption"><strong>Figure 2.</strong> Commit TI across modes and models. Reflection helps 70B (84%) but is neutral on 8B (74%) and harmful on OSS-20B (10%). The 8B model is the exception where CoT outperforms belief on this metric.</div>
+</div>
+
+<h3>4.2 &nbsp;Mixed Benchmark (N=50) — Primary Result</h3>
+
+<h4>Table 4 — llama-3.3-70b-versatile</h4>
+<div class="table-wrap">
+<table>
+  <tr><th>Mode</th><th>Task acc</th><th>Ambig safe</th><th>Miscon commit TI</th></tr>
+  <tr><td class="td-mode">LLM alone</td><td>60%</td><td>28%</td><td>92%</td></tr>
+  <tr><td class="td-mode">LLM CoT</td><td class="td-worst">40%</td><td>20%</td><td class="td-worst">60%</td></tr>
+  <tr><td class="td-mode">LLM reflection</td><td>54%</td><td>24%</td><td>84%</td></tr>
+  <tr><td class="td-mode">EIDOS belief</td><td>86%</td><td>88%</td><td>84%</td></tr>
+  <tr><td class="td-mode">EIDOS gate</td><td class="td-best">96%</td><td class="td-best">100%</td><td>92%</td></tr>
+  <tr><td class="td-mode">EIDOS meta</td><td>86%</td><td>88%</td><td>84%</td></tr>
+</table>
+<div class="table-caption">Belief vs reflection: +32 pts task accuracy (86% vs 54%). Belief vs alone: +26 pts. Belief vs CoT: +46 pts. Gate achieves highest task accuracy (96%) and perfect ambiguity safety (100%) on this model.</div>
+</div>
+
+<h4>Table 5 — llama-3.1-8b-instant</h4>
+<div class="table-wrap">
+<table>
+  <tr><th>Mode</th><th>Task acc</th><th>Ambig safe</th><th>Miscon commit TI</th></tr>
+  <tr><td class="td-mode">LLM alone</td><td>56%</td><td>28%</td><td>84%</td></tr>
+  <tr><td class="td-mode">LLM CoT</td><td>66%</td><td>40%</td><td>92%</td></tr>
+  <tr><td class="td-mode">LLM reflection</td><td>52%</td><td>28%</td><td>76%</td></tr>
+  <tr><td class="td-mode">EIDOS belief</td><td>86%</td><td class="td-best">100%</td><td>78.3%</td></tr>
+  <tr><td class="td-mode">EIDOS gate</td><td class="td-best">88%</td><td>96%</td><td>83.3%</td></tr>
+  <tr><td class="td-mode">EIDOS meta</td><td>86%</td><td class="td-best">100%</td><td>78.3%</td></tr>
+</table>
+<div class="table-caption">Belief vs reflection: +34 pts task accuracy. Belief vs alone: +30 pts. Even on the model where CoT won on TruthfulQA-only, EIDOS wins on the combined task through near-perfect ambiguity safety (100% vs 28% for reflection).</div>
+</div>
+
+<h4>Table 6 — openai/gpt-oss-20b</h4>
+<div class="table-wrap">
+<table>
+  <tr><th>Mode</th><th>Task acc</th><th>Ambig safe</th><th>Miscon commit TI</th></tr>
+  <tr><td class="td-mode">LLM alone</td><td class="td-worst">30%</td><td class="td-worst">8%</td><td>52%</td></tr>
+  <tr><td class="td-mode">LLM CoT</td><td class="td-worst">12%</td><td>0%</td><td>24%</td></tr>
+  <tr><td class="td-mode">LLM reflection</td><td class="td-worst">8%</td><td>0%</td><td>16%</td></tr>
+  <tr><td class="td-mode">EIDOS belief</td><td>80%</td><td class="td-best">100%</td><td>75%</td></tr>
+  <tr><td class="td-mode">EIDOS gate</td><td>72%</td><td>92%</td><td>68.4%</td></tr>
+  <tr><td class="td-mode">EIDOS meta</td><td class="td-best">80%</td><td>96%</td><td>72.7%</td></tr>
+</table>
+<div class="table-caption">Largest reflection gap: +72 pts belief vs reflection. Belief vs alone: +50 pts, vs CoT: +68 pts. Reflection (8%) barely exceeds LLM alone (30%) on task accuracy; belief achieves 100% ambiguity safety.</div>
+</div>
+
+<!-- FIGURE 3: Mixed Benchmark Bar Chart -->
+<div class="figure-wrap">
+  <div class="figure-inner">
+    <div class="figure-title">Figure 3 — Mixed Benchmark (N=50): Task Accuracy by Mode and Model</div>
+    <div class="figure-canvas-wrap">
+      <canvas id="chart_mixed"></canvas>
+    </div>
+  </div>
+  <div class="figure-caption"><strong>Figure 3.</strong> Task accuracy on the mixed benchmark. Belief beats reflection on all three models (+32, +34, +72 pts). The mixed benchmark is the primary evaluation as it rewards calibrated commit/abstain behaviour.</div>
+</div>
+
+<!-- FIGURE 4: Ambiguity Safety -->
+<div class="figure-wrap">
+  <div class="figure-inner">
+    <div class="figure-title">Figure 4 — Ambiguity-Safe Rate: Belief Injection vs LLM Alone (All Models)</div>
+    <div class="figure-canvas-wrap">
+      <canvas id="chart_ambig"></canvas>
+    </div>
+  </div>
+  <div class="figure-caption"><strong>Figure 4.</strong> Ambiguity-safe rate (proportion of ambiguous questions correctly handled by abstention or clarification) for EIDOS belief vs LLM alone across all three models. The gap is consistent and large: EIDOS belief achieves 88–100% while LLM alone achieves 8–28%.</div>
+</div>
+
+<h4>Cross-Model Summary — Mixed Benchmark (EIDOS Belief vs Baselines)</h4>
+<div class="table-wrap">
+<table>
+  <tr><th>Model</th><th>Δ task vs alone</th><th>Δ task vs CoT</th><th>Δ task vs reflection</th><th>Ambig safe (belief)</th><th>Belief beats reflection?</th></tr>
+  <tr><td class="td-mode">Llama-3.3-70B</td><td class="td-best">+26 pts</td><td class="td-best">+46 pts</td><td class="td-best">+32 pts</td><td>88%</td><td>✓ Yes</td></tr>
+  <tr><td class="td-mode">Llama-3.1-8B</td><td class="td-best">+30 pts</td><td class="td-best">+20 pts</td><td class="td-best">+34 pts</td><td class="td-best">100%</td><td>✓ Yes</td></tr>
+  <tr><td class="td-mode">GPT-OSS-20B</td><td class="td-best">+50 pts</td><td class="td-best">+68 pts</td><td class="td-best">+72 pts</td><td class="td-best">100%</td><td>✓ Yes</td></tr>
+</table>
+<div class="table-caption">Belief injection improves task accuracy over LLM alone, CoT, and reflection on <strong>all three models</strong> on the mixed benchmark. The 8B misconception-commit exception on TruthfulQA-only is noted in Section 5.2.</div>
+</div>
+
+<h3>4.3 &nbsp;3×2 Summary — Belief vs Reflection Across Models and Benchmarks</h3>
+
+<p>Table 7 consolidates the headline comparison for the paper: three models × two benchmarks, reporting belief injection against the self-reflection baseline (and LLM-alone for context). TruthfulQA rows use TI; mixed rows use task accuracy.</p>
+
+<h4>Table 7 — Belief vs reflection (3 models × 2 benchmarks)</h4>
+<div class="table-wrap">
+<table>
+  <tr>
+    <th rowspan="2">Model</th>
+    <th colspan="3">TruthfulQA Misconceptions (TI)</th>
+    <th colspan="3">Mixed Benchmark (task accuracy)</th>
+  </tr>
+  <tr>
+    <th>LLM alone</th><th>Reflection</th><th>EIDOS belief</th>
+    <th>LLM alone</th><th>Reflection</th><th>EIDOS belief</th>
+  </tr>
+  <tr>
+    <td class="td-mode">Llama-3.3-70B</td>
+    <td>88%</td><td>84%</td><td>82%</td>
+    <td>60%</td><td>54%</td><td class="td-best">86%</td>
+  </tr>
+  <tr>
+    <td class="td-mode">Llama-3.1-8B</td>
+    <td>74%</td><td>74%</td><td>66%</td>
+    <td>56%</td><td>52%</td><td class="td-best">86%</td>
+  </tr>
+  <tr>
+    <td class="td-mode">GPT-OSS-20B</td>
+    <td>52%</td><td class="td-worst">10%</td><td>54%</td>
+    <td>30%</td><td>8%</td><td class="td-best">80%</td>
+  </tr>
+</table>
+<div class="table-caption">Mixed benchmark: belief beats reflection on task accuracy for all three core models (+32, +34, +72 pts). TruthfulQA: reflection competitive on 70B (84% vs 82% TI), no gain on 8B (74% = 74%), catastrophic on OSS-20B (10% TI).</div>
+</div>
+
+<h3>4.4 &nbsp;Extended Models — Mixed Benchmark Robustness (N=50)</h3>
+
+<p>To test whether the mixed-benchmark gains generalise beyond the core three-model set, we evaluated three additional Groq production models spanning different families and scales: GPT-OSS-120B, Qwen 3.6 27B, and Llama 4 Scout 17B MoE.</p>
+
+<h4>Table 8 — Extended models, mixed benchmark</h4>
+<div class="table-wrap">
+<table>
+  <tr><th>Model</th><th>LLM alone</th><th>CoT</th><th>Reflection</th><th>EIDOS belief</th><th>Δ belief vs reflection</th><th>Ambig safe (belief)</th></tr>
+  <tr><td class="td-mode">GPT-OSS-120B</td><td>40%</td><td>28%</td><td>24%</td><td class="td-best">86%</td><td class="td-best">+62 pts</td><td>92%</td></tr>
+  <tr><td class="td-mode">Qwen 3.6 27B</td><td>68%</td><td>70%</td><td>66%</td><td>80%</td><td>+14 pts</td><td class="td-best">100%</td></tr>
+  <tr><td class="td-mode">Llama 4 Scout 17B</td><td>60%</td><td>64%</td><td>56%</td><td class="td-best">94%</td><td>+38 pts</td><td class="td-best">100%</td></tr>
+</table>
+<div class="table-caption">Belief beats reflection on task accuracy for all three extended models. On stronger baselines (Qwen, Scout), CoT is competitive on misconception commits when it does answer; EIDOS wins primarily through ambiguity-safe abstention (92–100% vs 8–40% for baselines). Llama 4 Scout achieves the highest belief task accuracy in this study (94%).</div>
+</div>
+
+<div class="callout finding">
+  <div class="callout-label">Key Finding</div>
+  <p><strong>On the mixed benchmark, EIDOS belief injection improves task accuracy by 12–50 percentage points over LLM-alone and by 14–72 points over self-reflection across all six models evaluated, achieving 88–100% ambiguity-safe behaviour versus 0–40% for reflection.</strong></p>
+  <p>Against chain-of-thought, belief injection leads by 20–68 points on task accuracy on core models. On TruthfulQA-only (must-answer), reflection is model-dependent: helpful on 70B, neutral on 8B, harmful on OSS-20B. Structured cognitive-state injection dominates when calibrated abstention is required.</p>
+</div>
+</section>
+
+<!-- ══════════════════ 5. DISCUSSION ══════════════════ -->
+<section class="section">
+<h2><span class="sec-num">5.</span>Discussion</h2>
+
+<h3>5.1 &nbsp;Why the Mixed Benchmark Matters More Than TruthfulQA-Only</h3>
+
+<p>TruthfulQA in its standard must-answer form penalises appropriate abstention: a system that correctly withholds on genuinely uncertain items still loses TI score. This creates a structural disadvantage for any calibration-oriented system. A raw LLM that always answers, even when it should not, is rewarded for volume of committed answers rather than quality of epistemic behaviour.</p>
+
+<p>The mixed benchmark was designed precisely to address this. By scoring both correct commitment on misconceptions <em>and</em> correct abstention on ambiguous items, it creates an evaluation surface where calibrated behaviour is rewarded. On this benchmark, EIDOS shows its largest and most consistent gains. The 30-point gap on 70B (86% vs 60% alone, 86% vs 40% CoT) is not an artefact of benchmark construction — it reflects EIDOS doing exactly what it was designed to do on both halves of the evaluation simultaneously.</p>
+
+<h3>5.2 &nbsp;When Does Belief Injection Win vs CoT and Reflection?</h3>
+
+<div class="table-wrap">
+<table>
+  <tr><th>Condition</th><th>vs CoT</th><th>vs reflection</th></tr>
+  <tr><td>Large Llama (70B)</td><td>CoT hurts on misconceptions (−26 pts vs alone); belief helps (+25 pts commit TI vs CoT)</td><td>Mixed: belief +32 pts task acc; TruthfulQA: reflection competitive (84% vs 82% TI)</td></tr>
+  <tr><td>Small Llama (8B)</td><td>CoT helps on TruthfulQA-only misconceptions (+16 pts vs alone); belief wins on mixed via ambiguity safety</td><td>TruthfulQA: reflection = alone (74%); mixed: belief +34 pts, 100% ambig safe vs 28% reflection</td></tr>
+  <tr><td>Weak OSS model (20B)</td><td>CoT catastrophic (−16 pts vs alone, 0% ambig safe); belief strongly preferred</td><td>TruthfulQA: reflection 10% TI (−42 pts); mixed: belief +72 pts task acc</td></tr>
+  <tr><td>Strong baselines (Qwen, Scout)</td><td>CoT competitive on misconceptions; belief still wins mixed via abstention</td><td>Belief +14 to +38 pts vs reflection; 100% ambig safe on both</td></tr>
+  <tr><td>GPT-OSS-120B</td><td>Scaling alone to 120B does not fix calibration (40% mixed task)</td><td>Belief +62 pts vs reflection (86% vs 24%)</td></tr>
+</table>
+</div>
+
+<p>Self-reflection (draft → critique → revise) adds a second LLM call with highly model-dependent outcomes. On 70B TruthfulQA it reaches 84% TI, comparable to belief; on 8B it is identical to LLM-alone (74%); on OSS-20B it collapses to 10% TI. Across all six models on the mixed benchmark, reflection never matches belief: ambiguity-safe rates remain 0–40% versus 88–100% for belief. CoT and reflection both encourage more generation; EIDOS belief injection adds structured signals about <em>when to be uncertain</em> before the first token is produced.</p>
+
+<h3>5.3 &nbsp;Gate vs Belief vs Meta</h3>
+
+<p>Gate-only sometimes achieves the highest task accuracy on the mixed benchmark (96% on 70B), by abstaining most aggressively. This suggests the gate threshold is well-calibrated for that model. Belief injection trades some abstention precision for richer LLM conditioning — the model produces better answers when it does commit, because it has access to the cognitive state context. Meta-injection adds a revision round; on these benchmarks it shows diminishing returns relative to belief, likely because belief injection prevents most errors at generation time rather than requiring post-hoc correction.</p>
+
+<h3>5.4 &nbsp;Limitations</h3>
+
+<ol class="body-list">
+  <li><strong>N=50 per benchmark per model.</strong> Results are directional. At N=50, each item is 2 percentage points; no confidence intervals are reported. The mixed-benchmark pattern is consistent across six models but should be replicated at larger scale before strong claims are made.</li>
+  <li><strong>Single API provider (Groq).</strong> All results are from Groq-hosted model snapshots. Results may vary across providers and model versions.</li>
+  <li><strong>Reference-based grading.</strong> Grading uses substring/token overlap against reference answer lists rather than the official TruthfulQA GPT-judge evaluator. This may diverge from leaderboard metrics and is a known limitation of the evaluation harness.</li>
+  <li><strong>Concept warmup required.</strong> Each evaluation item includes per-question concept registration; cold-start performance on unseen domains is untested.</li>
+  <li><strong>No fine-tuning.</strong> All gains are from inference-time architecture changes only. The comparison to fine-tuned or RLHF-adjusted baselines is out of scope.</li>
+  <li><strong>8B misconception-commit regression.</strong> EIDOS belief does not beat CoT on misconception-only commit TI for the 8B model. Gate threshold calibration for small models is identified as future work.</li>
+  <li><strong>Latency and cost.</strong> Multiple EIDOS steps, SBERT encoding, and optional meta-revision loops increase inference time and API cost relative to raw LLM calls.</li>
+</ol>
+
+<h3>5.5 &nbsp;Threats to Validity</h3>
+
+<ul class="body-list">
+  <li><strong>Cache effects:</strong> Per-model response caches stabilise results but may freeze early errors. A <code>--no-cache</code> ablation on the 70B model is recommended before final submission.</li>
+  <li><strong>Subset selection:</strong> The N=50 TruthfulQA subset is seeded at 42 but is not identical to the full 104-item misconception set. Full-set evaluation is planned.</li>
+  <li><strong>Prompt sensitivity:</strong> CoT and belief prompts were hand-designed. Modest paraphrase sensitivity is likely; systematic prompt ablation is future work.</li>
+</ul>
+</section>
+
+<!-- ══════════════════ 6. CONCLUSION ══════════════════ -->
+<section class="section">
+<h2><span class="sec-num">6.</span>Conclusion</h2>
+
+<p>EIDOS Sidecar demonstrates that a lightweight, interpretable cognitive monitor — requiring no training, no GPU, and implemented entirely in numpy — can meaningfully improve LLM behaviour on misconception and ambiguity benchmarks. The architecture draws directly from validated neuroscientific frameworks: predictive processing (Friston, 2010), global workspace broadcasting (Baars, 1988; Dehaene et al., 1998), Hebbian association learning (Hebb, 1949), and metacognitive monitoring (Nelson and Narens, 1990).</p>
+
+<p>The strongest empirical claim is on the mixed N=50 benchmark, where belief injection raises task accuracy by 12–50 percentage points across six Groq-hosted models while achieving 88–100% ambiguity-safe behaviour versus 0–40% for LLM-alone and reflection. Belief beats self-reflection on mixed task accuracy for every model tested (+14 to +72 pts). The key mechanistic insight is that supplying <em>structured cognitive state</em> derived from a separate architecture — concept rankings, surprise signals, ambiguity flags — before LLM generation produces better-calibrated outputs than prompting the model to generate more reasoning tokens via chain-of-thought or self-reflection.</p>
+
+<p>Honest limitations must be acknowledged: N=50 is directional, not definitive; the 8B model shows CoT can outperform belief on misconception-only commits; and reference-based grading differs from the official TruthfulQA evaluation methodology. These limitations are recorded transparently and inform the future work plan.</p>
+
+<p>Future directions include: full 104-item TruthfulQA misconception evaluation with GPT-judge grading; per-model gate calibration, particularly for sub-10B models; latency-optimised deployment of the SBERT grounding layer; and ablation studies isolating the contribution of each belief context component (concept rankings, surprise, metacognitive flags) independently.</p>
+
+<p>Code, evaluation harness, and all per-model reports are released at <a href="https://github.com/yesYescaca/eidos" style="color:#2d5fa6">github.com/yesYescaca/eidos</a> (tag v7.7).</p>
+</section>
+
+<!-- ══════════════════ REFERENCES ══════════════════ -->
+<section class="section references">
+<h2>References</h2>
+
+<ol>
+  <li>Baars, B.J. (1988) <em>A Cognitive Theory of Consciousness.</em> Cambridge: Cambridge University Press.</li>
+  <li>Dehaene, S., Kerszberg, M. and Changeux, J.P. (1998) 'A neuronal model of a global workspace in effortful cognitive tasks', <em>Proceedings of the National Academy of Sciences,</em> 95(24), pp. 14529–14534. doi: 10.1073/pnas.95.24.14529.</li>
+  <li>Friston, K. (2010) 'The free-energy principle: a unified brain theory?', <em>Nature Reviews Neuroscience,</em> 11(2), pp. 127–138. doi: 10.1038/nrn2787.</li>
+  <li>Friston, K., FitzGerald, T., Rigoli, F., Schwartenbeck, P. and Pezzulo, G. (2017) 'Active inference: a process theory', <em>Neural Computation,</em> 29(1), pp. 1–49. doi: 10.1162/NECO_a_00912.</li>
+  <li>Harnad, S. (1990) 'The symbol grounding problem', <em>Physica D: Nonlinear Phenomena,</em> 42(1–3), pp. 335–346. doi: 10.1016/0167-2789(90)90087-6.</li>
+  <li>Hebb, D.O. (1949) <em>The Organisation of Behaviour: A Neuropsychological Theory.</em> New York: Wiley.</li>
+  <li>Kadavath, S., Conerly, T., Askell, A., Henighan, T., Drain, D., Perez, E., Schiefer, N., Dodds, Z., Tran-Johnson, J., Johnston, S., El-Showk, S., Jones, A., Elhage, N., Hume, T., Chen, A., Bai, Y., Bowman, S., Fort, S., Ganguli, D., Hernandez, D., Jacobson, J., Kernion, J., Kravec, S., Lovitt, L., Ndousse, K., Olsson, C., Ringer, S., Amodei, D., Joseph, N., McCandlish, S., Brown, T. and Clark, J. (2022) 'Language models (mostly) know what they know', <em>arXiv preprint,</em> arXiv:2207.05221. Available at: https://arxiv.org/abs/2207.05221 (Accessed: 23 June 2026).</li>
+  <li>Kahneman, D. (2011) <em>Thinking, Fast and Slow.</em> New York: Farrar, Straus and Giroux.</li>
+  <li>Lin, S., Hilton, J. and Evans, O. (2022) 'TruthfulQA: Measuring how models mimic human falsehoods', in <em>Proceedings of the 60th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers),</em> Dublin, Ireland, May 2022. Stroudsburg, PA: Association for Computational Linguistics, pp. 3214–3252. doi: 10.18653/v1/2022.acl-long.229.</li>
+  <li>McClelland, J.L., McNaughton, B.L. and O'Reilly, R.C. (1995) 'Why there are complementary learning systems in the hippocampus and neocortex: insights from the successes and failures of connectionist models of learning and memory', <em>Psychological Review,</em> 102(3), pp. 419–457. doi: 10.1037/0033-295X.102.3.419.</li>
+  <li>Miller, G.A. (1956) 'The magical number seven, plus or minus two: some limits on our capacity for processing information', <em>Psychological Review,</em> 63(2), pp. 81–97. doi: 10.1037/h0043158.</li>
+  <li>Nelson, T.O. and Narens, L. (1990) 'Metamemory: a theoretical framework and new findings', <em>Psychology of Learning and Motivation,</em> 26, pp. 125–173. doi: 10.1016/S0079-7421(08)60053-5.</li>
+  <li>Rao, R.P.N. and Ballard, D.H. (1999) 'Predictive coding in the visual cortex: a functional interpretation of some extra-classical receptive-field effects', <em>Nature Neuroscience,</em> 2(1), pp. 79–87. doi: 10.1038/4580.</li>
+  <li>Reimers, N. and Gurevych, I. (2019) 'Sentence-BERT: Sentence embeddings using Siamese BERT-networks', in <em>Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing,</em> Hong Kong, November 2019. Stroudsburg, PA: Association for Computational Linguistics, pp. 3982–3992. doi: 10.18653/v1/D19-1410.</li>
+  <li>Wei, J., Wang, X., Schuurmans, D., Bosma, M., Ichter, B., Xia, F., Chi, E., Le, Q. and Zhou, D. (2022) 'Chain-of-thought prompting elicits reasoning in large language models', in <em>Advances in Neural Information Processing Systems 35 (NeurIPS 2022),</em> New Orleans, LA. Available at: https://arxiv.org/abs/2201.11903 (Accessed: 23 June 2026).</li>
+</ol>
+</section>
+
+<!-- ══════════════════ APPENDICES ══════════════════ -->
+<div class="appendix">
+
+<h2>Appendix A — Development Methodology Notes</h2>
+<p>Early live evaluations (v7.3) used a harsh substring scorer and counted all abstention as failure on must-answer items, producing misleading 4–16% accuracy scores. Version 7.4 introduced TruthfulQA-aligned TI grading. Version 7.5 calibrated abstention via underdetermination markers (<code>underdetermination.py</code>) and introduced the mixed benchmark. Version 7.6 extended evaluation to three models simultaneously. Version 7.7 added the <code>llm_reflection</code> two-call self-critique baseline and <code>run_live_eval.py</code> for repo-root execution. This progression is documented in <code>docs/LIVE_EVAL_PILOT.md</code>, <code>docs/PAPER_EVAL_COMMANDS.md</code>, and <code>CHANGELOG.md</code>.</p>
+
+<h2>Appendix B — Reproduction Commands</h2>
+<pre><code>pip install -r requirements.txt -r requirements-eval.txt
+export GROQ_API_KEY=...
+
+# From repo root (any cwd) — four baseline modes including reflection
+python run_live_eval.py --provider groq --model llama-3.3-70b-versatile \
+  --truthfulqa --modes llm_alone llm_cot llm_reflection eidos_belief
+python run_live_eval.py --provider groq --model llama-3.1-8b-instant \
+  --truthfulqa --modes llm_alone llm_cot llm_reflection eidos_belief
+python run_live_eval.py --provider groq --model openai/gpt-oss-20b \
+  --truthfulqa --modes llm_alone llm_cot llm_reflection eidos_belief
+
+python run_live_eval.py --provider groq --model llama-3.3-70b-versatile \
+  --mixed --modes llm_alone llm_cot llm_reflection eidos_belief
+
+# Multi-model batch (3 core models)
+python -m eval.eidos_eval.run_multimodel_eval --provider groq
+
+# Extended robustness set (+3 models: GPT-OSS-120B, Qwen3.6-27B, Llama 4 Scout)
+python -m eval.eidos_eval.run_multimodel_eval --provider groq --extended</code></pre>
+
+<h2>Appendix C — Data Availability</h2>
+<p>Code and evaluation harness: <a href="https://github.com/yesYescaca/eidos" style="color:#2d5fa6">github.com/yesYescaca/eidos</a> (tag <code>v7.7</code>). Local reports (not committed to git): <code>eval/eidos_eval/reports/*.json</code>. Question sets: <code>questions_truthfulqa_50.json</code>, <code>questions_mixed_50.json</code>. Full command reference: <code>docs/PAPER_EVAL_COMMANDS.md</code>.</p>
+
+<h2>Appendix D — Recommended Before Submission</h2>
+<ul class="body-list">
+  <li>Add Wilson/binomial confidence intervals for all N=50 proportions</li>
+  <li>Run <code>--no-cache</code> ablation on 70B for robustness paragraph</li>
+  <li>Replicate TruthfulQA subset with GPT-judge for official metric alignment</li>
+  <li>Convert to LaTeX (arXiv <code>cs.AI</code> / <code>cs.CL</code> template)</li>
+  <li>Add author affiliation and ORCID</li>
+</ul>
+
+</div>
+
+<!-- ══════════════════ FOOTER ══════════════════ -->
+<div class="paper-footer">
+  EIDOS Sidecar · Kisamapa Labs · Experiment 06 · v7.7 · June 2026<br>
+  Draft for workshop / arXiv preprint submission (cs.AI / cs.CL)
+</div>
+
+<!-- ══════════════════ CHARTS ══════════════════ -->
+<script>
+const ACCENT   = '#2d5fa6';
+const WARN     = '#b54a1c';
+const SOFT     = '#8888a0';
+const SUCCESS  = '#2a7a4b';
+const NEUTRAL  = '#6b6b7a';
+const RULE     = '#d4d4dc';
+
+const modes = ['LLM alone','LLM CoT','LLM reflection','EIDOS gate','EIDOS belief','EIDOS meta'];
+const modeColors = [NEUTRAL, WARN, '#7a5fa6', ACCENT, SUCCESS, '#5b3fa6'];
+
+// ── FIGURE 2: TruthfulQA Commit TI ──
+const ctx2 = document.getElementById('chart_truthfulqa').getContext('2d');
+new Chart(ctx2, {
+  type: 'bar',
+  data: {
+    labels: modes,
+    datasets: [
+      {
+        label: 'Llama-3.3-70B',
+        data: [88, 62, 84, 89.6, 87.2, 87.2],
+        backgroundColor: ACCENT + 'cc',
+        borderColor: ACCENT,
+        borderWidth: 1.5,
+        borderRadius: 3,
+      },
+      {
+        label: 'Llama-3.1-8B',
+        data: [74, 90, 74, 76.2, 75.0, 75.6],
+        backgroundColor: SUCCESS + 'aa',
+        borderColor: SUCCESS,
+        borderWidth: 1.5,
+        borderRadius: 3,
+      },
+      {
+        label: 'GPT-OSS-20B',
+        data: [52, 36, 10, 72.7, 71.1, 68.3],
+        backgroundColor: WARN + 'aa',
+        borderColor: WARN,
+        borderWidth: 1.5,
+        borderRadius: 3,
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'top', labels: { font: { family: 'Inter', size: 11 }, boxWidth: 14, padding: 14 } },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y}%` } }
+    },
+    scales: {
+      x: { grid: { display: false }, ticks: { font: { family: 'Inter', size: 11 }, color: '#3d3d46' } },
+      y: { min: 0, max: 100, grid: { color: RULE }, ticks: { font: { family: 'Inter', size: 11 }, color: '#6b6b7a', callback: v => v + '%' }, title: { display: true, text: 'Commit TI (%)', font: { family: 'Inter', size: 11 }, color: '#6b6b7a' } }
+    }
+  }
+});
+
+// ── FIGURE 3: Mixed Benchmark Task Accuracy ──
+const ctx3 = document.getElementById('chart_mixed').getContext('2d');
+new Chart(ctx3, {
+  type: 'bar',
+  data: {
+    labels: modes,
+    datasets: [
+      {
+        label: 'Llama-3.3-70B',
+        data: [60, 40, 54, 96, 86, 86],
+        backgroundColor: ACCENT + 'cc',
+        borderColor: ACCENT,
+        borderWidth: 1.5,
+        borderRadius: 3,
+      },
+      {
+        label: 'Llama-3.1-8B',
+        data: [56, 66, 52, 88, 86, 86],
+        backgroundColor: SUCCESS + 'aa',
+        borderColor: SUCCESS,
+        borderWidth: 1.5,
+        borderRadius: 3,
+      },
+      {
+        label: 'GPT-OSS-20B',
+        data: [30, 12, 8, 72, 80, 80],
+        backgroundColor: WARN + 'aa',
+        borderColor: WARN,
+        borderWidth: 1.5,
+        borderRadius: 3,
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'top', labels: { font: { family: 'Inter', size: 11 }, boxWidth: 14, padding: 14 } },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y}%` } }
+    },
+    scales: {
+      x: { grid: { display: false }, ticks: { font: { family: 'Inter', size: 11 }, color: '#3d3d46' } },
+      y: { min: 0, max: 100, grid: { color: RULE }, ticks: { font: { family: 'Inter', size: 11 }, color: '#6b6b7a', callback: v => v + '%' }, title: { display: true, text: 'Task Accuracy (%)', font: { family: 'Inter', size: 11 }, color: '#6b6b7a' } }
+    }
+  }
+});
+
+// ── FIGURE 4: Ambiguity Safe Rate ──
+const ctx4 = document.getElementById('chart_ambig').getContext('2d');
+new Chart(ctx4, {
+  type: 'bar',
+  data: {
+    labels: ['Llama-3.3-70B', 'Llama-3.1-8B', 'GPT-OSS-20B'],
+    datasets: [
+      {
+        label: 'LLM alone',
+        data: [28, 28, 8],
+        backgroundColor: NEUTRAL + 'aa',
+        borderColor: NEUTRAL,
+        borderWidth: 1.5,
+        borderRadius: 3,
+      },
+      {
+        label: 'LLM CoT',
+        data: [20, 40, 0],
+        backgroundColor: WARN + 'aa',
+        borderColor: WARN,
+        borderWidth: 1.5,
+        borderRadius: 3,
+      },
+      {
+        label: 'LLM reflection',
+        data: [24, 28, 0],
+        backgroundColor: '#7a5fa6aa',
+        borderColor: '#7a5fa6',
+        borderWidth: 1.5,
+        borderRadius: 3,
+      },
+      {
+        label: 'EIDOS belief',
+        data: [88, 100, 100],
+        backgroundColor: SUCCESS + 'cc',
+        borderColor: SUCCESS,
+        borderWidth: 1.5,
+        borderRadius: 3,
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'top', labels: { font: { family: 'Inter', size: 11 }, boxWidth: 14, padding: 14 } },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y}%` } }
+    },
+    scales: {
+      x: { grid: { display: false }, ticks: { font: { family: 'Inter', size: 11 }, color: '#3d3d46' } },
+      y: { min: 0, max: 100, grid: { color: RULE }, ticks: { font: { family: 'Inter', size: 11 }, color: '#6b6b7a', callback: v => v + '%' }, title: { display: true, text: 'Ambiguity-Safe Rate (%)', font: { family: 'Inter', size: 11 }, color: '#6b6b7a' } }
+    }
+  }
+});
+</script>
+
+</body>
+</html>

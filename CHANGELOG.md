@@ -1,5 +1,18 @@
 # Changelog
 
+## v7.7 — Reflection Baseline
+- **`EvalMode.llm_reflection`** — two-call self-critique baseline (draft → revise)
+- **`reflection.py`** — `run_reflection_baseline()` separate from EIDOS gate
+- **`run_live_eval.py`** — repo-root launcher (fixes wrong-cwd `ModuleNotFoundError`)
+- **Comparison summary** — `belief_beats_reflection`, reflection TI deltas
+- **`GROQ_EXTENDED_EVAL_MODELS`** — GPT-OSS-120B, Qwen3.6-27B, Llama 4 Scout
+- **`run_multimodel_eval --extended`** — batch 6-model eval
+- **`docs/PAPER_EVAL_COMMANDS.md`** — reproduction commands + live result tables
+- **`docs/EIDOS_Research_Paper.html`** — preprint with N=50 results (6 models on mixed)
+- **Exp 29** — reflection mock CI
+- Live runner includes reflection in default comparison modes
+- State version **7.7**
+
 ## v7.6 — Multi-Model Live Eval
 - **`--model`** on live runner — explicit Groq/OpenAI model ID
 - **Per-model cache** — `live_cache_{model_slug}.json`

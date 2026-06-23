@@ -12,6 +12,7 @@ from architecture.gate.gate_profiles import policy_for_live_mode, policy_for_que
 from architecture.hybrid.hybrid_agent import HybridEidosAgent
 from architecture.hybrid.llm_backend import CaseMockLLM, LanguageModelBackend, RoundRobinMockLLM
 from eval.eidos_eval.prompts import resolve_prompt_template
+from eval.eidos_eval.reflection import run_reflection_baseline
 from eval.eidos_eval.scorer import (
     answer_correct,
     committed,
@@ -26,6 +27,7 @@ DEFAULT_QUESTIONS_PATH = Path(__file__).resolve().parent / "questions.json"
 class EvalMode(str, Enum):
     LLM_ALONE = "llm_alone"
     LLM_COT = "llm_cot"
+    LLM_REFLECTION = "llm_reflection"
     EIDOS_GATE = "eidos_gate"
     EIDOS_BELIEF = "eidos_belief"
     EIDOS_META = "eidos_meta"
@@ -38,10 +40,15 @@ LIVE_COMPARISON_MODES = frozenset(
     {
         EvalMode.LLM_ALONE,
         EvalMode.LLM_COT,
+        EvalMode.LLM_REFLECTION,
         EvalMode.EIDOS_GATE,
         EvalMode.EIDOS_BELIEF,
         EvalMode.EIDOS_META,
     }
+)
+
+BASELINE_MODES = frozenset(
+    {EvalMode.LLM_ALONE, EvalMode.LLM_COT, EvalMode.LLM_REFLECTION}
 )
 
 
@@ -142,14 +149,20 @@ class ComparisonSummary:
     task_accuracy_delta_gate: float
     task_accuracy_delta_belief: float
     task_accuracy_delta_cot: float
+    task_accuracy_delta_reflection: float
     belief_beats_cot: bool
+    belief_beats_reflection: bool
     truthful_informative_delta_belief: float | None = None
     truthful_informative_delta_cot: float | None = None
+    truthful_informative_delta_reflection: float | None = None
     belief_beats_cot_ti: bool | None = None
+    belief_beats_reflection_ti: bool | None = None
     misconception_reduction_belief: float | None = None
     misconception_commit_ti_belief: float | None = None
     misconception_commit_ti_cot: float | None = None
+    misconception_commit_ti_reflection: float | None = None
     belief_beats_cot_misconception_commits: bool | None = None
+    belief_beats_reflection_misconception_commits: bool | None = None
 
     def to_dict(self) -> dict[str, float | bool | None]:
         return {
@@ -160,14 +173,22 @@ class ComparisonSummary:
             "task_accuracy_delta_gate": self.task_accuracy_delta_gate,
             "task_accuracy_delta_belief": self.task_accuracy_delta_belief,
             "task_accuracy_delta_cot": self.task_accuracy_delta_cot,
+            "task_accuracy_delta_reflection": self.task_accuracy_delta_reflection,
             "belief_beats_cot": self.belief_beats_cot,
+            "belief_beats_reflection": self.belief_beats_reflection,
             "truthful_informative_delta_belief": self.truthful_informative_delta_belief,
             "truthful_informative_delta_cot": self.truthful_informative_delta_cot,
+            "truthful_informative_delta_reflection": self.truthful_informative_delta_reflection,
             "belief_beats_cot_ti": self.belief_beats_cot_ti,
+            "belief_beats_reflection_ti": self.belief_beats_reflection_ti,
             "misconception_reduction_belief": self.misconception_reduction_belief,
             "misconception_commit_ti_belief": self.misconception_commit_ti_belief,
             "misconception_commit_ti_cot": self.misconception_commit_ti_cot,
+            "misconception_commit_ti_reflection": self.misconception_commit_ti_reflection,
             "belief_beats_cot_misconception_commits": self.belief_beats_cot_misconception_commits,
+            "belief_beats_reflection_misconception_commits": (
+                self.belief_beats_reflection_misconception_commits
+            ),
         }
 
 
@@ -220,10 +241,10 @@ class EidosEvalHarness:
         live = live_llm is not None
         if live:
             llm = live_llm
-            enable_gate = mode not in (EvalMode.LLM_ALONE, EvalMode.LLM_COT)
+            enable_gate = mode not in BASELINE_MODES
             meta = mode == EvalMode.EIDOS_META
             belief = mode in (EvalMode.EIDOS_BELIEF, EvalMode.EIDOS_META)
-        elif mode in (EvalMode.LLM_ALONE, EvalMode.LLM_COT):
+        elif mode in BASELINE_MODES:
             llm = CaseMockLLM(self._mock_draft(question, mode))
             enable_gate = False
             meta = False
@@ -278,6 +299,20 @@ class EidosEvalHarness:
             hybrid.warm_session([(label, phrase)], n_each=int(item["n"]))
         return hybrid
 
+    def _build_reflection_llm(
+        self,
+        question: dict[str, Any],
+        live_llm: LanguageModelBackend | None,
+    ) -> LanguageModelBackend:
+        if live_llm is not None:
+            return live_llm
+        return RoundRobinMockLLM(
+            [
+                self._mock_draft(question),
+                question.get("revised_draft", self._mock_draft(question)),
+            ]
+        )
+
     def run_question(
         self,
         question: dict[str, Any],
@@ -287,22 +322,36 @@ class EidosEvalHarness:
         hybrid_factory: Callable[..., HybridEidosAgent] | None = None,
         live_llm: LanguageModelBackend | None = None,
     ) -> QuestionResult:
-        hybrid = self._build_hybrid(
-            question, mode, seed, hybrid_factory, live_llm=live_llm
-        )
-        prompt_template = resolve_prompt_template(
-            mode.value,
-            grading_mode=self.grading_mode,
-            question_type=question.get("question_type"),
-        )
-        result = hybrid.respond(
-            question["question"],
-            goal_text=question.get("goal"),
-            prompt_template=prompt_template,
-        )
-        response = result["final_response"]
-        gate_decision = result["gate_decision"]
-        gated = bool(result["gated"])
+        if mode == EvalMode.LLM_REFLECTION:
+            reflection_llm = self._build_reflection_llm(question, live_llm)
+            reflection = run_reflection_baseline(
+                reflection_llm,
+                question,
+                grading_mode=self.grading_mode,
+            )
+            response = reflection.final_response
+            gate_decision = "commit"
+            gated = False
+            revision_rounds = 1
+        else:
+            hybrid = self._build_hybrid(
+                question, mode, seed, hybrid_factory, live_llm=live_llm
+            )
+            prompt_template = resolve_prompt_template(
+                mode.value,
+                grading_mode=self.grading_mode,
+                question_type=question.get("question_type"),
+            )
+            result = hybrid.respond(
+                question["question"],
+                goal_text=question.get("goal"),
+                prompt_template=prompt_template,
+            )
+            response = result["final_response"]
+            gate_decision = result["gate_decision"]
+            gated = bool(result["gated"])
+            revision_rounds = len(result.get("revision_rounds", []))
+
         is_committed = committed(response, gate_decision, gated)
 
         tqa_score = None
@@ -343,7 +392,7 @@ class EidosEvalHarness:
             correct_flag = tqa_score.truthful_and_informative
         else:
             correct_flag = answer_ok if (
-                is_committed or mode in (EvalMode.LLM_ALONE, EvalMode.LLM_COT)
+                is_committed or mode in BASELINE_MODES
             ) else False
 
         return QuestionResult(
@@ -357,7 +406,7 @@ class EidosEvalHarness:
             must_abstain=must_abstain,
             false_commit=false_commit,
             response_preview=response[:120],
-            revision_rounds=len(result.get("revision_rounds", [])),
+            revision_rounds=revision_rounds,
             truthful=tqa_score.truthful if tqa_score else None,
             informative=tqa_score.informative if tqa_score else None,
             truthful_informative=tqa_score.truthful_and_informative
@@ -468,6 +517,7 @@ class EidosEvalHarness:
     def summarize_comparison(reports: dict[str, EvalReport]) -> ComparisonSummary:
         alone = reports[EvalMode.LLM_ALONE.value]
         cot = reports.get(EvalMode.LLM_COT.value)
+        reflection = reports.get(EvalMode.LLM_REFLECTION.value)
         gate = reports.get(EvalMode.EIDOS_GATE.value)
         belief = reports.get(EvalMode.EIDOS_BELIEF.value)
         meta = reports.get(EvalMode.EIDOS_META.value)
@@ -482,14 +532,18 @@ class EidosEvalHarness:
 
         belief_report = belief or meta
         cot_task = cot.task_accuracy if cot else 0.0
+        reflection_task = reflection.task_accuracy if reflection else 0.0
         belief_task = belief_report.task_accuracy if belief_report else 0.0
 
         ti_alone = alone.truthful_informative_rate
         ti_belief = belief_report.truthful_informative_rate if belief_report else None
         ti_cot = cot.truthful_informative_rate if cot else None
+        ti_reflection = reflection.truthful_informative_rate if reflection else None
         ti_delta_belief = None
         ti_delta_cot = None
+        ti_delta_reflection = None
         beats_cot_ti = None
+        beats_reflection_ti = None
         misc_reduction = None
         if ti_alone is not None and ti_belief is not None:
             ti_delta_belief = ti_belief - ti_alone
@@ -498,14 +552,24 @@ class EidosEvalHarness:
                 misc_reduction -= belief_report.misconception_commit_rate or 0.0
         if ti_alone is not None and ti_cot is not None:
             ti_delta_cot = ti_cot - ti_alone
+        if ti_alone is not None and ti_reflection is not None:
+            ti_delta_reflection = ti_reflection - ti_alone
         if ti_belief is not None and ti_cot is not None:
             beats_cot_ti = ti_belief > ti_cot
+        if ti_belief is not None and ti_reflection is not None:
+            beats_reflection_ti = ti_belief > ti_reflection
 
         misc_commit_belief = belief_report.misconception_commit_ti_rate if belief_report else None
         misc_commit_cot = cot.misconception_commit_ti_rate if cot else None
+        misc_commit_reflection = (
+            reflection.misconception_commit_ti_rate if reflection else None
+        )
         beats_cot_misc = None
+        beats_reflection_misc = None
         if misc_commit_belief is not None and misc_commit_cot is not None:
             beats_cot_misc = misc_commit_belief > misc_commit_cot
+        if misc_commit_belief is not None and misc_commit_reflection is not None:
+            beats_reflection_misc = misc_commit_belief > misc_commit_reflection
 
         return ComparisonSummary(
             selective_accuracy_delta_gate=delta(gate),
@@ -517,14 +581,20 @@ class EidosEvalHarness:
             - alone.task_accuracy,
             task_accuracy_delta_belief=belief_task - alone.task_accuracy,
             task_accuracy_delta_cot=cot_task - alone.task_accuracy,
+            task_accuracy_delta_reflection=reflection_task - alone.task_accuracy,
             belief_beats_cot=belief_task > cot_task if cot else False,
+            belief_beats_reflection=belief_task > reflection_task if reflection else False,
             truthful_informative_delta_belief=ti_delta_belief,
             truthful_informative_delta_cot=ti_delta_cot,
+            truthful_informative_delta_reflection=ti_delta_reflection,
             belief_beats_cot_ti=beats_cot_ti,
+            belief_beats_reflection_ti=beats_reflection_ti,
             misconception_reduction_belief=misc_reduction,
             misconception_commit_ti_belief=misc_commit_belief,
             misconception_commit_ti_cot=misc_commit_cot,
+            misconception_commit_ti_reflection=misc_commit_reflection,
             belief_beats_cot_misconception_commits=beats_cot_misc,
+            belief_beats_reflection_misconception_commits=beats_reflection_misc,
         )
 
 

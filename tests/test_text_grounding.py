@@ -45,7 +45,7 @@ def test_text_agent_save_load_roundtrip():
         path = Path(tmp) / "text_agent.json"
         agent.save_state(path)
         loaded = json.loads(path.read_text())
-        assert loaded["version"] == "7.6"
+        assert loaded["version"] == "7.7"
         assert loaded["text_concepts"]["fire"] == "flames in the kitchen"
 
         agent2 = EidosTextAgent(seed=99)

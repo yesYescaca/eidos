@@ -10,13 +10,22 @@ from architecture.hybrid.llm_factory import GROQ_DEFAULT_MODEL
 
 LiveEvalProvider = Literal["groq", "openai"]
 
-# Groq models for cross-scale / cross-family robustness checks (v7.6).
-# Note: llama-3.1-70b-versatile was decommissioned on Groq — use gpt-oss-20b instead.
+# Groq models for cross-scale / cross-family robustness checks (v7.6+).
 GROQ_EVAL_MODELS: tuple[str, ...] = (
     "llama-3.3-70b-versatile",
     "llama-3.1-8b-instant",
     "openai/gpt-oss-20b",
 )
+
+# Optional extended set for paper robustness (v7.7) — run via --models or --extended.
+# Note: qwen/qwen3-32b and llama-4-scout deprecate 2026-07-17 on Groq; prefer qwen3.6-27b long-term.
+GROQ_EXTENDED_EVAL_MODELS: tuple[str, ...] = (
+    "openai/gpt-oss-120b",
+    "qwen/qwen3.6-27b",
+    "meta-llama/llama-4-scout-17b-16e-instruct",
+)
+
+GROQ_ALL_EVAL_MODELS: tuple[str, ...] = GROQ_EVAL_MODELS + GROQ_EXTENDED_EVAL_MODELS
 
 # Deprecated Groq IDs → current replacement (warn + auto-map).
 DEPRECATED_GROQ_MODELS: dict[str, str] = {

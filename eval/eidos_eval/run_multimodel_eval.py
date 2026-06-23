@@ -10,6 +10,7 @@ from pathlib import Path
 from architecture.hybrid.llm_factory import live_llm_available
 from eval.eidos_eval.live_models import (
     GROQ_EVAL_MODELS,
+    GROQ_EXTENDED_EVAL_MODELS,
     default_models_for_provider,
     model_slug,
     report_basename,
@@ -167,6 +168,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--embedding", choices=("auto", "hash", "sbert"), default="auto")
     parser.add_argument("--limit", type=int, default=None, help="First N questions only")
     parser.add_argument(
+        "--extended",
+        action="store_true",
+        help="Include GROQ_EXTENDED_EVAL_MODELS (6 models total)",
+    )
+    parser.add_argument(
         "--summary-out",
         type=Path,
         default=REPORTS_DIR / "multimodel_summary.json",
@@ -181,6 +187,8 @@ def main(argv: list[str] | None = None) -> int:
     models = args.models or list(default_models_for_provider(args.provider))
     if args.provider == "groq" and args.models is None:
         models = list(GROQ_EVAL_MODELS)
+        if args.extended:
+            models = list(GROQ_EVAL_MODELS) + list(GROQ_EXTENDED_EVAL_MODELS)
 
     results = run_multimodel_eval(
         provider=args.provider,

@@ -154,7 +154,7 @@ def print_live_summary(
     model_label = model_id or payload.get("model") or "default"
 
     print("=" * 55)
-    print(f"EIDOS-EVAL LIVE ({provider}) — v7.6")
+    print(f"EIDOS-EVAL LIVE ({provider}) — v7.7")
     print(f"Model: {model_label}")
     print(f"Embedding: {emb}")
     if grading_mode:
@@ -178,14 +178,25 @@ def print_live_summary(
         f"  Δ task_acc (belief vs alone): {summary['task_accuracy_delta_belief']:+.1%}"
     )
     print(f"  Δ task_acc (CoT vs alone): {summary['task_accuracy_delta_cot']:+.1%}")
+    print(
+        f"  Δ task_acc (reflection vs alone): "
+        f"{summary['task_accuracy_delta_reflection']:+.1%}"
+    )
     print(f"  Belief beats CoT (task): {summary['belief_beats_cot']}")
+    print(f"  Belief beats reflection (task): {summary['belief_beats_reflection']}")
     if summary.get("truthful_informative_delta_belief") is not None:
         print(
             f"  Δ TI (belief vs alone): "
             f"{summary['truthful_informative_delta_belief']:+.1%}"
         )
         print(f"  Δ TI (CoT vs alone): {summary['truthful_informative_delta_cot']:+.1%}")
+        if summary.get("truthful_informative_delta_reflection") is not None:
+            print(
+                f"  Δ TI (reflection vs alone): "
+                f"{summary['truthful_informative_delta_reflection']:+.1%}"
+            )
         print(f"  Belief beats CoT (TI): {summary['belief_beats_cot_ti']}")
+        print(f"  Belief beats reflection (TI): {summary['belief_beats_reflection_ti']}")
     if summary.get("misconception_commit_ti_belief") is not None:
         print(
             f"  Miscon commit TI (belief): "
@@ -195,8 +206,16 @@ def print_live_summary(
             f"  Miscon commit TI (CoT): {summary['misconception_commit_ti_cot']:.1%}"
         )
         print(
+            f"  Miscon commit TI (reflection): "
+            f"{summary['misconception_commit_ti_reflection']:.1%}"
+        )
+        print(
             f"  Belief beats CoT (miscon commits): "
             f"{summary['belief_beats_cot_misconception_commits']}"
+        )
+        print(
+            f"  Belief beats reflection (miscon commits): "
+            f"{summary['belief_beats_reflection_misconception_commits']}"
         )
     print(
         f"  false_commit reduction (gate): {summary['false_commit_reduction_gate']:.1%}"
