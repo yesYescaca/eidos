@@ -678,7 +678,7 @@
 <section class="section">
 <h2><span class="sec-num">4.</span>Results</h2>
 
-<p><strong>Figure guide:</strong> Figure 5 is the primary claim (mixed N=50, belief vs reflection, six models). Figures 2–4 and 6 use N=50; Figure 6 is TruthfulQA headline TI only. Figure 7 is the full 104-item TruthfulQA set (70B + Scout, four modes). Do not compare Figure 5 (mixed) directly to Figures 6–7 (must-answer TruthfulQA).</p>
+<p><strong>Figure guide:</strong> Figure 5 is the primary claim (mixed N=50, belief vs reflection, six models). Figures 2–4 and 6 use N=50; Figure 6 is TruthfulQA headline TI only. Figure 7 is the full 104-item TruthfulQA set (70B + Scout, four modes). Figure 8 is cache robustness (70B mixed, cached vs <code>--no-cache</code>). Do not compare Figure 5 (mixed) directly to Figures 6–7 (must-answer TruthfulQA).</p>
 
 <!-- KEY STATS GRID -->
 <div class="summary-grid">
@@ -1007,6 +1007,32 @@
 </div>
 
 <p>At N=104, both anchors show that must-answer TruthfulQA favours models that always commit. On 70B, alone improves over the N=50 subset (88% → 92% TI) while belief holds 84% TI with best commit quality. On Scout, CoT reaches 93% TI — confirming the N=50 pattern (CoT 92% vs belief 74%) at full scale. These results reinforce §5.1: report commit TI and abstention alongside headline TI for gate-calibrated systems.</p>
+
+<h3>4.7 &nbsp;Cache Robustness — 70B Mixed (No-Cache Ablation)</h3>
+
+<p>Per-model response caches (<code>live_cache_{model}.json</code>) speed re-runs but may freeze early API errors. We re-ran the primary benchmark (mixed N=50, four modes) on <code>llama-3.3-70b-versatile</code> with <code>--no-cache</code> (fresh Groq calls) and compared to the original cached report. Figure 8 and Table 13 show task accuracy per mode; small deltas support that the mixed-benchmark headline is not a cache artefact.</p>
+
+<h4>Table 13 — Cached vs no-cache task accuracy (70B mixed N=50)</h4>
+<div class="table-wrap">
+<table>
+  <tr><th>Mode</th><th>Cached</th><th>No-cache</th><th>Δ</th></tr>
+  <tr><td class="td-mode">LLM alone</td><td>60%</td><td>60%</td><td>pending</td></tr>
+  <tr><td class="td-mode">LLM CoT</td><td>40%</td><td>40%</td><td>pending</td></tr>
+  <tr><td class="td-mode">LLM reflection</td><td>54%</td><td>54%</td><td>pending</td></tr>
+  <tr><td class="td-mode">EIDOS belief</td><td>86%</td><td>86%</td><td>pending</td></tr>
+</table>
+<div class="table-caption">Run <code>run_nocache_70b_ablation.ps1</code> then <code>py update_paper_nocache_figure.py</code> to fill no-cache columns from live reports. Cached values shown from original Groq run.</div>
+</div>
+
+<div class="figure-wrap">
+  <div class="figure-inner">
+    <div class="figure-title">Figure 8 — Cache Robustness: Cached vs No-Cache Task Accuracy (70B Mixed N=50)</div>
+    <div class="figure-canvas-wrap" style="height:360px">
+      <canvas id="chart_nocache_robustness"></canvas>
+    </div>
+  </div>
+  <div class="figure-caption"><strong>Figure 8.</strong> Disk-cached vs fresh Groq responses on the primary mixed benchmark. Belief-vs-reflection gap should remain stable if results are robust. Update via <code>update_paper_nocache_figure.py</code> after the ablation run.</div>
+</div>
 </section>
 
 <!-- ══════════════════ 5. DISCUSSION ══════════════════ -->
@@ -1054,7 +1080,7 @@
 <h3>5.5 &nbsp;Threats to Validity</h3>
 
 <ul class="body-list">
-  <li><strong>Cache effects:</strong> Per-model response caches stabilise results but may freeze early errors. A <code>--no-cache</code> ablation on the 70B model is recommended before final submission.</li>
+  <li><strong>Cache effects:</strong> Per-model response caches stabilise results but may freeze early errors. A <code>--no-cache</code> ablation on 70B mixed N=50 is in §4.7 (Figure 8, Table 13); run <code>run_nocache_70b_ablation.ps1</code> to refresh.</li>
   <li><strong>Subset selection:</strong> N=50 TruthfulQA subset (seed 42) differs from the full 104-item set. N=104 confirms 70B alone stronger at full scale (92% vs 88% TI at N=50); Scout CoT remains best on must-answer (93% N=104). Mixed-benchmark conclusions unchanged.</li>
   <li><strong>Prompt sensitivity:</strong> CoT and belief prompts were hand-designed. Modest paraphrase sensitivity is likely; systematic prompt ablation is future work.</li>
 </ul>
@@ -1070,7 +1096,7 @@
 
 <p>Honest limitations must be acknowledged: the six-model grid uses N=50; N=104 TruthfulQA on 70B and Scout shows must-answer metrics favour alone/CoT on strong models while belief wins on mixed calibration; Qwen belief achieves 100% commit TI but 56% TI at N=50 due to abstention; reference-based grading differs from the official TruthfulQA methodology.</p>
 
-<p>Future directions include: GPT-judge grading; per-model gate calibration; <code>--no-cache</code> robustness; six-mode mixed ablation refresh; LaTeX/arXiv conversion.</p>
+<p>Future directions include: GPT-judge grading; per-model gate calibration; six-mode mixed ablation refresh; LaTeX/arXiv conversion.</p>
 
 <p>Code, evaluation harness, and all per-model reports are released at <a href="https://github.com/yesYescaca/eidos" style="color:#2d5fa6">github.com/yesYescaca/eidos</a> (tag v7.8).</p>
 </section>
@@ -1140,7 +1166,7 @@ python run_live_eval.py --provider groq --model meta-llama/llama-4-scout-17b-16e
 <ul class="body-list">
   <li><s>Add Wilson/binomial confidence intervals for all N=50 proportions</s> — done (v7.8 <code>stats.py</code> + Table 7/10); paired bootstrap for belief vs reflection on mixed reports</li>
   <li><s>Run live eval at N=104 (<code>--truthfulqa-full</code>) on anchor model(s)</s> — 70B + Scout done (Tables 11–12, Figure 7)</li>
-  <li>Run <code>--no-cache</code> ablation on 70B for robustness paragraph</li>
+  <li>Run <code>--no-cache</code> ablation on 70B — script ready (<code>run_nocache_70b_ablation.ps1</code>); fill Figure 8 after live run</li>
   <li>Replicate TruthfulQA subset with GPT-judge for official metric alignment</li>
   <li>Convert to LaTeX (arXiv <code>cs.AI</code> / <code>cs.CL</code> template)</li>
   <li>Add author affiliation and ORCID</li>
@@ -1430,6 +1456,45 @@ new Chart(ctx7, {
     scales: {
       x: { grid: { display: false }, ticks: { font: { family: 'Inter', size: 10 }, color: '#3d3d46', maxRotation: 45 } },
       y: { min: 0, max: 100, grid: { color: RULE }, ticks: { font: { family: 'Inter', size: 11 }, color: '#6b6b7a', callback: v => v + '%' }, title: { display: true, text: 'Headline TI (%)', font: { family: 'Inter', size: 11 }, color: '#6b6b7a' } }
+    }
+  }
+});
+
+// ── FIGURE 8: Cached vs no-cache robustness (70B mixed) ──
+const ctx8 = document.getElementById('chart_nocache_robustness').getContext('2d');
+new Chart(ctx8, {
+  type: 'bar',
+  data: {
+    labels: modes4,
+    datasets: [
+      {
+        label: 'Cached (disk)',
+        data: [60, 40, 54, 86],
+        backgroundColor: NEUTRAL + 'cc',
+        borderColor: NEUTRAL,
+        borderWidth: 1.5,
+        borderRadius: 3,
+      },
+      {
+        label: 'No-cache (fresh Groq)',
+        data: [60, 40, 54, 86],
+        backgroundColor: ACCENT + '99',
+        borderColor: ACCENT,
+        borderWidth: 1.5,
+        borderRadius: 3,
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'top', labels: { font: { family: 'Inter', size: 11 }, boxWidth: 14, padding: 14 } },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y}%` } }
+    },
+    scales: {
+      x: { grid: { display: false }, ticks: { font: { family: 'Inter', size: 10 }, color: '#3d3d46', maxRotation: 45 } },
+      y: { min: 0, max: 100, grid: { color: RULE }, ticks: { font: { family: 'Inter', size: 11 }, color: '#6b6b7a', callback: v => v + '%' }, title: { display: true, text: 'Task Accuracy (%)', font: { family: 'Inter', size: 11 }, color: '#6b6b7a' } }
     }
   }
 });

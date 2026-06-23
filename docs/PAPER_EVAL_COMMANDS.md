@@ -123,3 +123,37 @@ py $EIDOS --provider groq --model llama-3.3-70b-versatile --mixed \
 cd "C:\Users\Francisco\Downloads\Kisamapa labs\EIDOS project\eidos"
 & ".\run_analyze_reports.ps1" --out eval/eidos_eval/reports/stats_summary.json
 ```
+
+## No-cache robustness ablation (70B mixed N=50)
+
+Re-runs the **primary benchmark** with fresh Groq API calls (no disk cache) and compares to the cached baseline. Saves a separate report; does not overwrite the original.
+
+```powershell
+$env:GROQ_API_KEY="gsk_your_key_here"
+cd "C:\Users\Francisco\Downloads\Kisamapa labs\EIDOS project\eidos"
+& ".\run_nocache_70b_ablation.ps1"
+```
+
+This script:
+1. Runs `run_live_eval.py --mixed --no-cache` → `live_mixed_llama-3.3-70b-versatile_nocache_report.json`
+2. Compares vs cached report → `nocache_ablation_70b_mixed.json`
+3. Patches **Figure 8** and **Table 13** in the research paper
+
+Manual steps (equivalent):
+
+```powershell
+$EIDOS = ".\run_live_eval.ps1"
+& $EIDOS --provider groq --model llama-3.3-70b-versatile --mixed --no-cache `
+  --modes llm_alone llm_cot llm_reflection eidos_belief `
+  --out eval/eidos_eval/reports/live_mixed_llama-3.3-70b-versatile_nocache_report.json
+
+& ".\run_compare_ablation.ps1" `
+  eval/eidos_eval/reports/live_mixed_llama-3.3-70b-versatile_report.json `
+  eval/eidos_eval/reports/live_mixed_llama-3.3-70b-versatile_nocache_report.json `
+  --metrics task_accuracy ambiguous_safe_rate misconception_commit_ti_rate `
+  --out eval/eidos_eval/reports/nocache_ablation_70b_mixed.json
+
+py update_paper_nocache_figure.py
+```
+
+Expect ~15–30 minutes (4 modes × 50 questions, fresh API calls).
