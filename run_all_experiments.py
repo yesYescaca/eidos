@@ -38,6 +38,7 @@ EXPERIMENTS = [
     ("25", "exp_25_truthfulqa_misconceptions", "TruthfulQA belief vs CoT (v7.3)"),
     ("26", "exp_26_truthfulqa_grading", "TruthfulQA grading + factual gate (v7.4)"),
     ("27", "exp_27_mixed_eval", "Mixed eval misconceptions + ambiguous (v7.5)"),
+    ("28", "exp_28_multimodel_eval", "Multi-model live eval registry (v7.6)"),
 ]
 
 

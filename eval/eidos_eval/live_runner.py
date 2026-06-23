@@ -1,4 +1,4 @@
-"""Live EIDOS-Eval — Groq API comparison (v7.5)."""
+"""Live EIDOS-Eval — Groq API comparison (v7.6)."""
 
 from __future__ import annotations
 
@@ -11,14 +11,37 @@ from architecture.bridge.embedding_factory import create_live_grounding, resolve
 from architecture.hybrid.hybrid_agent import HybridEidosAgent
 from architecture.hybrid.llm_backend import LanguageModelBackend
 from architecture.hybrid.llm_factory import create_live_llm, live_llm_available
-from eval.eidos_eval.llm_cache import CachedLLM, DEFAULT_CACHE_PATH
+from eval.eidos_eval.llm_cache import CachedLLM, cache_path_for_model
+from eval.eidos_eval.live_models import model_slug, report_basename, resolve_model_id
 from eval.eidos_eval.runner import EidosEvalHarness, EvalMode, LIVE_COMPARISON_MODES
 
 LIVE_QUESTIONS_PATH = Path(__file__).resolve().parent / "questions_live.json"
 TRUTHFULQA_50_PATH = Path(__file__).resolve().parent / "questions_truthfulqa_50.json"
 MIXED_50_PATH = Path(__file__).resolve().parent / "questions_mixed_50.json"
+REPORTS_DIR = Path(__file__).resolve().parent / "reports"
 
 DEFAULT_LIVE_MODES = list(LIVE_COMPARISON_MODES)
+
+
+def benchmark_name(*, mixed: bool, truthfulqa: bool) -> str:
+    if mixed:
+        return "mixed"
+    if truthfulqa:
+        return "truthfulqa"
+    return "pilot"
+
+
+def default_report_path(
+    *,
+    provider: str,
+    model_id: str,
+    mixed: bool,
+    truthfulqa: bool,
+) -> Path | None:
+    bench = benchmark_name(mixed=mixed, truthfulqa=truthfulqa)
+    if bench == "pilot":
+        return None
+    return REPORTS_DIR / report_basename(bench, model_id)
 
 
 def _print_report(mode: str, report: object) -> None:
@@ -52,6 +75,7 @@ def _print_report(mode: str, report: object) -> None:
 def run_live_comparison(
     *,
     provider: str = "groq",
+    model: str | None = None,
     questions_path: Path | None = None,
     seed: int = 42,
     modes: list[EvalMode] | None = None,
@@ -64,9 +88,14 @@ def run_live_comparison(
     """Run EIDOS-Eval with a live LLM for all modes."""
     path = questions_path or LIVE_QUESTIONS_PATH
     harness = EidosEvalHarness(path, limit=limit)
-    backend = llm or create_live_llm(provider)  # type: ignore[arg-type]
+    model_id = resolve_model_id(provider, model)  # type: ignore[arg-type]
+    backend = llm or create_live_llm(provider, model=model_id)  # type: ignore[arg-type]
     if use_cache:
-        backend = CachedLLM(backend, cache_path or DEFAULT_CACHE_PATH)
+        resolved_cache = cache_path or cache_path_for_model(
+            model_id,
+            legacy=model is None and cache_path is None,
+        )
+        backend = CachedLLM(backend, resolved_cache)
 
     prefer_sbert = embedding != "hash"
     if embedding == "sbert":
@@ -89,7 +118,89 @@ def run_live_comparison(
     )
     reports["_embedding_backend"] = backend_label  # type: ignore[assignment]
     reports["_grading_mode"] = harness.grading_mode  # type: ignore[assignment]
+    reports["_model"] = model_id  # type: ignore[assignment]
+    reports["_provider"] = provider  # type: ignore[assignment]
     return reports
+
+
+def build_live_payload(reports: dict) -> dict:
+    emb = reports.pop("_embedding_backend", "unknown")
+    grading_mode = reports.pop("_grading_mode", None)
+    model_id = reports.pop("_model", None)
+    provider = reports.pop("_provider", None)
+    summary = EidosEvalHarness.summarize_comparison(reports)
+    payload: dict = {
+        "provider": provider,
+        "model": model_id,
+        "embedding_backend": emb,
+        "grading_mode": grading_mode,
+        "reports": {},
+        "summary": summary.to_dict(),
+    }
+    for mode, report in reports.items():
+        payload["reports"][mode] = report.to_dict()
+    return payload
+
+
+def print_live_summary(
+    payload: dict,
+    *,
+    provider: str,
+    model_id: str | None = None,
+) -> None:
+    summary = payload["summary"]
+    grading_mode = payload.get("grading_mode")
+    emb = payload.get("embedding_backend", "unknown")
+    model_label = model_id or payload.get("model") or "default"
+
+    print("=" * 55)
+    print(f"EIDOS-EVAL LIVE ({provider}) — v7.6")
+    print(f"Model: {model_label}")
+    print(f"Embedding: {emb}")
+    if grading_mode:
+        print(f"Grading: {grading_mode}")
+    print("=" * 55)
+
+    for mode, report in payload["reports"].items():
+        class _R:
+            pass
+
+        r = _R()
+        for k, v in report.items():
+            setattr(r, k, v)
+        _print_report(mode, r)
+
+    print("  ---")
+    print(
+        f"  Δ commit_acc (gate vs alone): {summary['selective_accuracy_delta_gate']:+.1%}"
+    )
+    print(
+        f"  Δ task_acc (belief vs alone): {summary['task_accuracy_delta_belief']:+.1%}"
+    )
+    print(f"  Δ task_acc (CoT vs alone): {summary['task_accuracy_delta_cot']:+.1%}")
+    print(f"  Belief beats CoT (task): {summary['belief_beats_cot']}")
+    if summary.get("truthful_informative_delta_belief") is not None:
+        print(
+            f"  Δ TI (belief vs alone): "
+            f"{summary['truthful_informative_delta_belief']:+.1%}"
+        )
+        print(f"  Δ TI (CoT vs alone): {summary['truthful_informative_delta_cot']:+.1%}")
+        print(f"  Belief beats CoT (TI): {summary['belief_beats_cot_ti']}")
+    if summary.get("misconception_commit_ti_belief") is not None:
+        print(
+            f"  Miscon commit TI (belief): "
+            f"{summary['misconception_commit_ti_belief']:.1%}"
+        )
+        print(
+            f"  Miscon commit TI (CoT): {summary['misconception_commit_ti_cot']:.1%}"
+        )
+        print(
+            f"  Belief beats CoT (miscon commits): "
+            f"{summary['belief_beats_cot_misconception_commits']}"
+        )
+    print(
+        f"  false_commit reduction (gate): {summary['false_commit_reduction_gate']:.1%}"
+    )
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -99,6 +210,11 @@ def main(argv: list[str] | None = None) -> int:
         choices=("groq", "openai"),
         default="groq",
         help="Live LLM provider (default: groq)",
+    )
+    parser.add_argument(
+        "--model",
+        default=None,
+        help="Model ID (e.g. llama-3.1-8b-instant). Default: GROQ_MODEL or 70b versatile",
     )
     parser.add_argument(
         "--questions",
@@ -154,6 +270,7 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     modes = [EvalMode(m) for m in args.modes]
+    model_id = resolve_model_id(args.provider, args.model)
     if args.mixed:
         questions_path = MIXED_50_PATH
     elif args.truthfulqa:
@@ -161,15 +278,16 @@ def main(argv: list[str] | None = None) -> int:
     else:
         questions_path = args.questions
 
-    default_out = None
-    if args.out is None:
-        if args.mixed:
-            default_out = Path(__file__).resolve().parent / "live_mixed_report.json"
-        elif args.truthfulqa:
-            default_out = Path(__file__).resolve().parent / "live_truthfulqa_report.json"
+    default_out = default_report_path(
+        provider=args.provider,
+        model_id=model_id,
+        mixed=args.mixed,
+        truthfulqa=args.truthfulqa,
+    )
 
     reports = run_live_comparison(
         provider=args.provider,
+        model=args.model,
         questions_path=questions_path,
         seed=args.seed,
         modes=modes,
@@ -177,62 +295,12 @@ def main(argv: list[str] | None = None) -> int:
         embedding=args.embedding,
         limit=args.limit,
     )
-    emb = reports.pop("_embedding_backend", "unknown")
-    grading_mode = reports.pop("_grading_mode", None)
-    summary = EidosEvalHarness.summarize_comparison(reports)
-
-    print("=" * 55)
-    print(f"EIDOS-EVAL LIVE ({args.provider}) — v7.5")
-    print(f"Embedding: {emb}")
-    if grading_mode:
-        print(f"Grading: {grading_mode}")
-    print("=" * 55)
-    payload: dict = {
-        "embedding_backend": emb,
-        "grading_mode": grading_mode,
-        "reports": {},
-        "summary": summary.to_dict(),
-    }
-    for mode, report in reports.items():
-        _print_report(mode, report)
-        payload["reports"][mode] = report.to_dict()
-
-    print("  ---")
-    print(
-        f"  Δ commit_acc (gate vs alone): {summary.selective_accuracy_delta_gate:+.1%}"
-    )
-    print(
-        f"  Δ task_acc (belief vs alone): {summary.task_accuracy_delta_belief:+.1%}"
-    )
-    print(
-        f"  Δ task_acc (CoT vs alone): {summary.task_accuracy_delta_cot:+.1%}"
-    )
-    print(f"  Belief beats CoT (task): {summary.belief_beats_cot}")
-    if summary.truthful_informative_delta_belief is not None:
-        print(
-            f"  Δ TI (belief vs alone): {summary.truthful_informative_delta_belief:+.1%}"
-        )
-        print(
-            f"  Δ TI (CoT vs alone): {summary.truthful_informative_delta_cot:+.1%}"
-        )
-        print(f"  Belief beats CoT (TI): {summary.belief_beats_cot_ti}")
-    if summary.misconception_commit_ti_belief is not None:
-        print(
-            f"  Miscon commit TI (belief): {summary.misconception_commit_ti_belief:.1%}"
-        )
-        print(
-            f"  Miscon commit TI (CoT): {summary.misconception_commit_ti_cot:.1%}"
-        )
-        print(
-            f"  Belief beats CoT (miscon commits): "
-            f"{summary.belief_beats_cot_misconception_commits}"
-        )
-    print(
-        f"  false_commit reduction (gate): {summary.false_commit_reduction_gate:.1%}"
-    )
+    payload = build_live_payload(reports)
+    print_live_summary(payload, provider=args.provider, model_id=model_id)
 
     out_path = args.out or default_out
     if out_path:
+        out_path.parent.mkdir(parents=True, exist_ok=True)
         out_path.write_text(json.dumps(payload, indent=2))
         print(f"\nReport saved to {out_path}")
 

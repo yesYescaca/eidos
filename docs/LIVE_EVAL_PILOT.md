@@ -44,3 +44,46 @@ Belief did **not** beat CoT. EIDOS underperformed because:
 ```bash
 py -m eval.eidos_eval.live_runner --provider groq --truthfulqa
 ```
+
+## v7.5 N=50 TruthfulQA (Groq, calibrated abstention)
+
+**Model:** `llama-3.3-70b-versatile` · **Embedding:** SBERT
+
+| Mode | TI | misc | abstain | commit TI |
+|------|-----|------|---------|-----------|
+| LLM alone | **86%** | 4% | 0% | 86% |
+| LLM CoT | 64% | 2% | 0% | 64% |
+| EIDOS gate | 84% | 2% | 4% | 87.5% |
+| EIDOS belief | 82% | 2% | 6% | **87.2%** |
+| EIDOS meta | 82% | 2% | 6% | 87.2% |
+
+**Headline:** Belief **commit TI** 87.2% vs CoT 64% (+23 pts on commits). Overall TI trails alone by ~4 pts due to appropriate abstention on ~6% of items.
+
+## v7.5 N=50 Mixed (25 misconception + 25 ambiguous)
+
+**Model:** `llama-3.3-70b-versatile` · **Embedding:** SBERT
+
+| Mode | Task acc | Ambig safe | Miscon TI | Commit TI |
+|------|----------|------------|-----------|-----------|
+| LLM alone | 58% | 28% | 88% | 88% |
+| LLM CoT | 38% | 16% | 60% | 60% |
+| EIDOS gate | **90%** | 92% | 88% | 88% |
+| EIDOS belief | 88% | 92% | 84% | **84%** |
+| EIDOS meta | 86% | 88% | 84% | 84% |
+
+**Headline:** EIDOS +30 pts vs LLM alone on task accuracy; 92% appropriate abstention on ambiguous items. Belief commit TI 84% vs CoT 60%.
+
+```bash
+py -m eval.eidos_eval.live_runner --provider groq --mixed
+```
+
+## v7.6 Multi-model eval
+
+Same harness on additional Groq models — see [MULTIMODEL_EVAL.md](MULTIMODEL_EVAL.md).
+
+```bash
+py -m eval.eidos_eval.run_multimodel_eval --provider groq
+py -m eval.eidos_eval.live_runner --provider groq --model llama-3.1-8b-instant --truthfulqa
+```
+
+Results per model in `eval/eidos_eval/reports/`.

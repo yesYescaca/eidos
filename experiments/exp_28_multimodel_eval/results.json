@@ -1,0 +1,18 @@
+{
+  "pass": true,
+  "models": [
+    "llama-3.3-70b-versatile",
+    "llama-3.1-8b-instant",
+    "llama-3.1-70b-versatile"
+  ],
+  "slugs": [
+    "llama-3.3-70b-versatile",
+    "llama-3.1-8b-instant",
+    "llama-3.1-70b-versatile"
+  ],
+  "cache_files": [
+    "live_cache_llama-3.3-70b-versatile.json",
+    "live_cache_llama-3.1-8b-instant.json",
+    "live_cache_llama-3.1-70b-versatile.json"
+  ]
+}

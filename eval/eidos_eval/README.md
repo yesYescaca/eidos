@@ -1,4 +1,4 @@
-# EIDOS-Eval (v7.4)
+# EIDOS-Eval (v7.6)
 
 External comparison harness: **LLM-alone** vs **chain-of-thought** vs **EIDOS gate** vs **EIDOS belief** vs **EIDOS meta-injection**.
 
@@ -35,18 +35,21 @@ py experiments/exp_23_eidos_eval/run.py
 py experiments/exp_25_truthfulqa_misconceptions/run.py
 ```
 
-## Live API eval (Groq — v7.3)
+## Live API eval (Groq — v7.6)
 
 ```bash
 set GROQ_API_KEY=gsk_...
 py -m eval.eidos_eval.live_runner --provider groq
 py -m eval.eidos_eval.live_runner --provider groq --truthfulqa
+py -m eval.eidos_eval.live_runner --provider groq --mixed
+py -m eval.eidos_eval.live_runner --provider groq --model llama-3.1-8b-instant --truthfulqa
+py -m eval.eidos_eval.run_multimodel_eval --provider groq
 py experiments/exp_24_groq_live_eval/run.py
 ```
 
-Pilot (N=6): [docs/LIVE_EVAL_PILOT.md](../../docs/LIVE_EVAL_PILOT.md)
+Pilot (N=6): [docs/LIVE_EVAL_PILOT.md](../../docs/LIVE_EVAL_PILOT.md) · Multi-model: [docs/MULTIMODEL_EVAL.md](../../docs/MULTIMODEL_EVAL.md)
 
-Uses **SBERT** + mode-specific gate profiles (`gate_profiles.py`). Reports **task_accuracy**. Responses cached in `live_cache.json` (use `--no-cache` to bypass).
+Uses **SBERT** + mode-specific gate profiles (`gate_profiles.py`). Reports **task_accuracy**. Responses cached per model in `live_cache_{model}.json` (legacy `live_cache.json` when `--model` omitted). Use `--no-cache` to bypass.
 
 If HuggingFace Hub fails (SBERT download), the runner **falls back to hash** automatically, or force hash:
 

@@ -10,6 +10,20 @@ from typing import Any
 from architecture.hybrid.llm_backend import LanguageModelBackend
 
 DEFAULT_CACHE_PATH = Path(__file__).resolve().parent / "live_cache.json"
+_CACHE_DIR = Path(__file__).resolve().parent
+
+
+def cache_path_for_model(model_id: str, *, legacy: bool = False) -> Path:
+    """
+    Per-model cache file (v7.6).
+
+    Legacy ``live_cache.json`` is kept when ``legacy=True`` (unspecified model).
+    """
+    if legacy:
+        return DEFAULT_CACHE_PATH
+    from eval.eidos_eval.live_models import model_slug
+
+    return _CACHE_DIR / f"live_cache_{model_slug(model_id)}.json"
 
 
 class CachedLLM:

@@ -2,7 +2,7 @@
 
 **Emergent Intelligence via Distributed Organisational Systems**
 
-**Status: Active (v7.5)** — [Lab report](LAB_REPORT.md) · [Changelog](CHANGELOG.md) · [TruthfulQA eval](docs/TRUTHFULQA_EVAL.md) · [Live pilot](docs/LIVE_EVAL_PILOT.md) · [Releases](https://github.com/yesYescaca/eidos/releases)
+**Status: Active (v7.6)** — [Lab report](LAB_REPORT.md) · [Changelog](CHANGELOG.md) · [TruthfulQA eval](docs/TRUTHFULQA_EVAL.md) · [Live pilot](docs/LIVE_EVAL_PILOT.md) · [Multi-model eval](docs/MULTIMODEL_EVAL.md) · [Releases](https://github.com/yesYescaca/eidos/releases)
 
 EIDOS is a laboratory prototype reasoning agent built from cognitive science primitives — not from transformer architectures or token prediction. Instead of learning statistical text patterns, EIDOS implements mechanisms drawn from neuroscience: hierarchical predictive coding, global workspace broadcasting, Hebbian association learning, attentional gating, and intrinsic curiosity reward. It is a transparent, numpy-only system designed to explore how biological cognition might be computationally reconstructed.
 
@@ -10,10 +10,10 @@ EIDOS is a laboratory prototype reasoning agent built from cognitive science pri
 
 | | |
 |---|---|
-| **Experiments** | 27 controlled tests (v1 → v7.5) |
-| **Unit tests** | 96 (pytest) |
+| **Experiments** | 28 controlled tests (v1 → v7.6) |
+| **Unit tests** | 105+ (pytest) |
 | **Benchmark** | 17 ambiguous QA + EIDOS-Eval + TruthfulQA + mixed N=50 |
-| **Latest** | v7.5 — mixed benchmark + abstention calibration |
+| **Latest** | v7.6 — multi-model live eval |
 | **Hybrid** | LLM proposes → EIDOS gates (`HybridEidosAgent`) |
 
 ```bash
@@ -23,9 +23,19 @@ pytest tests/ && python run_all_experiments.py
 py -m benchmark.ambiguous_qa.runner
 py -m eval.eidos_eval.runner
 py -m eval.eidos_eval.live_runner --provider groq --truthfulqa
+py -m eval.eidos_eval.live_runner --provider groq --mixed
+py -m eval.eidos_eval.run_multimodel_eval --provider groq
 ```
 
-py -m eval.eidos_eval.live_runner --provider groq --mixed
+## v7.6 — Multi-Model Live Eval
+
+- **`--model`** on live runner — per-model cache + reports
+- **`run_multimodel_eval`** — TruthfulQA + mixed across 70B / 8B / 70B-3.1
+- See [docs/MULTIMODEL_EVAL.md](docs/MULTIMODEL_EVAL.md)
+
+```bash
+py -m eval.eidos_eval.live_runner --provider groq --model llama-3.1-8b-instant --truthfulqa
+py -m eval.eidos_eval.run_multimodel_eval --provider groq --benchmarks truthfulqa mixed
 ```
 
 ## v7.5 — Mixed Benchmark + Abstention Calibration

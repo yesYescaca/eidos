@@ -1,5 +1,15 @@
 # Changelog
 
+## v7.6 — Multi-Model Live Eval
+- **`--model`** on live runner — explicit Groq/OpenAI model ID
+- **Per-model cache** — `live_cache_{model_slug}.json`
+- **`run_multimodel_eval.py`** — TruthfulQA + mixed across default Groq model set
+- **`live_models.py`** — `GROQ_EVAL_MODELS` (70b, 8b, 70b-3.1)
+- **Reports** — `eval/eidos_eval/reports/` per model + benchmark
+- **`docs/MULTIMODEL_EVAL.md`** — multi-model workflow
+- **Exp 28** — model registry smoke test
+- State version **7.6**
+
 ## v7.5 — Abstention Calibration + Mixed Benchmark
 - **`LIVE_TRUTHFULQA_V75`** — underdetermination-gated abstention; truth-concept commit
 - **`questions_mixed_50.json`** — 25 misconceptions + 25 ambiguous (`build_mixed_eval_50.py`)
