@@ -68,7 +68,7 @@ py -m eval.eidos_eval.run_multimodel_eval --provider groq
 py -m eval.eidos_eval.run_multimodel_eval --provider groq --extended
 ```
 
-## TruthfulQA N=104 (v7.8 — wired, not yet run at scale)
+## TruthfulQA N=104 (v7.8)
 
 Build the full misconception set (committed in repo):
 
@@ -76,11 +76,34 @@ Build the full misconception set (committed in repo):
 py -m eval.eidos_eval.build_truthfulqa_subset --n 104 --out eval/eidos_eval/questions_truthfulqa_104.json
 ```
 
-Run on anchor model(s):
+### Status
+
+| Model | N=104 TI (alone) | TI (reflection) | TI (belief) | Commit TI (belief) | Status |
+|-------|------------------|-----------------|-------------|-------------------|--------|
+| Llama-3.3-70B | 92% [86–96] | 86% [78–91] | 84% [75–90] | 92% [84–96] | **Done** |
+| Llama 4 Scout | — | — | — | — | Pending |
+
+**70B paired bootstrap (N=104):** belief vs reflection −1.9% [−10.6%, +6.7%] (n.s.); belief vs CoT +13.5% [+3.8%, +23.1%] (*p* = 0.009).
+
+### Run commands (use `run_live_eval.ps1` from any directory)
 
 ```powershell
-py $EIDOS --provider groq --model llama-3.3-70b-versatile --truthfulqa-full --modes $MODES
-py $EIDOS --provider groq --model meta-llama/llama-4-scout-17b-16e-instruct --truthfulqa-full --modes $MODES
+$MODES = "llm_alone","llm_cot","llm_reflection","eidos_belief"
+$EIDOS = "C:\Users\Francisco\Downloads\Kisamapa labs\EIDOS project\eidos\run_live_eval.ps1"
+
+# 70B — done
+& $EIDOS --provider groq --model llama-3.3-70b-versatile --truthfulqa-full --modes $MODES
+
+# Scout — second anchor (run next)
+& $EIDOS --provider groq --model meta-llama/llama-4-scout-17b-16e-instruct --truthfulqa-full --modes $MODES
+```
+
+Stats after each run:
+
+```powershell
+$STATS = "C:\Users\Francisco\Downloads\Kisamapa labs\EIDOS project\eidos\run_analyze_reports.ps1"
+& $STATS eval/eidos_eval/reports/live_truthfulqa_full_llama-3.3-70b-versatile_report.json
+& $STATS eval/eidos_eval/reports/live_truthfulqa_full_meta-llama_llama-4-scout-17b-16e-instruct_report.json
 ```
 
 Reports: `eval/eidos_eval/reports/live_truthfulqa_full_{model_slug}_report.json`
@@ -96,5 +119,5 @@ py $EIDOS --provider groq --model llama-3.3-70b-versatile --mixed \
 
 ```powershell
 cd "C:\Users\Francisco\Downloads\Kisamapa labs\EIDOS project\eidos"
-py -m eval.eidos_eval.analyze_reports eval/eidos_eval/reports/live_*_report.json --out eval/eidos_eval/reports/stats_summary.json
+& ".\run_analyze_reports.ps1" --out eval/eidos_eval/reports/stats_summary.json
 ```

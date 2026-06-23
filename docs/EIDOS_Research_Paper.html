@@ -715,7 +715,7 @@
   <tr><td class="td-mode">EIDOS belief</td><td>82%</td><td>2%</td><td>6%</td><td class="td-best">87.2%</td></tr>
   <tr><td class="td-mode">EIDOS meta</td><td>82%</td><td>2%</td><td>6%</td><td>87.2%</td></tr>
 </table>
-<div class="table-caption">Reflection (84% TI) is competitive with belief (82% TI) on this model; both beat CoT (62%). Belief vs CoT (commit TI): +25.2 pts. Misconception commits halved (4% → 2%).</div>
+<div class="table-caption">Reflection (84% TI) is competitive with belief (82% TI) on this model; both beat CoT (62%). Belief vs CoT (commit TI): +25.2 pts. Misconception commits halved (4% → 2%). Full 104-item set: Table 11.</div>
 </div>
 
 <h4>Table 2 — llama-3.1-8b-instant</h4>
@@ -964,6 +964,24 @@
   <li><strong>Belief vs meta:</strong> Meta-injection (belief + revision round) matches belief on all three mixed metrics at N=50 for 70B; revision cost is not justified on this benchmark.</li>
   <li><strong>Belief vs reflection:</strong> Primary mechanistic claim — structured pre-generation signals outperform a second self-critique pass (+32 pts task acc, paired bootstrap CI excludes zero).</li>
 </ul>
+
+<h3>4.6 &nbsp;TruthfulQA Full Misconceptions (N=104)</h3>
+
+<p>To test whether N=50 subset findings generalise, we evaluated the full 104-item TruthfulQA Misconceptions set (<code>questions_truthfulqa_104.json</code>, <code>--truthfulqa-full</code>) on the anchor model. Four modes only (gate/meta omitted). Wilson 95% CIs and paired bootstrap from <code>stats.py</code>.</p>
+
+<h4>Table 11 — llama-3.3-70b-versatile (N=104)</h4>
+<div class="table-wrap">
+<table>
+  <tr><th>Mode</th><th>TI</th><th>misc</th><th>Abstain</th><th>Commit TI</th></tr>
+  <tr><td class="td-mode">LLM alone</td><td class="td-best">92% [86–96]</td><td>2.9%</td><td>0%</td><td>92% [86–96]</td></tr>
+  <tr><td class="td-mode">LLM CoT</td><td class="td-worst">70% [61–78]</td><td>1.9%</td><td>0%</td><td>70% [61–78]</td></tr>
+  <tr><td class="td-mode">LLM reflection</td><td>86% [78–91]</td><td>1.9%</td><td>0%</td><td>86% [78–91]</td></tr>
+  <tr><td class="td-mode">EIDOS belief</td><td>84% [75–90]</td><td class="td-best">1.0%</td><td>8.7%</td><td class="td-best">92% [84–96]</td></tr>
+</table>
+<div class="table-caption"><strong>Headline TI:</strong> LLM-alone wins (92%); belief trails reflection by 2 pts (84% vs 86%) — paired bootstrap <strong>−1.9% [−10.6%, +6.7%]</strong>, McNemar <em>p</em> = 0.82 (not significant). <strong>Commit quality:</strong> belief achieves highest commit TI (92% [84–96]) and lowest misconception-commit rate (1.0%). <strong>vs CoT:</strong> belief +13.5 pts TI <strong>[+3.8%, +23.1%]</strong>, <em>p</em> = 0.009. Abstention (8.7%, ~9 items) explains the gap vs alone/reflection on must-answer scoring. Llama 4 Scout N=104: pending (see <code>PAPER_EVAL_COMMANDS.md</code>).</div>
+</div>
+
+<p>At N=104, alone improves over the N=50 subset (88% → 92% TI), while belief holds near 84% TI with higher commit quality. This reinforces §5.1: on must-answer TruthfulQA, volume of committed answers favours raw LLMs; EIDOS value is commit TI (+22 pts vs CoT) and calibration metrics on the mixed benchmark. N=50 results for 70B remain in Table 1 for cross-scale comparison.</p>
 </section>
 
 <!-- ══════════════════ 5. DISCUSSION ══════════════════ -->
@@ -981,7 +999,7 @@
 <div class="table-wrap">
 <table>
   <tr><th>Condition</th><th>vs CoT</th><th>vs reflection</th></tr>
-  <tr><td>Large Llama (70B)</td><td>CoT hurts on misconceptions (−26 pts vs alone); belief helps (+25 pts commit TI vs CoT)</td><td>Mixed: belief +32 pts task acc; TruthfulQA: reflection competitive (84% vs 82% TI)</td></tr>
+  <tr><td>Large Llama (70B)</td><td>N=50: CoT hurts (−26 pts vs alone); N=104: CoT 70% [61–78] vs alone 92% [86–96]; belief beats CoT +13.5 pts TI <strong>[+3.8%, +23.1%]</strong> (<em>p</em> = 0.009)</td><td>Mixed: belief +32 pts task acc; TruthfulQA N=104: reflection 86% vs belief 84% TI (not sig.); belief commit TI 92% [84–96]</td></tr>
   <tr><td>Small Llama (8B)</td><td>CoT helps on TruthfulQA-only misconceptions (+16 pts vs alone); belief wins on mixed via ambiguity safety</td><td>TruthfulQA: reflection = alone (74%); mixed: belief +34 pts, 100% ambig safe vs 28% reflection</td></tr>
   <tr><td>Weak OSS model (20B)</td><td>CoT catastrophic (−16 pts vs alone, 0% ambig safe); belief strongly preferred</td><td>TruthfulQA: reflection 10% TI (−42 pts); mixed: belief +72 pts task acc</td></tr>
   <tr><td>Strong baselines (Qwen, Scout)</td><td>TruthfulQA: CoT wins (Qwen 92%, Scout 92%); belief loses headline TI on must-answer</td><td>Mixed: belief +14 to +38 pts vs reflection; 100% ambig safe; Qwen TruthfulQA reflection 92% vs belief 56% TI</td></tr>
@@ -998,7 +1016,7 @@
 <h3>5.4 &nbsp;Limitations</h3>
 
 <ol class="body-list">
-  <li><strong>N=50 per benchmark per model.</strong> Wilson 95% confidence intervals are now reported for headline proportions (Table 7, Table 10); paired bootstrap CIs for belief vs reflection on mixed task accuracy (§4.5). At N=50, each item is 2 percentage points — full 104-item TruthfulQA evaluation is wired (<code>--truthfulqa-full</code>) but not yet run at scale.</li>
+  <li><strong>N=50 per benchmark per model</strong> for the six-model grid; <strong>N=104 TruthfulQA</strong> completed for 70B (Table 11), Scout pending. Wilson 95% CIs in Tables 7, 10, 11; paired bootstrap on mixed and N=104 70B.</li>
   <li><strong>Single API provider (Groq).</strong> All results are from Groq-hosted model snapshots. Results may vary across providers and model versions.</li>
   <li><strong>Reference-based grading.</strong> Grading uses substring/token overlap against reference answer lists rather than the official TruthfulQA GPT-judge evaluator. This may diverge from leaderboard metrics and is a known limitation of the evaluation harness.</li>
   <li><strong>Concept warmup required.</strong> Each evaluation item includes per-question concept registration; cold-start performance on unseen domains is untested.</li>
@@ -1012,7 +1030,7 @@
 
 <ul class="body-list">
   <li><strong>Cache effects:</strong> Per-model response caches stabilise results but may freeze early errors. A <code>--no-cache</code> ablation on the 70B model is recommended before final submission.</li>
-  <li><strong>Subset selection:</strong> The N=50 TruthfulQA subset is seeded at 42 but is not identical to the full 104-item misconception set. Full-set evaluation is available via <code>--truthfulqa-full</code> and <code>questions_truthfulqa_104.json</code> (v7.8).</li>
+  <li><strong>Subset selection:</strong> N=50 TruthfulQA subset (seed 42) differs from the full 104-item set. N=104 70B results (Table 11) show alone stronger at full scale (92% vs 88% TI); conclusions on mixed benchmark are unchanged.</li>
   <li><strong>Prompt sensitivity:</strong> CoT and belief prompts were hand-designed. Modest paraphrase sensitivity is likely; systematic prompt ablation is future work.</li>
 </ul>
 </section>
@@ -1027,7 +1045,7 @@
 
 <p>Honest limitations must be acknowledged: N=50 is directional, not definitive; strong models (Qwen, Scout) show CoT/alone can outperform belief on TruthfulQA headline TI; Qwen belief achieves 100% commit TI but 56% TI due to abstention; and reference-based grading differs from the official TruthfulQA evaluation methodology. These limitations are recorded transparently and inform the future work plan.</p>
 
-<p>Future directions include: full 104-item TruthfulQA misconception evaluation with GPT-judge grading (<code>--truthfulqa-full</code> wired in v7.8); per-model gate calibration, particularly for sub-10B models; latency-optimised deployment of the SBERT grounding layer; and ablation studies isolating the contribution of each belief context component (concept rankings, surprise, metacognitive flags) independently.</p>
+<p>Future directions include: N=104 TruthfulQA on Llama 4 Scout (second anchor); GPT-judge grading for official metric alignment; per-model gate calibration for sub-10B models; latency-optimised SBERT deployment; and component-level belief-context ablations.</p>
 
 <p>Code, evaluation harness, and all per-model reports are released at <a href="https://github.com/yesYescaca/eidos" style="color:#2d5fa6">github.com/yesYescaca/eidos</a> (tag v7.8).</p>
 </section>
@@ -1096,7 +1114,7 @@ python run_live_eval.py --provider groq --model meta-llama/llama-4-scout-17b-16e
 <h2>Appendix D — Recommended Before Submission</h2>
 <ul class="body-list">
   <li><s>Add Wilson/binomial confidence intervals for all N=50 proportions</s> — done (v7.8 <code>stats.py</code> + Table 7/10); paired bootstrap for belief vs reflection on mixed reports</li>
-  <li>Run live eval at N=104 (<code>--truthfulqa-full</code>) on anchor model(s)</li>
+  <li><s>Run live eval at N=104 (<code>--truthfulqa-full</code>) on anchor model(s)</s> — 70B done (Table 11); Scout pending</li>
   <li>Run <code>--no-cache</code> ablation on 70B for robustness paragraph</li>
   <li>Replicate TruthfulQA subset with GPT-judge for official metric alignment</li>
   <li>Convert to LaTeX (arXiv <code>cs.AI</code> / <code>cs.CL</code> template)</li>

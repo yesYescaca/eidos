@@ -16,14 +16,14 @@ A numpy cognitive monitor (predictive processing, global workspace, metacognitio
 | Live Groq pilot | 6 | Done — see `LIVE_EVAL_PILOT.md` |
 | TruthfulQA Misconceptions | 50 × 6 models | Done (v7.7) |
 | Mixed misconception + ambiguous | 50 × 6 models | Done (v7.7) |
-| TruthfulQA full misconceptions | 104 | Wired (`--truthfulqa-full`, v7.8); live eval pending |
+| TruthfulQA full misconceptions | 104 | 70B done; Scout pending |
 
 ## Key comparisons (novel)
 
 - **EIDOS belief injection** vs **chain-of-thought** — structured cognitive state vs more reasoning tokens
 - **EIDOS belief injection** vs **self-reflection** (draft → critique → revise) — external monitor vs second LLM call
 
-## Headline numbers (v7.7 Groq live)
+## Headline numbers (v7.7–v7.8 Groq live)
 
 | Benchmark | Best story |
 |-----------|------------|
@@ -31,7 +31,8 @@ A numpy cognitive monitor (predictive processing, global workspace, metacognitio
 | Mixed task acc vs alone | +12 to +50 pts |
 | Mixed ambig safe (belief) | 88–100% vs 0–40% reflection |
 | Best single result | Llama 4 Scout belief: **94%** mixed task acc |
-| TruthfulQA caveat | Qwen: 56% TI but **100% commit TI** (44% abstain); OSS reflection harmful (10–32% TI) |
+| TruthfulQA N=104 (70B) | Alone 92% TI; belief 84% TI but **92% commit TI**; beats CoT +13.5 pts (sig.) |
+| TruthfulQA caveat (N=50) | Qwen: 56% TI but **100% commit TI** (44% abstain); OSS reflection harmful (10–32% TI) |
 
 ## Prior work to cite
 
