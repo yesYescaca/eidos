@@ -20,6 +20,7 @@ from eval.eidos_eval.live_runner import (
     MIXED_50_PATH,
     REPORTS_DIR,
     TRUTHFULQA_50_PATH,
+    TRUTHFULQA_104_PATH,
     build_live_payload,
     print_live_summary,
     run_live_comparison,
@@ -27,6 +28,7 @@ from eval.eidos_eval.live_runner import (
 
 BENCHMARK_PATHS = {
     "truthfulqa": TRUTHFULQA_50_PATH,
+    "truthfulqa_full": TRUTHFULQA_104_PATH,
     "mixed": MIXED_50_PATH,
 }
 

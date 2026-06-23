@@ -16,7 +16,7 @@ A numpy cognitive monitor (predictive processing, global workspace, metacognitio
 | Live Groq pilot | 6 | Done — see `LIVE_EVAL_PILOT.md` |
 | TruthfulQA Misconceptions | 50 × 6 models | Done (v7.7) |
 | Mixed misconception + ambiguous | 50 × 6 models | Done (v7.7) |
-| TruthfulQA full misconceptions | 104 | Future |
+| TruthfulQA full misconceptions | 104 | Wired (`--truthfulqa-full`, v7.8); live eval pending |
 
 ## Key comparisons (novel)
 
@@ -48,4 +48,4 @@ Not a replacement for scaling LLMs; not guaranteed raw MMLU gains; trades covera
 
 ## Submission bar
 
-**Met** for workshop / arXiv: N=50, two benchmarks, six models, belief vs CoT + reflection, honest limitations in `EIDOS_Research_Paper.html`.
+**Met** for workshop / arXiv: N=50, two benchmarks, six models, belief vs CoT + reflection, Wilson CIs + paired bootstrap (v7.8 `stats.py`), §4.5 mode ablation, honest limitations in `EIDOS_Research_Paper.html`.

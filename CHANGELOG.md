@@ -1,5 +1,16 @@
 # Changelog
 
+## v7.8 — Report Stats, N=104 Wiring, Paper Ablation
+- **`eval/eidos_eval/stats.py`** — Wilson CIs, paired bootstrap, McNemar exact (stdlib only)
+- **`analyze_reports.py`** — CLI over `live_*_report.json`; writes `stats_summary.json`
+- **`--truthfulqa-full`** — TruthfulQA Misconceptions N=104 (`questions_truthfulqa_104.json`)
+- **`run_multimodel_eval`** — optional benchmark key `truthfulqa_full`
+- **`docs/EIDOS_Research_Paper.html`** — §4.5 Table 10 mode ablation; Wilson CIs in Table 7; Appendix D updated
+- **`docs/PAPER_EVAL_COMMANDS.md`** — N=104 + stats CLI sections
+- **Exp 30** — report stats smoke test
+- **`tests/test_stats.py`** — Wilson + bootstrap unit tests
+- State version **7.8**
+
 ## v7.7 — Reflection Baseline
 - **`EvalMode.llm_reflection`** — two-call self-critique baseline (draft → revise)
 - **`reflection.py`** — `run_reflection_baseline()` separate from EIDOS gate

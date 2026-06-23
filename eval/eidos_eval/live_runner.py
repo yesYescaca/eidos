@@ -17,15 +17,18 @@ from eval.eidos_eval.runner import EidosEvalHarness, EvalMode, LIVE_COMPARISON_M
 
 LIVE_QUESTIONS_PATH = Path(__file__).resolve().parent / "questions_live.json"
 TRUTHFULQA_50_PATH = Path(__file__).resolve().parent / "questions_truthfulqa_50.json"
+TRUTHFULQA_104_PATH = Path(__file__).resolve().parent / "questions_truthfulqa_104.json"
 MIXED_50_PATH = Path(__file__).resolve().parent / "questions_mixed_50.json"
 REPORTS_DIR = Path(__file__).resolve().parent / "reports"
 
 DEFAULT_LIVE_MODES = list(LIVE_COMPARISON_MODES)
 
 
-def benchmark_name(*, mixed: bool, truthfulqa: bool) -> str:
+def benchmark_name(*, mixed: bool, truthfulqa: bool, truthfulqa_full: bool = False) -> str:
     if mixed:
         return "mixed"
+    if truthfulqa_full:
+        return "truthfulqa_full"
     if truthfulqa:
         return "truthfulqa"
     return "pilot"
@@ -37,8 +40,9 @@ def default_report_path(
     model_id: str,
     mixed: bool,
     truthfulqa: bool,
+    truthfulqa_full: bool = False,
 ) -> Path | None:
-    bench = benchmark_name(mixed=mixed, truthfulqa=truthfulqa)
+    bench = benchmark_name(mixed=mixed, truthfulqa=truthfulqa, truthfulqa_full=truthfulqa_full)
     if bench == "pilot":
         return None
     return REPORTS_DIR / report_basename(bench, model_id)
@@ -154,7 +158,7 @@ def print_live_summary(
     model_label = model_id or payload.get("model") or "default"
 
     print("=" * 55)
-    print(f"EIDOS-EVAL LIVE ({provider}) — v7.7")
+    print(f"EIDOS-EVAL LIVE ({provider}) — v7.8")
     print(f"Model: {model_label}")
     print(f"Embedding: {emb}")
     if grading_mode:
@@ -277,11 +281,19 @@ def main(argv: list[str] | None = None) -> int:
         help="Use TruthfulQA Misconceptions N=50 set",
     )
     parser.add_argument(
+        "--truthfulqa-full",
+        action="store_true",
+        help="Use TruthfulQA Misconceptions N=104 set",
+    )
+    parser.add_argument(
         "--mixed",
         action="store_true",
         help="Use mixed N=50 (25 misconceptions + 25 ambiguous)",
     )
     args = parser.parse_args(argv)
+
+    if args.truthfulqa and args.truthfulqa_full:
+        parser.error("--truthfulqa and --truthfulqa-full are mutually exclusive")
 
     if not live_llm_available(args.provider):
         key_name = "GROQ_API_KEY" if args.provider == "groq" else "OPENAI_API_KEY"
@@ -292,6 +304,8 @@ def main(argv: list[str] | None = None) -> int:
     model_id = resolve_model_id(args.provider, args.model)
     if args.mixed:
         questions_path = MIXED_50_PATH
+    elif args.truthfulqa_full:
+        questions_path = TRUTHFULQA_104_PATH
     elif args.truthfulqa:
         questions_path = TRUTHFULQA_50_PATH
     else:
@@ -302,6 +316,7 @@ def main(argv: list[str] | None = None) -> int:
         model_id=model_id,
         mixed=args.mixed,
         truthfulqa=args.truthfulqa,
+        truthfulqa_full=args.truthfulqa_full,
     )
 
     reports = run_live_comparison(

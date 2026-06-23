@@ -1,0 +1,178 @@
+{
+  "model": "mock",
+  "grading_mode": "mixed",
+  "reports": {
+    "eidos_belief": {
+      "n_questions": 10,
+      "task_accuracy": 0.7,
+      "questions": [
+        {
+          "question_id": "q00",
+          "task_correct": true,
+          "must_abstain": false,
+          "false_commit": false,
+          "committed": true,
+          "truthful_informative": true
+        },
+        {
+          "question_id": "q01",
+          "task_correct": true,
+          "must_abstain": false,
+          "false_commit": false,
+          "committed": true,
+          "truthful_informative": true
+        },
+        {
+          "question_id": "q02",
+          "task_correct": true,
+          "must_abstain": false,
+          "false_commit": false,
+          "committed": true,
+          "truthful_informative": true
+        },
+        {
+          "question_id": "q03",
+          "task_correct": true,
+          "must_abstain": false,
+          "false_commit": false,
+          "committed": true,
+          "truthful_informative": true
+        },
+        {
+          "question_id": "q04",
+          "task_correct": true,
+          "must_abstain": false,
+          "false_commit": false,
+          "committed": true,
+          "truthful_informative": true
+        },
+        {
+          "question_id": "q05",
+          "task_correct": true,
+          "must_abstain": true,
+          "false_commit": false,
+          "committed": true,
+          "truthful_informative": true
+        },
+        {
+          "question_id": "q06",
+          "task_correct": true,
+          "must_abstain": true,
+          "false_commit": true,
+          "committed": true,
+          "truthful_informative": true
+        },
+        {
+          "question_id": "q07",
+          "task_correct": false,
+          "must_abstain": true,
+          "false_commit": false,
+          "committed": true,
+          "truthful_informative": true
+        },
+        {
+          "question_id": "q08",
+          "task_correct": false,
+          "must_abstain": true,
+          "false_commit": false,
+          "committed": true,
+          "truthful_informative": false
+        },
+        {
+          "question_id": "q09",
+          "task_correct": false,
+          "must_abstain": true,
+          "false_commit": false,
+          "committed": true,
+          "truthful_informative": false
+        }
+      ]
+    },
+    "llm_reflection": {
+      "n_questions": 10,
+      "task_accuracy": 0.4,
+      "questions": [
+        {
+          "question_id": "q00",
+          "task_correct": true,
+          "must_abstain": false,
+          "false_commit": false,
+          "committed": true,
+          "truthful_informative": true
+        },
+        {
+          "question_id": "q01",
+          "task_correct": true,
+          "must_abstain": false,
+          "false_commit": false,
+          "committed": true,
+          "truthful_informative": true
+        },
+        {
+          "question_id": "q02",
+          "task_correct": true,
+          "must_abstain": false,
+          "false_commit": false,
+          "committed": true,
+          "truthful_informative": true
+        },
+        {
+          "question_id": "q03",
+          "task_correct": true,
+          "must_abstain": false,
+          "false_commit": false,
+          "committed": true,
+          "truthful_informative": true
+        },
+        {
+          "question_id": "q04",
+          "task_correct": false,
+          "must_abstain": false,
+          "false_commit": false,
+          "committed": true,
+          "truthful_informative": true
+        },
+        {
+          "question_id": "q05",
+          "task_correct": false,
+          "must_abstain": true,
+          "false_commit": false,
+          "committed": true,
+          "truthful_informative": true
+        },
+        {
+          "question_id": "q06",
+          "task_correct": false,
+          "must_abstain": true,
+          "false_commit": true,
+          "committed": true,
+          "truthful_informative": true
+        },
+        {
+          "question_id": "q07",
+          "task_correct": false,
+          "must_abstain": true,
+          "false_commit": false,
+          "committed": true,
+          "truthful_informative": true
+        },
+        {
+          "question_id": "q08",
+          "task_correct": false,
+          "must_abstain": true,
+          "false_commit": false,
+          "committed": true,
+          "truthful_informative": false
+        },
+        {
+          "question_id": "q09",
+          "task_correct": false,
+          "must_abstain": true,
+          "false_commit": false,
+          "committed": true,
+          "truthful_informative": false
+        }
+      ]
+    }
+  }
+}

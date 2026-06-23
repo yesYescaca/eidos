@@ -78,7 +78,7 @@ class EidosTextAgent:
         path = Path(path)
         self.agent.save_state(path)
         state = json.loads(path.read_text())
-        state["version"] = "7.7"
+        state["version"] = "7.8"
         state["text_concepts"] = dict(self._text_concepts)
         state["embedding_backend"] = self.embedding_backend
         path.write_text(json.dumps(state, indent=2))

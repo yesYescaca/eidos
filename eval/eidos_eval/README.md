@@ -1,4 +1,4 @@
-# EIDOS-Eval (v7.7)
+# EIDOS-Eval (v7.8)
 
 External comparison harness: **LLM-alone** vs **chain-of-thought** vs **self-reflection** vs **EIDOS gate** vs **EIDOS belief** vs **EIDOS meta-injection**.
 
@@ -59,6 +59,7 @@ Equivalent module form (only when cwd is eidos root):
 set GROQ_API_KEY=gsk_...
 py -m eval.eidos_eval.live_runner --provider groq --mixed --modes llm_alone llm_cot llm_reflection eidos_belief
 py -m eval.eidos_eval.live_runner --provider groq --truthfulqa
+py -m eval.eidos_eval.live_runner --provider groq --truthfulqa-full
 py -m eval.eidos_eval.live_runner --provider groq --mixed
 py -m eval.eidos_eval.live_runner --provider groq --model llama-3.1-8b-instant --truthfulqa
 py -m eval.eidos_eval.run_multimodel_eval --provider groq
@@ -90,11 +91,24 @@ Writes `gate_calibration.json` from ambiguous QA benchmark grid search.
 | `questions.json` | 8 | Mock CI |
 | `questions_live.json` | 6 | Groq pilot |
 | `questions_truthfulqa_50.json` | 50 | TruthfulQA Misconceptions live scale |
+| `questions_truthfulqa_104.json` | 104 | Full TruthfulQA Misconceptions (`--truthfulqa-full`) |
 
 Build TruthfulQA subset:
 
 ```bash
 py -m eval.eidos_eval.build_truthfulqa_subset --n 50
+py -m eval.eidos_eval.build_truthfulqa_subset --n 104 --out eval/eidos_eval/questions_truthfulqa_104.json
+```
+
+## Report statistics (v7.8)
+
+Wilson 95% CIs and paired bootstrap over saved live reports:
+
+```bash
+py -m eval.eidos_eval.analyze_reports eval/eidos_eval/reports/live_mixed_*_report.json
+py -m eval.eidos_eval.analyze_reports --compare eidos_belief llm_reflection \
+  --metric task_correct eval/eidos_eval/reports/live_mixed_llama-3.3-70b-versatile_report.json
+py -m eval.eidos_eval.analyze_reports --out eval/eidos_eval/reports/stats_summary.json
 ```
 
 See `docs/POSITIONING.md` for Core vs Sidecar framing and `docs/SIDECAR_RESEARCH_NOTE.md` for the research arc.

@@ -1,4 +1,4 @@
-# Paper eval commands (v7.7)
+# Paper eval commands (v7.8)
 
 Run from any directory using `run_live_eval.py`. Set `GROQ_API_KEY` first.
 
@@ -66,4 +66,35 @@ py $EIDOS --provider groq --model llama-3.3-70b-versatile --mixed --modes $MODES
 cd "C:\Users\Francisco\Downloads\Kisamapa labs\EIDOS project\eidos"
 py -m eval.eidos_eval.run_multimodel_eval --provider groq
 py -m eval.eidos_eval.run_multimodel_eval --provider groq --extended
+```
+
+## TruthfulQA N=104 (v7.8 — wired, not yet run at scale)
+
+Build the full misconception set (committed in repo):
+
+```powershell
+py -m eval.eidos_eval.build_truthfulqa_subset --n 104 --out eval/eidos_eval/questions_truthfulqa_104.json
+```
+
+Run on anchor model(s):
+
+```powershell
+py $EIDOS --provider groq --model llama-3.3-70b-versatile --truthfulqa-full --modes $MODES
+py $EIDOS --provider groq --model meta-llama/llama-4-scout-17b-16e-instruct --truthfulqa-full --modes $MODES
+```
+
+Reports: `eval/eidos_eval/reports/live_truthfulqa_full_{model_slug}_report.json`
+
+Optional six-mode ablation refresh (gate + meta in JSON):
+
+```powershell
+py $EIDOS --provider groq --model llama-3.3-70b-versatile --mixed \
+  --modes llm_alone llm_cot llm_reflection eidos_gate eidos_belief eidos_meta
+```
+
+## Report statistics (Wilson CIs + paired bootstrap)
+
+```powershell
+cd "C:\Users\Francisco\Downloads\Kisamapa labs\EIDOS project\eidos"
+py -m eval.eidos_eval.analyze_reports eval/eidos_eval/reports/live_*_report.json --out eval/eidos_eval/reports/stats_summary.json
 ```
