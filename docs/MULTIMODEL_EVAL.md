@@ -62,13 +62,23 @@ On each model and benchmark:
 
 See [LIVE_EVAL_PILOT.md](LIVE_EVAL_PILOT.md) and [PAPER_EVAL_COMMANDS.md](PAPER_EVAL_COMMANDS.md) for v7.5–v7.7 Groq live results.
 
-## Live results summary (N=50, mixed benchmark, belief vs reflection)
+## Live results summary (N=50)
 
-| Model set | Belief task acc | Reflection task acc | Δ |
-|-----------|-----------------|---------------------|---|
+### Mixed benchmark (belief vs reflection)
+
+| Model | Belief task acc | Reflection task acc | Δ |
+|-------|-----------------|---------------------|---|
 | Core 70B | 86% | 54% | +32 |
 | Core 8B | 86% | 52% | +34 |
 | Core OSS-20B | 80% | 8% | +72 |
 | GPT-OSS-120B | 86% | 24% | +62 |
 | Qwen 3.6 27B | 80% | 66% | +14 |
 | Llama 4 Scout | 94% | 56% | +38 |
+
+### TruthfulQA (TI; extended models)
+
+| Model | Alone | Reflection | Belief TI | Commit TI (belief) | Abstain |
+|-------|-------|------------|-----------|-------------------|---------|
+| GPT-OSS-120B | 68% | 32% | 70% | 83.3% | 16% |
+| Qwen 3.6 27B | 94% | 92% | 56% | 100% | 44% |
+| Llama 4 Scout | 84% | 78% | 74% | 86.0% | 14% |

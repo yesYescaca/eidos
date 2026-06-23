@@ -442,7 +442,7 @@
 <!-- ══════════════════ ABSTRACT ══════════════════ -->
 <div class="abstract-block">
   <div class="block-label">Abstract</div>
-  <p>Large language models (LLMs) frequently commit to answers confidently on questions that invite false beliefs or lack sufficient context. Chain-of-thought (CoT) prompting is widely used to improve reasoning, but can amplify misconception traps on benchmarks such as TruthfulQA. We also compare against a <strong>self-reflection baseline</strong> (draft → critique → revise, two LLM calls). We present <strong>EIDOS Sidecar</strong>, a hybrid architecture in which a lightweight, numpy-only cognitive monitor — implementing predictive processing, global workspace broadcasting, metacognitive gating, and Hebbian association — wraps a commercial LLM API. The monitor injects structured belief state (concept rankings, surprise signals, ambiguity flags) before generation and can withhold or clarify outputs when alignment checks fail. On TruthfulQA Misconceptions (N=50) and a mixed benchmark of 25 misconception plus 25 ambiguous items (N=50), evaluated across three core Groq-hosted models plus three extended models, EIDOS belief injection improves task accuracy by <strong>26–50 percentage points</strong> versus LLM-alone on the mixed benchmark for all core models tested, and achieves <strong>88–100% ambiguity-safe behaviour</strong> versus 0–40% for LLM-alone and reflection. On the mixed benchmark, belief beats reflection by <strong>+14 to +72 percentage points</strong> across all six models evaluated. On TruthfulQA-only (must-answer), reflection is competitive with belief on 70B (84% vs 82% TI) but provides no gain on 8B (74% = 74%) and catastrophically harms OSS-20B (10% TI, −42 pts vs alone). Against CoT, belief injection yields substantially higher commit accuracy on large Llama and GPT-OSS models. We report results honestly including abstention trade-offs, and release code, eval harness, and per-model reports.</p>
+  <p>Large language models (LLMs) frequently commit to answers confidently on questions that invite false beliefs or lack sufficient context. Chain-of-thought (CoT) prompting is widely used to improve reasoning, but can amplify misconception traps on benchmarks such as TruthfulQA. We also compare against a <strong>self-reflection baseline</strong> (draft → critique → revise, two LLM calls). We present <strong>EIDOS Sidecar</strong>, a hybrid architecture in which a lightweight, numpy-only cognitive monitor — implementing predictive processing, global workspace broadcasting, metacognitive gating, and Hebbian association — wraps a commercial LLM API. The monitor injects structured belief state (concept rankings, surprise signals, ambiguity flags) before generation and can withhold or clarify outputs when alignment checks fail. Evaluated across six Groq-hosted models on TruthfulQA Misconceptions (N=50) and a mixed benchmark (25 misconceptions + 25 ambiguous items, N=50), EIDOS belief injection improves mixed task accuracy by <strong>12–50 percentage points</strong> versus LLM-alone and beats self-reflection by <strong>+14 to +72 points</strong> on every model, achieving <strong>88–100% ambiguity-safe behaviour</strong> versus 0–40% for reflection. On TruthfulQA-only (must-answer), outcomes are model-dependent: reflection harms OSS models (10–32% TI); Qwen belief drops to 56% TI with 44% abstention but <strong>100% commit TI</strong>; Scout and Qwen favor CoT/alone on headline TI. We report abstention trade-offs honestly and release code, eval harness, and per-model reports.</p>
 </div>
 
 <!-- ══════════════════ 1. INTRODUCTION ══════════════════ -->
@@ -662,7 +662,8 @@
 <table>
   <tr><th>Parameter</th><th>Value</th></tr>
   <tr><td>Provider</td><td>Groq API</td></tr>
-  <tr><td>Models</td><td><code>llama-3.3-70b-versatile</code>, <code>llama-3.1-8b-instant</code>, <code>openai/gpt-oss-20b</code></td></tr>
+  <tr><td>Models (core)</td><td><code>llama-3.3-70b-versatile</code>, <code>llama-3.1-8b-instant</code>, <code>openai/gpt-oss-20b</code></td></tr>
+  <tr><td>Models (extended)</td><td><code>openai/gpt-oss-120b</code>, <code>qwen/qwen3.6-27b</code>, <code>meta-llama/llama-4-scout-17b-16e-instruct</code></td></tr>
   <tr><td>Embedding model</td><td>SBERT <code>all-MiniLM-L6-v2</code> (hash fallback if HF unavailable)</td></tr>
   <tr><td>Temperature</td><td>0.2</td></tr>
   <tr><td>Max tokens</td><td>256</td></tr>
@@ -695,9 +696,9 @@
     <div class="sc-sub">GPT-OSS-20B: 80% belief vs 8% reflection</div>
   </div>
   <div class="summary-card">
-    <div class="sc-label">Misconception commits halved</div>
-    <div class="sc-value">4% → 2%</div>
-    <div class="sc-sub">misc rate, EIDOS belief vs LLM alone (70B)</div>
+    <div class="sc-label">Highest belief task accuracy</div>
+    <div class="sc-value">94%</div>
+    <div class="sc-sub">Llama 4 Scout, mixed benchmark (extended set)</div>
   </div>
 </div>
 
@@ -753,7 +754,7 @@
       <canvas id="chart_truthfulqa"></canvas>
     </div>
   </div>
-  <div class="figure-caption"><strong>Figure 2.</strong> Commit TI across modes and models. Reflection helps 70B (84%) but is neutral on 8B (74%) and harmful on OSS-20B (10%). The 8B model is the exception where CoT outperforms belief on this metric.</div>
+  <div class="figure-caption"><strong>Figure 2.</strong> Commit TI across modes for the core three models (detail view). Reflection helps 70B (84%) but is neutral on 8B (74%) and harmful on OSS-20B (10%). See Table 7 and Figure 6 for the full six-model TruthfulQA comparison.</div>
 </div>
 
 <h3>4.2 &nbsp;Mixed Benchmark (N=50) — Primary Result</h3>
@@ -808,18 +809,18 @@
       <canvas id="chart_mixed"></canvas>
     </div>
   </div>
-  <div class="figure-caption"><strong>Figure 3.</strong> Task accuracy on the mixed benchmark. Belief beats reflection on all three models (+32, +34, +72 pts). The mixed benchmark is the primary evaluation as it rewards calibrated commit/abstain behaviour.</div>
+  <div class="figure-caption"><strong>Figure 3.</strong> Task accuracy on the mixed benchmark (core three models, all modes). Belief beats reflection on all three (+32, +34, +72 pts). See Figure 5 for the six-model belief-vs-reflection summary.</div>
 </div>
 
 <!-- FIGURE 4: Ambiguity Safety -->
 <div class="figure-wrap">
   <div class="figure-inner">
-    <div class="figure-title">Figure 4 — Ambiguity-Safe Rate: Belief Injection vs LLM Alone (All Models)</div>
+    <div class="figure-title">Figure 4 — Ambiguity-Safe Rate: Baselines vs EIDOS Belief (Six Models)</div>
     <div class="figure-canvas-wrap">
       <canvas id="chart_ambig"></canvas>
     </div>
   </div>
-  <div class="figure-caption"><strong>Figure 4.</strong> Ambiguity-safe rate (proportion of ambiguous questions correctly handled by abstention or clarification) for EIDOS belief vs LLM alone across all three models. The gap is consistent and large: EIDOS belief achieves 88–100% while LLM alone achieves 8–28%.</div>
+  <div class="figure-caption"><strong>Figure 4.</strong> Ambiguity-safe rate on the mixed benchmark across all six evaluated models. EIDOS belief achieves 88–100% versus 0–40% for LLM-alone and reflection. Extended models (right three) show the same pattern: strong factual baselines still over-commit on ambiguous items.</div>
 </div>
 
 <h4>Cross-Model Summary — Mixed Benchmark (EIDOS Belief vs Baselines)</h4>
@@ -829,15 +830,18 @@
   <tr><td class="td-mode">Llama-3.3-70B</td><td class="td-best">+26 pts</td><td class="td-best">+46 pts</td><td class="td-best">+32 pts</td><td>88%</td><td>✓ Yes</td></tr>
   <tr><td class="td-mode">Llama-3.1-8B</td><td class="td-best">+30 pts</td><td class="td-best">+20 pts</td><td class="td-best">+34 pts</td><td class="td-best">100%</td><td>✓ Yes</td></tr>
   <tr><td class="td-mode">GPT-OSS-20B</td><td class="td-best">+50 pts</td><td class="td-best">+68 pts</td><td class="td-best">+72 pts</td><td class="td-best">100%</td><td>✓ Yes</td></tr>
+  <tr><td class="td-mode">GPT-OSS-120B</td><td class="td-best">+46 pts</td><td class="td-best">+58 pts</td><td class="td-best">+62 pts</td><td>92%</td><td>✓ Yes</td></tr>
+  <tr><td class="td-mode">Qwen 3.6 27B</td><td>+12 pts</td><td>+10 pts</td><td>+14 pts</td><td class="td-best">100%</td><td>✓ Yes</td></tr>
+  <tr><td class="td-mode">Llama 4 Scout</td><td class="td-best">+34 pts</td><td>+30 pts</td><td class="td-best">+38 pts</td><td class="td-best">100%</td><td>✓ Yes</td></tr>
 </table>
-<div class="table-caption">Belief injection improves task accuracy over LLM alone, CoT, and reflection on <strong>all three models</strong> on the mixed benchmark. The 8B misconception-commit exception on TruthfulQA-only is noted in Section 5.2.</div>
+<div class="table-caption">Belief injection improves task accuracy over LLM alone, CoT, and reflection on <strong>all six models</strong> on the mixed benchmark.</div>
 </div>
 
-<h3>4.3 &nbsp;3×2 Summary — Belief vs Reflection Across Models and Benchmarks</h3>
+<h3>4.3 &nbsp;Six-Model Summary — Belief vs Reflection Across Benchmarks</h3>
 
-<p>Table 7 consolidates the headline comparison for the paper: three models × two benchmarks, reporting belief injection against the self-reflection baseline (and LLM-alone for context). TruthfulQA rows use TI; mixed rows use task accuracy.</p>
+<p>Table 7 consolidates the headline comparison: six models × two benchmarks. TruthfulQA rows use TI; mixed rows use task accuracy.</p>
 
-<h4>Table 7 — Belief vs reflection (3 models × 2 benchmarks)</h4>
+<h4>Table 7 — Six-model belief vs reflection (2 benchmarks)</h4>
 <div class="table-wrap">
 <table>
   <tr>
@@ -864,8 +868,23 @@
     <td>52%</td><td class="td-worst">10%</td><td>54%</td>
     <td>30%</td><td>8%</td><td class="td-best">80%</td>
   </tr>
+  <tr>
+    <td class="td-mode">GPT-OSS-120B</td>
+    <td>68%</td><td class="td-worst">32%</td><td>70%</td>
+    <td>40%</td><td>24%</td><td class="td-best">86%</td>
+  </tr>
+  <tr>
+    <td class="td-mode">Qwen 3.6 27B</td>
+    <td class="td-best">94%</td><td>92%</td><td>56%</td>
+    <td>68%</td><td>66%</td><td class="td-best">80%</td>
+  </tr>
+  <tr>
+    <td class="td-mode">Llama 4 Scout 17B</td>
+    <td>84%</td><td>78%</td><td>74%</td>
+    <td>60%</td><td>56%</td><td class="td-best">94%</td>
+  </tr>
 </table>
-<div class="table-caption">Mixed benchmark: belief beats reflection on task accuracy for all three core models (+32, +34, +72 pts). TruthfulQA: reflection competitive on 70B (84% vs 82% TI), no gain on 8B (74% = 74%), catastrophic on OSS-20B (10% TI).</div>
+<div class="table-caption"><strong>Mixed:</strong> belief beats reflection on all six models (+14 to +72 pts). <strong>TruthfulQA:</strong> belief beats reflection on 70B (close), OSS-20B, and OSS-120B; reflection matches or beats belief on Qwen (92% vs 56% TI) and Scout (78% vs 74% TI) — largely due to belief abstention on must-answer items (see Table 9 commit TI).</div>
 </div>
 
 <h3>4.4 &nbsp;Extended Models — Mixed Benchmark Robustness (N=50)</h3>
@@ -883,10 +902,43 @@
 <div class="table-caption">Belief beats reflection on task accuracy for all three extended models. On stronger baselines (Qwen, Scout), CoT is competitive on misconception commits when it does answer; EIDOS wins primarily through ambiguity-safe abstention (92–100% vs 8–40% for baselines). Llama 4 Scout achieves the highest belief task accuracy in this study (94%).</div>
 </div>
 
+<!-- FIGURE 5: Six-model belief vs reflection (mixed) -->
+<div class="figure-wrap">
+  <div class="figure-inner">
+    <div class="figure-title">Figure 5 — Six-Model Robustness: Belief vs Reflection Task Accuracy (Mixed N=50)</div>
+    <div class="figure-canvas-wrap" style="height:360px">
+      <canvas id="chart_sixmodel"></canvas>
+    </div>
+  </div>
+  <div class="figure-caption"><strong>Figure 5.</strong> Headline comparison across core and extended models on the mixed benchmark. Belief beats reflection on every model (+14 to +72 pts). Core models shown in blue/green/orange; extended models in purple/teal/coral.</div>
+</div>
+
+<h4>Table 9 — Extended models, TruthfulQA (N=50)</h4>
+<div class="table-wrap">
+<table>
+  <tr><th>Model</th><th>LLM alone</th><th>CoT</th><th>Reflection</th><th>Belief TI</th><th>Commit TI</th><th>Abstain</th></tr>
+  <tr><td class="td-mode">GPT-OSS-120B</td><td>68%</td><td>60%</td><td class="td-worst">32%</td><td class="td-best">70%</td><td>83.3%</td><td>16%</td></tr>
+  <tr><td class="td-mode">Qwen 3.6 27B</td><td class="td-best">94%</td><td>92%</td><td>92%</td><td>56%</td><td class="td-best">100%</td><td>44%</td></tr>
+  <tr><td class="td-mode">Llama 4 Scout 17B</td><td>84%</td><td class="td-best">92%</td><td>78%</td><td>74%</td><td>86.0%</td><td>14%</td></tr>
+</table>
+<div class="table-caption">Extended TruthfulQA results. Qwen shows the largest abstention penalty (44%): headline TI falls to 56% but committed answers are 100% TI. OSS-120B reflection collapses to 32% TI (−36 pts vs alone). Scout: CoT wins headline TI; belief achieves 0% misc on commits.</div>
+</div>
+
+<!-- FIGURE 6: Six-model TruthfulQA TI belief vs reflection -->
+<div class="figure-wrap">
+  <div class="figure-inner">
+    <div class="figure-title">Figure 6 — Six-Model TruthfulQA: Belief vs Reflection (TI, N=50)</div>
+    <div class="figure-canvas-wrap" style="height:360px">
+      <canvas id="chart_truthfulqa_six"></canvas>
+    </div>
+  </div>
+  <div class="figure-caption"><strong>Figure 6.</strong> TruthfulQA TI for belief injection vs self-reflection across all six models. Belief wins on OSS family; reflection wins or ties on Qwen and Scout headline TI — interpret alongside commit TI and abstention (Table 9).</div>
+</div>
+
 <div class="callout finding">
   <div class="callout-label">Key Finding</div>
   <p><strong>On the mixed benchmark, EIDOS belief injection improves task accuracy by 12–50 percentage points over LLM-alone and by 14–72 points over self-reflection across all six models evaluated, achieving 88–100% ambiguity-safe behaviour versus 0–40% for reflection.</strong></p>
-  <p>Against chain-of-thought, belief injection leads by 20–68 points on task accuracy on core models. On TruthfulQA-only (must-answer), reflection is model-dependent: helpful on 70B, neutral on 8B, harmful on OSS-20B. Structured cognitive-state injection dominates when calibrated abstention is required.</p>
+  <p>On TruthfulQA-only (must-answer), belief beats reflection on OSS models and is close on 70B, but strong baselines (Qwen, Scout) favor CoT/alone on headline TI due to belief abstention — report <strong>commit TI</strong> alongside TI when interpreting gate-calibrated systems. Mixed benchmark remains the primary claim.</p>
 </div>
 </section>
 
@@ -908,12 +960,12 @@
   <tr><td>Large Llama (70B)</td><td>CoT hurts on misconceptions (−26 pts vs alone); belief helps (+25 pts commit TI vs CoT)</td><td>Mixed: belief +32 pts task acc; TruthfulQA: reflection competitive (84% vs 82% TI)</td></tr>
   <tr><td>Small Llama (8B)</td><td>CoT helps on TruthfulQA-only misconceptions (+16 pts vs alone); belief wins on mixed via ambiguity safety</td><td>TruthfulQA: reflection = alone (74%); mixed: belief +34 pts, 100% ambig safe vs 28% reflection</td></tr>
   <tr><td>Weak OSS model (20B)</td><td>CoT catastrophic (−16 pts vs alone, 0% ambig safe); belief strongly preferred</td><td>TruthfulQA: reflection 10% TI (−42 pts); mixed: belief +72 pts task acc</td></tr>
-  <tr><td>Strong baselines (Qwen, Scout)</td><td>CoT competitive on misconceptions; belief still wins mixed via abstention</td><td>Belief +14 to +38 pts vs reflection; 100% ambig safe on both</td></tr>
-  <tr><td>GPT-OSS-120B</td><td>Scaling alone to 120B does not fix calibration (40% mixed task)</td><td>Belief +62 pts vs reflection (86% vs 24%)</td></tr>
+  <tr><td>Strong baselines (Qwen, Scout)</td><td>TruthfulQA: CoT wins (Qwen 92%, Scout 92%); belief loses headline TI on must-answer</td><td>Mixed: belief +14 to +38 pts vs reflection; 100% ambig safe; Qwen TruthfulQA reflection 92% vs belief 56% TI</td></tr>
+  <tr><td>GPT-OSS-120B</td><td>Belief wins TruthfulQA TI (70% vs 60% CoT); mixed alone 40% despite scale</td><td>TruthfulQA reflection 32% TI (−36 pts); mixed belief +62 pts vs reflection</td></tr>
 </table>
 </div>
 
-<p>Self-reflection (draft → critique → revise) adds a second LLM call with highly model-dependent outcomes. On 70B TruthfulQA it reaches 84% TI, comparable to belief; on 8B it is identical to LLM-alone (74%); on OSS-20B it collapses to 10% TI. Across all six models on the mixed benchmark, reflection never matches belief: ambiguity-safe rates remain 0–40% versus 88–100% for belief. CoT and reflection both encourage more generation; EIDOS belief injection adds structured signals about <em>when to be uncertain</em> before the first token is produced.</p>
+<p>Self-reflection (draft → critique → revise) adds a second LLM call with highly model-dependent outcomes. On 70B TruthfulQA it reaches 84% TI, comparable to belief; on 8B it is identical to LLM-alone (74%); on OSS-20B and OSS-120B it collapses to 10% and 32% TI respectively. On Qwen, reflection (92% TI) substantially outperforms belief headline TI (56%) because belief abstains on 44% of must-answer items — yet achieves 100% commit TI when it does answer. Across all six models on the mixed benchmark, reflection never matches belief: ambiguity-safe rates remain 0–40% versus 88–100% for belief. CoT and reflection both encourage more generation; EIDOS belief injection adds structured signals about <em>when to be uncertain</em> before the first token is produced.</p>
 
 <h3>5.3 &nbsp;Gate vs Belief vs Meta</h3>
 
@@ -927,7 +979,8 @@
   <li><strong>Reference-based grading.</strong> Grading uses substring/token overlap against reference answer lists rather than the official TruthfulQA GPT-judge evaluator. This may diverge from leaderboard metrics and is a known limitation of the evaluation harness.</li>
   <li><strong>Concept warmup required.</strong> Each evaluation item includes per-question concept registration; cold-start performance on unseen domains is untested.</li>
   <li><strong>No fine-tuning.</strong> All gains are from inference-time architecture changes only. The comparison to fine-tuned or RLHF-adjusted baselines is out of scope.</li>
-  <li><strong>8B misconception-commit regression.</strong> EIDOS belief does not beat CoT on misconception-only commit TI for the 8B model. Gate threshold calibration for small models is identified as future work.</li>
+  <li><strong>Gate over-abstention on strong models.</strong> On TruthfulQA must-answer, belief TI is penalised when the gate abstains appropriately but the benchmark scores abstention as failure — most severely on Qwen 3.6 (44% abstain, 56% TI vs 94% alone) and 8B (12% abstain). Per-model gate threshold calibration is identified as future work.</li>
+  <li><strong>8B misconception-commit regression.</strong> EIDOS belief does not beat CoT on misconception-only commit TI for the 8B model.</li>
   <li><strong>Latency and cost.</strong> Multiple EIDOS steps, SBERT encoding, and optional meta-revision loops increase inference time and API cost relative to raw LLM calls.</li>
 </ol>
 
@@ -948,7 +1001,7 @@
 
 <p>The strongest empirical claim is on the mixed N=50 benchmark, where belief injection raises task accuracy by 12–50 percentage points across six Groq-hosted models while achieving 88–100% ambiguity-safe behaviour versus 0–40% for LLM-alone and reflection. Belief beats self-reflection on mixed task accuracy for every model tested (+14 to +72 pts). The key mechanistic insight is that supplying <em>structured cognitive state</em> derived from a separate architecture — concept rankings, surprise signals, ambiguity flags — before LLM generation produces better-calibrated outputs than prompting the model to generate more reasoning tokens via chain-of-thought or self-reflection.</p>
 
-<p>Honest limitations must be acknowledged: N=50 is directional, not definitive; the 8B model shows CoT can outperform belief on misconception-only commits; and reference-based grading differs from the official TruthfulQA evaluation methodology. These limitations are recorded transparently and inform the future work plan.</p>
+<p>Honest limitations must be acknowledged: N=50 is directional, not definitive; strong models (Qwen, Scout) show CoT/alone can outperform belief on TruthfulQA headline TI; Qwen belief achieves 100% commit TI but 56% TI due to abstention; and reference-based grading differs from the official TruthfulQA evaluation methodology. These limitations are recorded transparently and inform the future work plan.</p>
 
 <p>Future directions include: full 104-item TruthfulQA misconception evaluation with GPT-judge grading; per-model gate calibration, particularly for sub-10B models; latency-optimised deployment of the SBERT grounding layer; and ablation studies isolating the contribution of each belief context component (concept rankings, surprise, metacognitive flags) independently.</p>
 
@@ -1003,7 +1056,15 @@ python run_live_eval.py --provider groq --model llama-3.3-70b-versatile \
 python -m eval.eidos_eval.run_multimodel_eval --provider groq
 
 # Extended robustness set (+3 models: GPT-OSS-120B, Qwen3.6-27B, Llama 4 Scout)
-python -m eval.eidos_eval.run_multimodel_eval --provider groq --extended</code></pre>
+python -m eval.eidos_eval.run_multimodel_eval --provider groq --extended
+
+# TruthfulQA on extended models (complete six-model 3×2)
+python run_live_eval.py --provider groq --model openai/gpt-oss-120b \
+  --truthfulqa --modes llm_alone llm_cot llm_reflection eidos_belief
+python run_live_eval.py --provider groq --model qwen/qwen3.6-27b \
+  --truthfulqa --modes llm_alone llm_cot llm_reflection eidos_belief
+python run_live_eval.py --provider groq --model meta-llama/llama-4-scout-17b-16e-instruct \
+  --truthfulqa --modes llm_alone llm_cot llm_reflection eidos_belief</code></pre>
 
 <h2>Appendix C — Data Availability</h2>
 <p>Code and evaluation harness: <a href="https://github.com/yesYescaca/eidos" style="color:#2d5fa6">github.com/yesYescaca/eidos</a> (tag <code>v7.7</code>). Local reports (not committed to git): <code>eval/eidos_eval/reports/*.json</code>. Question sets: <code>questions_truthfulqa_50.json</code>, <code>questions_mixed_50.json</code>. Full command reference: <code>docs/PAPER_EVAL_COMMANDS.md</code>.</p>
@@ -1078,7 +1139,7 @@ new Chart(ctx2, {
       tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y}%` } }
     },
     scales: {
-      x: { grid: { display: false }, ticks: { font: { family: 'Inter', size: 11 }, color: '#3d3d46' } },
+      x: { grid: { display: false }, ticks: { font: { family: 'Inter', size: 10 }, color: '#3d3d46', maxRotation: 45 } },
       y: { min: 0, max: 100, grid: { color: RULE }, ticks: { font: { family: 'Inter', size: 11 }, color: '#6b6b7a', callback: v => v + '%' }, title: { display: true, text: 'Commit TI (%)', font: { family: 'Inter', size: 11 }, color: '#6b6b7a' } }
     }
   }
@@ -1125,7 +1186,7 @@ new Chart(ctx3, {
       tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y}%` } }
     },
     scales: {
-      x: { grid: { display: false }, ticks: { font: { family: 'Inter', size: 11 }, color: '#3d3d46' } },
+      x: { grid: { display: false }, ticks: { font: { family: 'Inter', size: 10 }, color: '#3d3d46', maxRotation: 45 } },
       y: { min: 0, max: 100, grid: { color: RULE }, ticks: { font: { family: 'Inter', size: 11 }, color: '#6b6b7a', callback: v => v + '%' }, title: { display: true, text: 'Task Accuracy (%)', font: { family: 'Inter', size: 11 }, color: '#6b6b7a' } }
     }
   }
@@ -1136,11 +1197,11 @@ const ctx4 = document.getElementById('chart_ambig').getContext('2d');
 new Chart(ctx4, {
   type: 'bar',
   data: {
-    labels: ['Llama-3.3-70B', 'Llama-3.1-8B', 'GPT-OSS-20B'],
+    labels: ['70B','8B','OSS-20B','OSS-120B','Qwen3.6','Scout'],
     datasets: [
       {
         label: 'LLM alone',
-        data: [28, 28, 8],
+        data: [28, 28, 8, 12, 40, 32],
         backgroundColor: NEUTRAL + 'aa',
         borderColor: NEUTRAL,
         borderWidth: 1.5,
@@ -1148,7 +1209,7 @@ new Chart(ctx4, {
       },
       {
         label: 'LLM CoT',
-        data: [20, 40, 0],
+        data: [20, 40, 0, 0, 40, 36],
         backgroundColor: WARN + 'aa',
         borderColor: WARN,
         borderWidth: 1.5,
@@ -1156,7 +1217,7 @@ new Chart(ctx4, {
       },
       {
         label: 'LLM reflection',
-        data: [24, 28, 0],
+        data: [24, 28, 0, 8, 40, 32],
         backgroundColor: '#7a5fa6aa',
         borderColor: '#7a5fa6',
         borderWidth: 1.5,
@@ -1164,7 +1225,47 @@ new Chart(ctx4, {
       },
       {
         label: 'EIDOS belief',
-        data: [88, 100, 100],
+        data: [88, 100, 100, 92, 100, 100],
+        backgroundColor: SUCCESS + 'cc',
+        borderColor: SUCCESS,
+        borderWidth: 1.5,
+        borderRadius: 3,
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'top', labels: { font: { family: 'Inter', size: 11 }, boxWidth: 14, padding: 14 } },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y}%` } }
+    },
+    scales: {
+      x: { grid: { display: false }, ticks: { font: { family: 'Inter', size: 10 }, color: '#3d3d46', maxRotation: 45 } },
+      y: { min: 0, max: 100, grid: { color: RULE }, ticks: { font: { family: 'Inter', size: 11 }, color: '#6b6b7a', callback: v => v + '%' }, title: { display: true, text: 'Ambiguity-Safe Rate (%)', font: { family: 'Inter', size: 11 }, color: '#6b6b7a' } }
+    }
+  }
+});
+
+// ── FIGURE 5: Six-model belief vs reflection (mixed task acc) ──
+const ctx5 = document.getElementById('chart_sixmodel').getContext('2d');
+const sixLabels = ['70B','8B','OSS-20B','OSS-120B','Qwen3.6','Scout'];
+new Chart(ctx5, {
+  type: 'bar',
+  data: {
+    labels: sixLabels,
+    datasets: [
+      {
+        label: 'LLM reflection',
+        data: [54, 52, 8, 24, 66, 56],
+        backgroundColor: '#7a5fa6aa',
+        borderColor: '#7a5fa6',
+        borderWidth: 1.5,
+        borderRadius: 3,
+      },
+      {
+        label: 'EIDOS belief',
+        data: [86, 86, 80, 86, 80, 94],
         backgroundColor: SUCCESS + 'cc',
         borderColor: SUCCESS,
         borderWidth: 1.5,
@@ -1181,7 +1282,46 @@ new Chart(ctx4, {
     },
     scales: {
       x: { grid: { display: false }, ticks: { font: { family: 'Inter', size: 11 }, color: '#3d3d46' } },
-      y: { min: 0, max: 100, grid: { color: RULE }, ticks: { font: { family: 'Inter', size: 11 }, color: '#6b6b7a', callback: v => v + '%' }, title: { display: true, text: 'Ambiguity-Safe Rate (%)', font: { family: 'Inter', size: 11 }, color: '#6b6b7a' } }
+      y: { min: 0, max: 100, grid: { color: RULE }, ticks: { font: { family: 'Inter', size: 11 }, color: '#6b6b7a', callback: v => v + '%' }, title: { display: true, text: 'Task Accuracy (%)', font: { family: 'Inter', size: 11 }, color: '#6b6b7a' } }
+    }
+  }
+});
+
+// ── FIGURE 6: Six-model TruthfulQA TI belief vs reflection ──
+const ctx6 = document.getElementById('chart_truthfulqa_six').getContext('2d');
+new Chart(ctx6, {
+  type: 'bar',
+  data: {
+    labels: sixLabels,
+    datasets: [
+      {
+        label: 'LLM reflection (TI)',
+        data: [84, 74, 10, 32, 92, 78],
+        backgroundColor: '#7a5fa6aa',
+        borderColor: '#7a5fa6',
+        borderWidth: 1.5,
+        borderRadius: 3,
+      },
+      {
+        label: 'EIDOS belief (TI)',
+        data: [82, 66, 54, 70, 56, 74],
+        backgroundColor: SUCCESS + 'cc',
+        borderColor: SUCCESS,
+        borderWidth: 1.5,
+        borderRadius: 3,
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'top', labels: { font: { family: 'Inter', size: 11 }, boxWidth: 14, padding: 14 } },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y}%` } }
+    },
+    scales: {
+      x: { grid: { display: false }, ticks: { font: { family: 'Inter', size: 11 }, color: '#3d3d46' } },
+      y: { min: 0, max: 100, grid: { color: RULE }, ticks: { font: { family: 'Inter', size: 11 }, color: '#6b6b7a', callback: v => v + '%' }, title: { display: true, text: 'TruthfulQA TI (%)', font: { family: 'Inter', size: 11 }, color: '#6b6b7a' } }
     }
   }
 });

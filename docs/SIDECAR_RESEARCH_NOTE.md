@@ -14,7 +14,7 @@ A numpy cognitive monitor (predictive processing, global workspace, metacognitio
 |-------|---|--------|
 | Mock EIDOS-Eval | 8 | Done (Exp 23) |
 | Live Groq pilot | 6 | Done — see `LIVE_EVAL_PILOT.md` |
-| TruthfulQA Misconceptions | 50 × 3 core models | Done (v7.7) |
+| TruthfulQA Misconceptions | 50 × 6 models | Done (v7.7) |
 | Mixed misconception + ambiguous | 50 × 6 models | Done (v7.7) |
 | TruthfulQA full misconceptions | 104 | Future |
 
@@ -28,10 +28,10 @@ A numpy cognitive monitor (predictive processing, global workspace, metacognitio
 | Benchmark | Best story |
 |-----------|------------|
 | Mixed task acc vs reflection | +14 to +72 pts (all 6 models) |
-| Mixed task acc vs alone | +12 to +50 pts (core 3: +26 to +50) |
+| Mixed task acc vs alone | +12 to +50 pts |
 | Mixed ambig safe (belief) | 88–100% vs 0–40% reflection |
-| TruthfulQA reflection | Model-dependent: 84% (70B), 74% = alone (8B), 10% (OSS-20B) |
 | Best single result | Llama 4 Scout belief: **94%** mixed task acc |
+| TruthfulQA caveat | Qwen: 56% TI but **100% commit TI** (44% abstain); OSS reflection harmful (10–32% TI) |
 
 ## Prior work to cite
 
@@ -44,8 +44,8 @@ A numpy cognitive monitor (predictive processing, global workspace, metacognitio
 
 ## What Sidecar is NOT
 
-Not a replacement for scaling LLMs; not guaranteed raw MMLU gains; trades coverage for calibration when configured conservatively; 8B shows CoT can still win on TruthfulQA-only commits; reflection can match belief on 70B TruthfulQA but fails on mixed calibration.
+Not a replacement for scaling LLMs; not guaranteed raw MMLU gains; trades coverage for calibration when configured conservatively; strong models (Qwen, Scout) can beat belief on TruthfulQA headline TI; reflection can match belief on 70B TruthfulQA but fails on mixed calibration.
 
 ## Submission bar
 
-**Met** for workshop / arXiv: N=50, two benchmarks, six models on mixed, belief vs CoT + reflection, honest limitations in `EIDOS_Research_Paper.html`.
+**Met** for workshop / arXiv: N=50, two benchmarks, six models, belief vs CoT + reflection, honest limitations in `EIDOS_Research_Paper.html`.
