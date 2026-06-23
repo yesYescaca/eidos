@@ -78,12 +78,14 @@ py -m eval.eidos_eval.build_truthfulqa_subset --n 104 --out eval/eidos_eval/ques
 
 ### Status
 
-| Model | N=104 TI (alone) | TI (reflection) | TI (belief) | Commit TI (belief) | Status |
-|-------|------------------|-----------------|-------------|-------------------|--------|
-| Llama-3.3-70B | 92% [86–96] | 86% [78–91] | 84% [75–90] | 92% [84–96] | **Done** |
-| Llama 4 Scout | — | — | — | — | Pending |
+| Model | N=104 TI (alone) | TI (CoT) | TI (reflection) | TI (belief) | Commit TI (belief) | Status |
+|-------|------------------|----------|-----------------|-------------|-------------------|--------|
+| Llama-3.3-70B | 92% [86–96] | 70% [61–78] | 86% [78–91] | 84% [75–90] | 92% [84–96] | **Done** |
+| Llama 4 Scout | 89% [82–94] | **93% [87–97]** | 87% [79–92] | 79% [70–86] | 88% [80–93] | **Done** |
 
 **70B paired bootstrap (N=104):** belief vs reflection −1.9% [−10.6%, +6.7%] (n.s.); belief vs CoT +13.5% [+3.8%, +23.1%] (*p* = 0.009).
+
+**Scout paired bootstrap (N=104):** belief vs reflection −7.7% [−17.3%, +1.9%] (n.s.); belief vs CoT −14.4% [−23.1%, −5.8%] (*p* = 0.003).
 
 ### Run commands (use `run_live_eval.ps1` from any directory)
 
@@ -94,7 +96,7 @@ $EIDOS = "C:\Users\Francisco\Downloads\Kisamapa labs\EIDOS project\eidos\run_liv
 # 70B — done
 & $EIDOS --provider groq --model llama-3.3-70b-versatile --truthfulqa-full --modes $MODES
 
-# Scout — second anchor (run next)
+# Scout — done
 & $EIDOS --provider groq --model meta-llama/llama-4-scout-17b-16e-instruct --truthfulqa-full --modes $MODES
 ```
 

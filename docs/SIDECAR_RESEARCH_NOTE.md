@@ -16,7 +16,7 @@ A numpy cognitive monitor (predictive processing, global workspace, metacognitio
 | Live Groq pilot | 6 | Done — see `LIVE_EVAL_PILOT.md` |
 | TruthfulQA Misconceptions | 50 × 6 models | Done (v7.7) |
 | Mixed misconception + ambiguous | 50 × 6 models | Done (v7.7) |
-| TruthfulQA full misconceptions | 104 | 70B done; Scout pending |
+| TruthfulQA full misconceptions | 104 | 70B + Scout done (Tables 11–12) |
 
 ## Key comparisons (novel)
 
@@ -31,7 +31,8 @@ A numpy cognitive monitor (predictive processing, global workspace, metacognitio
 | Mixed task acc vs alone | +12 to +50 pts |
 | Mixed ambig safe (belief) | 88–100% vs 0–40% reflection |
 | Best single result | Llama 4 Scout belief: **94%** mixed task acc |
-| TruthfulQA N=104 (70B) | Alone 92% TI; belief 84% TI but **92% commit TI**; beats CoT +13.5 pts (sig.) |
+| TruthfulQA N=104 (70B) | Alone 92% TI; belief 84% TI, **92% commit TI**; beats CoT +13.5 pts (sig.) |
+| TruthfulQA N=104 (Scout) | CoT **93%** TI wins; belief 79% TI (10.6% abstain); mixed belief still **94%** task acc |
 | TruthfulQA caveat (N=50) | Qwen: 56% TI but **100% commit TI** (44% abstain); OSS reflection harmful (10–32% TI) |
 
 ## Prior work to cite

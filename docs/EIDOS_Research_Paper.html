@@ -650,8 +650,8 @@
 
 <h3>3.4 &nbsp;Benchmarks</h3>
 
-<h4>TruthfulQA Misconceptions (N=50)</h4>
-<p>A 50-item subset of the Misconceptions category from Lin, Hilton and Evans (2022), constructed via <code>build_truthfulqa_subset.py</code> with seed 42. The benchmark uses a <em>must-answer</em> setting in which abstention penalises the task-level score. Grading uses reference answer lists (substring/token overlap) rather than GPT-judge, a limitation discussed in Section 5.4. Metrics follow Lin et al. (2022): <strong>T</strong> (truthful), <strong>I</strong> (informative), <strong>TI</strong> (truthful and informative, headline metric), <strong>misc</strong> (committed misconception), and <strong>commit TI</strong> (TI rate among committed answers only).</p>
+<h4>TruthfulQA Misconceptions (N=50 and N=104)</h4>
+<p>A 50-item subset of the Misconceptions category from Lin, Hilton and Evans (2022), constructed via <code>build_truthfulqa_subset.py</code> with seed 42. The full <strong>104-item</strong> misconception set is available via <code>questions_truthfulqa_104.json</code> (<code>--truthfulqa-full</code>); N=104 results for 70B and Llama 4 Scout are in §4.6 (Tables 11–12, Figure 7). The benchmark uses a <em>must-answer</em> setting in which abstention penalises the task-level score. Grading uses reference answer lists (substring/token overlap) rather than GPT-judge, a limitation discussed in Section 5.4. Metrics follow Lin et al. (2022): <strong>T</strong> (truthful), <strong>I</strong> (informative), <strong>TI</strong> (truthful and informative, headline metric), <strong>misc</strong> (committed misconception), and <strong>commit TI</strong> (TI rate among committed answers only).</p>
 
 <h4>Mixed Benchmark (N=50)</h4>
 <p>A purpose-built benchmark comprising 25 misconception items (correct commitment required) and 25 ambiguous items (correct abstention or clarification required), constructed via <code>build_mixed_eval_50.py</code>. This benchmark directly matches the design goal of EIDOS: calibrated behaviour across both factual and ambiguous question types. Primary metric is <strong>task accuracy</strong> — correct commits on misconceptions plus correct abstentions on ambiguous items. Secondary metrics: <strong>ambig_safe_rate</strong> (no false commit on ambiguous items) and <strong>misconception_commit_ti_rate</strong> (TI on misconception items when committing).</p>
@@ -667,7 +667,7 @@
   <tr><td>Embedding model</td><td>SBERT <code>all-MiniLM-L6-v2</code> (hash fallback if HF unavailable)</td></tr>
   <tr><td>Temperature</td><td>0.2</td></tr>
   <tr><td>Max tokens</td><td>256</td></tr>
-  <tr><td>N per benchmark</td><td>50</td></tr>
+  <tr><td>N per benchmark</td><td>50 (six-model grid); 104 (TruthfulQA full, §4.6)</td></tr>
   <tr><td>Random seed</td><td>42</td></tr>
   <tr><td>Gate profile</td><td><code>LIVE_TRUTHFULQA_V75</code> (factual mode, underdetermination-gated abstention)</td></tr>
 </table>
@@ -677,6 +677,8 @@
 <!-- ══════════════════ 4. RESULTS ══════════════════ -->
 <section class="section">
 <h2><span class="sec-num">4.</span>Results</h2>
+
+<p><strong>Figure guide:</strong> Figure 5 is the primary claim (mixed N=50, belief vs reflection, six models). Figures 2–4 and 6 use N=50; Figure 6 is TruthfulQA headline TI only. Figure 7 is the full 104-item TruthfulQA set (70B + Scout, four modes). Do not compare Figure 5 (mixed) directly to Figures 6–7 (must-answer TruthfulQA).</p>
 
 <!-- KEY STATS GRID -->
 <div class="summary-grid">
@@ -754,7 +756,7 @@
       <canvas id="chart_truthfulqa"></canvas>
     </div>
   </div>
-  <div class="figure-caption"><strong>Figure 2.</strong> Commit TI across modes for the core three models (detail view). Reflection helps 70B (84%) but is neutral on 8B (74%) and harmful on OSS-20B (10%). See Table 7 and Figure 6 for the full six-model TruthfulQA comparison.</div>
+  <div class="figure-caption"><strong>Figure 2.</strong> Commit TI on TruthfulQA Misconceptions <strong>N=50</strong> for the <strong>core three models</strong> (all six EIDOS modes; gate/meta from six-mode runs). Reflection helps 70B (84%) but is neutral on 8B (74%) and harmful on OSS-20B (10%). For six-model N=50 headline TI see Figure 6; for full N=104 see Figure 7.</div>
 </div>
 
 <h3>4.2 &nbsp;Mixed Benchmark (N=50) — Primary Result</h3>
@@ -809,7 +811,7 @@
       <canvas id="chart_mixed"></canvas>
     </div>
   </div>
-  <div class="figure-caption"><strong>Figure 3.</strong> Task accuracy on the mixed benchmark (core three models, all modes). Belief beats reflection on all three (+32, +34, +72 pts). See Figure 5 for the six-model belief-vs-reflection summary.</div>
+  <div class="figure-caption"><strong>Figure 3.</strong> Task accuracy on the <strong>mixed benchmark (N=50)</strong> for the <strong>core three models</strong> (six modes). Belief beats reflection on all three (+32, +34, +72 pts). Six-model belief-vs-reflection summary: Figure 5.</div>
 </div>
 
 <!-- FIGURE 4: Ambiguity Safety -->
@@ -820,7 +822,7 @@
       <canvas id="chart_ambig"></canvas>
     </div>
   </div>
-  <div class="figure-caption"><strong>Figure 4.</strong> Ambiguity-safe rate on the mixed benchmark across all six evaluated models. EIDOS belief achieves 88–100% versus 0–40% for LLM-alone and reflection. Extended models (right three) show the same pattern: strong factual baselines still over-commit on ambiguous items.</div>
+  <div class="figure-caption"><strong>Figure 4.</strong> Ambiguity-safe rate on the <strong>mixed benchmark (N=50)</strong> across all six models (four modes in live reports). EIDOS belief: 88–100% vs 0–40% for LLM-alone and reflection on ambiguous items.</div>
 </div>
 
 <h4>Cross-Model Summary — Mixed Benchmark (EIDOS Belief vs Baselines)</h4>
@@ -910,7 +912,7 @@
       <canvas id="chart_sixmodel"></canvas>
     </div>
   </div>
-  <div class="figure-caption"><strong>Figure 5.</strong> Headline comparison across core and extended models on the mixed benchmark. Belief beats reflection on every model (+14 to +72 pts). Core models shown in blue/green/orange; extended models in purple/teal/coral.</div>
+  <div class="figure-caption"><strong>Figure 5.</strong> <strong>Mixed N=50</strong> — belief vs reflection task accuracy (six models). Belief wins on every model (+14 to +72 pts). Primary empirical claim; not comparable to TruthfulQA-only figures (Figures 6–7).</div>
 </div>
 
 <h4>Table 9 — Extended models, TruthfulQA (N=50)</h4>
@@ -932,7 +934,7 @@
       <canvas id="chart_truthfulqa_six"></canvas>
     </div>
   </div>
-  <div class="figure-caption"><strong>Figure 6.</strong> TruthfulQA TI for belief injection vs self-reflection across all six models. Belief wins on OSS family; reflection wins or ties on Qwen and Scout headline TI — interpret alongside commit TI and abstention (Table 9).</div>
+  <div class="figure-caption"><strong>Figure 6.</strong> <strong>TruthfulQA N=50</strong> — headline TI for belief vs reflection (six models, four-mode live runs). Belief wins on OSS family; reflection/alone win on Qwen and Scout due to belief abstention. Full 104-item set (70B + Scout): Figure 7.</div>
 </div>
 
 <div class="callout finding">
@@ -967,7 +969,7 @@
 
 <h3>4.6 &nbsp;TruthfulQA Full Misconceptions (N=104)</h3>
 
-<p>To test whether N=50 subset findings generalise, we evaluated the full 104-item TruthfulQA Misconceptions set (<code>questions_truthfulqa_104.json</code>, <code>--truthfulqa-full</code>) on the anchor model. Four modes only (gate/meta omitted). Wilson 95% CIs and paired bootstrap from <code>stats.py</code>.</p>
+<p>We evaluated the full 104-item TruthfulQA Misconceptions set (<code>questions_truthfulqa_104.json</code>, <code>--truthfulqa-full</code>) on two anchor models: <code>llama-3.3-70b-versatile</code> (large Llama) and <code>meta-llama/llama-4-scout-17b-16e-instruct</code> (strong MoE baseline). Four modes only (gate/meta omitted). Wilson 95% CIs and paired bootstrap from <code>stats.py</code>. Figure 7 visualises headline TI; Tables 11–12 give full metrics.</p>
 
 <h4>Table 11 — llama-3.3-70b-versatile (N=104)</h4>
 <div class="table-wrap">
@@ -978,10 +980,33 @@
   <tr><td class="td-mode">LLM reflection</td><td>86% [78–91]</td><td>1.9%</td><td>0%</td><td>86% [78–91]</td></tr>
   <tr><td class="td-mode">EIDOS belief</td><td>84% [75–90]</td><td class="td-best">1.0%</td><td>8.7%</td><td class="td-best">92% [84–96]</td></tr>
 </table>
-<div class="table-caption"><strong>Headline TI:</strong> LLM-alone wins (92%); belief trails reflection by 2 pts (84% vs 86%) — paired bootstrap <strong>−1.9% [−10.6%, +6.7%]</strong>, McNemar <em>p</em> = 0.82 (not significant). <strong>Commit quality:</strong> belief achieves highest commit TI (92% [84–96]) and lowest misconception-commit rate (1.0%). <strong>vs CoT:</strong> belief +13.5 pts TI <strong>[+3.8%, +23.1%]</strong>, <em>p</em> = 0.009. Abstention (8.7%, ~9 items) explains the gap vs alone/reflection on must-answer scoring. Llama 4 Scout N=104: pending (see <code>PAPER_EVAL_COMMANDS.md</code>).</div>
+<div class="table-caption"><strong>Headline TI:</strong> LLM-alone wins (92%); belief vs reflection <strong>−1.9% [−10.6%, +6.7%]</strong> (n.s., <em>p</em> = 0.82). <strong>Commit quality:</strong> belief highest commit TI (92% [84–96]) and lowest misc (1.0%). <strong>vs CoT:</strong> belief +13.5 pts <strong>[+3.8%, +23.1%]</strong>, <em>p</em> = 0.009.</div>
 </div>
 
-<p>At N=104, alone improves over the N=50 subset (88% → 92% TI), while belief holds near 84% TI with higher commit quality. This reinforces §5.1: on must-answer TruthfulQA, volume of committed answers favours raw LLMs; EIDOS value is commit TI (+22 pts vs CoT) and calibration metrics on the mixed benchmark. N=50 results for 70B remain in Table 1 for cross-scale comparison.</p>
+<h4>Table 12 — Llama 4 Scout 17B (N=104)</h4>
+<div class="table-wrap">
+<table>
+  <tr><th>Mode</th><th>TI</th><th>misc</th><th>Abstain</th><th>Commit TI</th></tr>
+  <tr><td class="td-mode">LLM CoT</td><td class="td-best">93% [87–97]</td><td>1.9%</td><td>0%</td><td class="td-best">93% [87–97]</td></tr>
+  <tr><td class="td-mode">LLM alone</td><td>89% [82–94]</td><td>4.8%</td><td>0%</td><td>89% [82–94]</td></tr>
+  <tr><td class="td-mode">LLM reflection</td><td>87% [79–92]</td><td class="td-best">1.0%</td><td>0%</td><td>87% [79–92]</td></tr>
+  <tr><td class="td-mode">EIDOS belief</td><td class="td-worst">79% [70–86]</td><td>1.9%</td><td>10.6%</td><td>88% [80–93]</td></tr>
+</table>
+<div class="table-caption"><strong>CoT wins</strong> on this strong model (+4 pts vs alone). Belief headline TI 79% due to 10.6% abstention (~11 items). <strong>vs CoT:</strong> belief <strong>−14.4% [−23.1%, −5.8%]</strong>, <em>p</em> = 0.003. <strong>vs reflection:</strong> −7.7% [−17.3%, +1.9%] (n.s.). On <strong>mixed N=50</strong> (§4.4), the same model achieves <strong>94% task accuracy</strong> with belief vs 56% with reflection (+38 pts) — calibration gains do not appear on must-answer TruthfulQA alone.</div>
+</div>
+
+<!-- FIGURE 7: N=104 TruthfulQA headline TI -->
+<div class="figure-wrap">
+  <div class="figure-inner">
+    <div class="figure-title">Figure 7 — TruthfulQA Full Set (N=104): Headline TI by Mode (70B vs Scout)</div>
+    <div class="figure-canvas-wrap" style="height:380px">
+      <canvas id="chart_truthfulqa_n104"></canvas>
+    </div>
+  </div>
+  <div class="figure-caption"><strong>Figure 7.</strong> Full 104-item misconception set, four live modes. <strong>70B:</strong> alone leads (92%); belief beats CoT (+13.5 pts, sig.). <strong>Scout:</strong> CoT leads (93%); belief 79% TI (10.6% abstain). Wilson 95% CIs in Tables 11–12. Mixed-benchmark primary claim: Figure 5.</div>
+</div>
+
+<p>At N=104, both anchors show that must-answer TruthfulQA favours models that always commit. On 70B, alone improves over the N=50 subset (88% → 92% TI) while belief holds 84% TI with best commit quality. On Scout, CoT reaches 93% TI — confirming the N=50 pattern (CoT 92% vs belief 74%) at full scale. These results reinforce §5.1: report commit TI and abstention alongside headline TI for gate-calibrated systems.</p>
 </section>
 
 <!-- ══════════════════ 5. DISCUSSION ══════════════════ -->
@@ -1002,7 +1027,7 @@
   <tr><td>Large Llama (70B)</td><td>N=50: CoT hurts (−26 pts vs alone); N=104: CoT 70% [61–78] vs alone 92% [86–96]; belief beats CoT +13.5 pts TI <strong>[+3.8%, +23.1%]</strong> (<em>p</em> = 0.009)</td><td>Mixed: belief +32 pts task acc; TruthfulQA N=104: reflection 86% vs belief 84% TI (not sig.); belief commit TI 92% [84–96]</td></tr>
   <tr><td>Small Llama (8B)</td><td>CoT helps on TruthfulQA-only misconceptions (+16 pts vs alone); belief wins on mixed via ambiguity safety</td><td>TruthfulQA: reflection = alone (74%); mixed: belief +34 pts, 100% ambig safe vs 28% reflection</td></tr>
   <tr><td>Weak OSS model (20B)</td><td>CoT catastrophic (−16 pts vs alone, 0% ambig safe); belief strongly preferred</td><td>TruthfulQA: reflection 10% TI (−42 pts); mixed: belief +72 pts task acc</td></tr>
-  <tr><td>Strong baselines (Qwen, Scout)</td><td>TruthfulQA: CoT wins (Qwen 92%, Scout 92%); belief loses headline TI on must-answer</td><td>Mixed: belief +14 to +38 pts vs reflection; 100% ambig safe; Qwen TruthfulQA reflection 92% vs belief 56% TI</td></tr>
+  <tr><td>Strong baselines (Qwen, Scout)</td><td>N=50/N=104: CoT wins on Scout TruthfulQA (N=104: 93% [87–97] vs belief 79% [70–86], <em>p</em> = 0.003); Qwen N=50 CoT 92%</td><td>Mixed: belief +14 to +38 pts vs reflection; Scout mixed 94% vs 56% reflection; Qwen 56% TI but 100% commit TI (44% abstain)</td></tr>
   <tr><td>GPT-OSS-120B</td><td>Belief wins TruthfulQA TI (70% vs 60% CoT); mixed alone 40% despite scale</td><td>TruthfulQA reflection 32% TI (−36 pts); mixed belief +62 pts vs reflection</td></tr>
 </table>
 </div>
@@ -1016,7 +1041,7 @@
 <h3>5.4 &nbsp;Limitations</h3>
 
 <ol class="body-list">
-  <li><strong>N=50 per benchmark per model</strong> for the six-model grid; <strong>N=104 TruthfulQA</strong> completed for 70B (Table 11), Scout pending. Wilson 95% CIs in Tables 7, 10, 11; paired bootstrap on mixed and N=104 70B.</li>
+  <li><strong>N=50</strong> for the six-model grid; <strong>N=104 TruthfulQA</strong> completed for 70B and Scout (Tables 11–12, Figure 7). Wilson 95% CIs throughout; paired bootstrap on mixed and N=104 anchors.</li>
   <li><strong>Single API provider (Groq).</strong> All results are from Groq-hosted model snapshots. Results may vary across providers and model versions.</li>
   <li><strong>Reference-based grading.</strong> Grading uses substring/token overlap against reference answer lists rather than the official TruthfulQA GPT-judge evaluator. This may diverge from leaderboard metrics and is a known limitation of the evaluation harness.</li>
   <li><strong>Concept warmup required.</strong> Each evaluation item includes per-question concept registration; cold-start performance on unseen domains is untested.</li>
@@ -1030,7 +1055,7 @@
 
 <ul class="body-list">
   <li><strong>Cache effects:</strong> Per-model response caches stabilise results but may freeze early errors. A <code>--no-cache</code> ablation on the 70B model is recommended before final submission.</li>
-  <li><strong>Subset selection:</strong> N=50 TruthfulQA subset (seed 42) differs from the full 104-item set. N=104 70B results (Table 11) show alone stronger at full scale (92% vs 88% TI); conclusions on mixed benchmark are unchanged.</li>
+  <li><strong>Subset selection:</strong> N=50 TruthfulQA subset (seed 42) differs from the full 104-item set. N=104 confirms 70B alone stronger at full scale (92% vs 88% TI at N=50); Scout CoT remains best on must-answer (93% N=104). Mixed-benchmark conclusions unchanged.</li>
   <li><strong>Prompt sensitivity:</strong> CoT and belief prompts were hand-designed. Modest paraphrase sensitivity is likely; systematic prompt ablation is future work.</li>
 </ul>
 </section>
@@ -1043,9 +1068,9 @@
 
 <p>The strongest empirical claim is on the mixed N=50 benchmark, where belief injection raises task accuracy by 12–50 percentage points across six Groq-hosted models while achieving 88–100% ambiguity-safe behaviour versus 0–40% for LLM-alone and reflection. Belief beats self-reflection on mixed task accuracy for every model tested (+14 to +72 pts). The key mechanistic insight is that supplying <em>structured cognitive state</em> derived from a separate architecture — concept rankings, surprise signals, ambiguity flags — before LLM generation produces better-calibrated outputs than prompting the model to generate more reasoning tokens via chain-of-thought or self-reflection.</p>
 
-<p>Honest limitations must be acknowledged: N=50 is directional, not definitive; strong models (Qwen, Scout) show CoT/alone can outperform belief on TruthfulQA headline TI; Qwen belief achieves 100% commit TI but 56% TI due to abstention; and reference-based grading differs from the official TruthfulQA evaluation methodology. These limitations are recorded transparently and inform the future work plan.</p>
+<p>Honest limitations must be acknowledged: the six-model grid uses N=50; N=104 TruthfulQA on 70B and Scout shows must-answer metrics favour alone/CoT on strong models while belief wins on mixed calibration; Qwen belief achieves 100% commit TI but 56% TI at N=50 due to abstention; reference-based grading differs from the official TruthfulQA methodology.</p>
 
-<p>Future directions include: N=104 TruthfulQA on Llama 4 Scout (second anchor); GPT-judge grading for official metric alignment; per-model gate calibration for sub-10B models; latency-optimised SBERT deployment; and component-level belief-context ablations.</p>
+<p>Future directions include: GPT-judge grading; per-model gate calibration; <code>--no-cache</code> robustness; six-mode mixed ablation refresh; LaTeX/arXiv conversion.</p>
 
 <p>Code, evaluation harness, and all per-model reports are released at <a href="https://github.com/yesYescaca/eidos" style="color:#2d5fa6">github.com/yesYescaca/eidos</a> (tag v7.8).</p>
 </section>
@@ -1114,7 +1139,7 @@ python run_live_eval.py --provider groq --model meta-llama/llama-4-scout-17b-16e
 <h2>Appendix D — Recommended Before Submission</h2>
 <ul class="body-list">
   <li><s>Add Wilson/binomial confidence intervals for all N=50 proportions</s> — done (v7.8 <code>stats.py</code> + Table 7/10); paired bootstrap for belief vs reflection on mixed reports</li>
-  <li><s>Run live eval at N=104 (<code>--truthfulqa-full</code>) on anchor model(s)</s> — 70B done (Table 11); Scout pending</li>
+  <li><s>Run live eval at N=104 (<code>--truthfulqa-full</code>) on anchor model(s)</s> — 70B + Scout done (Tables 11–12, Figure 7)</li>
   <li>Run <code>--no-cache</code> ablation on 70B for robustness paragraph</li>
   <li>Replicate TruthfulQA subset with GPT-judge for official metric alignment</li>
   <li>Convert to LaTeX (arXiv <code>cs.AI</code> / <code>cs.CL</code> template)</li>
@@ -1365,6 +1390,46 @@ new Chart(ctx6, {
     scales: {
       x: { grid: { display: false }, ticks: { font: { family: 'Inter', size: 11 }, color: '#3d3d46' } },
       y: { min: 0, max: 100, grid: { color: RULE }, ticks: { font: { family: 'Inter', size: 11 }, color: '#6b6b7a', callback: v => v + '%' }, title: { display: true, text: 'TruthfulQA TI (%)', font: { family: 'Inter', size: 11 }, color: '#6b6b7a' } }
+    }
+  }
+});
+
+// ── FIGURE 7: N=104 TruthfulQA headline TI (70B vs Scout, four modes) ──
+const modes4 = ['LLM alone', 'LLM CoT', 'LLM reflection', 'EIDOS belief'];
+const ctx7 = document.getElementById('chart_truthfulqa_n104').getContext('2d');
+new Chart(ctx7, {
+  type: 'bar',
+  data: {
+    labels: modes4,
+    datasets: [
+      {
+        label: 'Llama-3.3-70B (N=104)',
+        data: [92, 70, 86, 84],
+        backgroundColor: ACCENT + 'cc',
+        borderColor: ACCENT,
+        borderWidth: 1.5,
+        borderRadius: 3,
+      },
+      {
+        label: 'Llama 4 Scout (N=104)',
+        data: [89, 93, 87, 79],
+        backgroundColor: '#c45a2a' + 'cc',
+        borderColor: '#c45a2a',
+        borderWidth: 1.5,
+        borderRadius: 3,
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'top', labels: { font: { family: 'Inter', size: 11 }, boxWidth: 14, padding: 14 } },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y}%` } }
+    },
+    scales: {
+      x: { grid: { display: false }, ticks: { font: { family: 'Inter', size: 10 }, color: '#3d3d46', maxRotation: 45 } },
+      y: { min: 0, max: 100, grid: { color: RULE }, ticks: { font: { family: 'Inter', size: 11 }, color: '#6b6b7a', callback: v => v + '%' }, title: { display: true, text: 'Headline TI (%)', font: { family: 'Inter', size: 11 }, color: '#6b6b7a' } }
     }
   }
 });
