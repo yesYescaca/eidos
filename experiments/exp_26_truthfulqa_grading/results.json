@@ -1,0 +1,18 @@
+{
+  "alone_ti": 0.0,
+  "meta_ti": 0.4,
+  "summary": {
+    "selective_accuracy_delta_gate": 0.0,
+    "selective_accuracy_delta_belief": 0.0,
+    "selective_accuracy_delta_meta": 0.4,
+    "false_commit_reduction_gate": 0.0,
+    "task_accuracy_delta_gate": 0.0,
+    "task_accuracy_delta_belief": 0.0,
+    "task_accuracy_delta_cot": 0.0,
+    "belief_beats_cot": false,
+    "truthful_informative_delta_belief": 0.0,
+    "truthful_informative_delta_cot": 0.0,
+    "belief_beats_cot_ti": false,
+    "misconception_reduction_belief": 0.4
+  }
+}

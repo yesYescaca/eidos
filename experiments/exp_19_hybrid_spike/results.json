@@ -7,14 +7,14 @@
     "final_preview": "The reactor core is overheating in sector beta. Recommend immediate cooling prot"
   },
   "hybrid_with_gate": {
-    "gate_decision": "probe",
-    "gated": true,
-    "final_preview": "I need to verify context first. Probing concept 'alpha': the reactor core is ove"
+    "gate_decision": "commit",
+    "gated": false,
+    "final_preview": "The reactor core is overheating in sector beta. Recommend immediate cooling prot"
   },
   "checks": {
     "baseline_committed_draft": true,
-    "hybrid_gated": true,
-    "hybrid_safer_decision": true
+    "hybrid_gated": false,
+    "hybrid_safer_decision": false
   },
-  "pass": true
+  "pass": false
 }

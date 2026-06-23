@@ -35,6 +35,8 @@ EXPERIMENTS = [
     ("22", "exp_22_end_to_end", "End-to-end full stack (v6.2)"),
     ("23", "exp_23_eidos_eval", "EIDOS-Eval LLM comparison (v7.0)"),
     ("24", "exp_24_groq_live_eval", "Live Groq EIDOS-Eval (v7.1)"),
+    ("25", "exp_25_truthfulqa_misconceptions", "TruthfulQA belief vs CoT (v7.3)"),
+    ("26", "exp_26_truthfulqa_grading", "TruthfulQA grading + factual gate (v7.4)"),
 ]
 
 

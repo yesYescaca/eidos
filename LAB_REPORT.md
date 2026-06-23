@@ -230,9 +230,9 @@ See `demos/hybrid_qa/` and `benchmark/ambiguous_qa/`.
 
 ## 6. Conclusion
 
-EIDOS v7.2 calibrates the live Sidecar path (SBERT + relaxed live thresholds) and adds **task_accuracy** so correct abstentions count. State version **7.2**.
+EIDOS v7.4 adds **TruthfulQA-aligned grading** (T/I/TI per Lin et al., ACL 2022), a **factual gate profile**, and N=50 Groq results showing **belief beats CoT** (TI 78% vs 64%) while LLM-alone leads overall TI (86%). State version **7.4**.
 
-**Next research frontier:** learned gate thresholds; larger TruthfulQA live runs.
+See [docs/LIVE_EVAL_PILOT.md](docs/LIVE_EVAL_PILOT.md) and [docs/TRUTHFULQA_EVAL.md](docs/TRUTHFULQA_EVAL.md).
 
 ---
 
@@ -241,13 +241,14 @@ EIDOS v7.2 calibrates the live Sidecar path (SBERT + relaxed live thresholds) an
 ```bash
 cd eidos
 pip install -r requirements.txt
-pytest tests/                    # 78 unit tests
-python run_all_experiments.py    # All 24 experiments + summary
+pytest tests/                    # 91 unit tests
+python run_all_experiments.py    # All 26 experiments + summary
 py -m benchmark.ambiguous_qa.runner
 py -m eval.eidos_eval.runner
+py -m eval.eidos_eval.live_runner --provider groq --truthfulqa
 ```
 
-State serialisation version: **7.0**
+State serialisation version: **7.4**
 
 ---
 
@@ -278,9 +279,12 @@ State serialisation version: **7.0**
 | 21 | SBERT embeddings | Success | v6.0 |
 | 22 | End-to-end full stack | Success | v6.2 |
 | 23 | EIDOS-Eval LLM comparison | Success | v7.0 |
+| 24 | Live Groq EIDOS-Eval | Success | v7.1 |
+| 25 | TruthfulQA belief vs CoT | Success | v7.3 |
+| 26 | TruthfulQA grading + factual gate | Success | v7.4 |
 
-*Exp 01–18: core PAW lab. Exp 19–23: hybrid Sidecar + eval.*
+*Exp 01–18: core PAW lab. Exp 19–26: hybrid Sidecar + eval.*
 
 ---
 
-*Kisamapa Labs — Experiment 06 — EIDOS v7.0 — Lab Report*
+*Kisamapa Labs — Experiment 06 — EIDOS v7.4 — Lab Report*

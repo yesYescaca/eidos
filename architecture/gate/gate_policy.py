@@ -45,10 +45,14 @@ class GatePolicy:
         min_draft_goal_align: float = GATE_MIN_DRAFT_GOAL_ALIGN,
         concept_ambiguity_eps: float = GATE_CONCEPT_AMBIGUITY_EPS,
         draft_concept_mismatch: bool = GATE_DRAFT_CONCEPT_MISMATCH,
+        question_goal_clear: float = GATE_QUESTION_GOAL_CLEAR,
+        factual_mode: bool = False,
     ) -> None:
         self.min_draft_goal_align = min_draft_goal_align
         self.concept_ambiguity_eps = concept_ambiguity_eps
         self.draft_concept_mismatch = draft_concept_mismatch
+        self.question_goal_clear = question_goal_clear
+        self.factual_mode = factual_mode
 
     @staticmethod
     def decision_from_step(step_result: dict[str, Any]) -> GateDecision:
@@ -203,7 +207,7 @@ class GatePolicy:
         if grounding and user_text and goal_text:
             question_goal_align = float(grounding.similarity(user_text, goal_text))
             scores["question_goal_alignment"] = question_goal_align
-        question_clear = question_goal_align >= GATE_QUESTION_GOAL_CLEAR
+        question_clear = question_goal_align >= self.question_goal_clear
 
         decision: GateDecision = cognitive
 
@@ -220,7 +224,8 @@ class GatePolicy:
                 )
 
         if (
-            user_text
+            not self.factual_mode
+            and user_text
             and text_concepts
             and concept_gap < self.concept_ambiguity_eps
             and not question_clear

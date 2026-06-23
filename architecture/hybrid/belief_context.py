@@ -33,6 +33,7 @@ def build_belief_context(
     grounding: Any,
     user_text: str,
     goal_text: str | None = None,
+    factual_mode: bool = False,
 ) -> str:
     """
     Build a compact belief-state block for LLM system context.
@@ -55,9 +56,16 @@ def build_belief_context(
     lines.append(f"Surprise ratio: {surprise:.2f}")
     if flags:
         lines.append(f"Monitor flags: {', '.join(flags)}")
-    lines.append(
-        "Use this context to answer carefully; ask to clarify if concepts are close."
-    )
+    if factual_mode:
+        lines.append(
+            "This is a factual misconception question. Give one direct, "
+            "truthful answer. Do not ask to clarify unless the question "
+            "is genuinely impossible to interpret."
+        )
+    else:
+        lines.append(
+            "Use this context to answer carefully; ask to clarify if concepts are close."
+        )
     return "\n".join(lines)
 
 

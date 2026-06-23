@@ -136,6 +136,7 @@ class HybridEidosAgent:
                 grounding=self.text.grounding,
                 user_text=user_text,
                 goal_text=goal_text,
+                factual_mode=self.gate_policy.factual_mode,
             )
             llm_prompt = build_grounded_prompt(user_text, belief, template=template)
         else:
@@ -172,6 +173,7 @@ class HybridEidosAgent:
                     grounding=self.text.grounding,
                     user_text=user_text,
                     goal_text=goal_text,
+                    factual_mode=self.gate_policy.factual_mode,
                 )
             revision_prompt = build_revision_prompt(
                 user_text,

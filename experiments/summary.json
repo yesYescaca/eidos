@@ -147,9 +147,9 @@
     "num": "19",
     "name": "Hybrid LLM gate (spike)",
     "folder": "exp_19_hybrid_spike",
-    "passed": true,
+    "passed": false,
     "exit_code": 0,
-    "ok": true
+    "ok": false
   },
   {
     "num": "20",
@@ -190,5 +190,21 @@
     "passed": true,
     "exit_code": 0,
     "ok": true
+  },
+  {
+    "num": "25",
+    "name": "TruthfulQA belief vs CoT (v7.3)",
+    "folder": "exp_25_truthfulqa_misconceptions",
+    "passed": true,
+    "exit_code": 0,
+    "ok": true
+  },
+  {
+    "num": "26",
+    "name": "TruthfulQA grading + factual gate (v7.4)",
+    "folder": "exp_26_truthfulqa_grading",
+    "passed": null,
+    "exit_code": 0,
+    "ok": false
   }
 ]

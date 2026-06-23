@@ -1,5 +1,24 @@
 # Changelog
 
+## v7.4 — TruthfulQA-Aligned Grading + Factual Gate
+- **`truthfulqa_scorer.py`** — T / I / TI metrics per Lin et al. (ACL 2022)
+- **Reference answer lists** in `questions_truthfulqa_50.json` (rebuild via builder)
+- **`LIVE_TRUTHFULQA`** gate profile + `factual_mode` on `GatePolicy`
+- **Factual belief prompt** — direct answers on misconception questions
+- **Exp 26** — TruthfulQA grading mock CI
+- Live runner reports T/I/TI + saves `live_truthfulqa_report.json`
+- State version **7.4**
+
+## v7.3 — TruthfulQA N=50 + CoT Baseline + Gate Calibration
+- **`questions_truthfulqa_50.json`** — 50 TruthfulQA Misconceptions (`build_truthfulqa_subset.py`)
+- **`EvalMode.llm_cot`** — chain-of-thought baseline vs EIDOS belief
+- **`gate_profiles.py`** + **`calibrate_gate.py`** — empirical gate-only tuning
+- **`docs/LIVE_EVAL_PILOT.md`** — honest N=6 Groq pilot results
+- **`docs/SIDECAR_RESEARCH_NOTE.md`** — arXiv-ready research arc
+- **Exp 25** — TruthfulQA meta vs CoT
+- **`--truthfulqa`** on live runner
+- State version **7.3**
+
 # v7.2 — Calibrated live Sidecar + task accuracy metrics
 - **Live eval uses SBERT** + `GATE_LIVE_MIN_DRAFT_GOAL_ALIGN=0.72` (fixes 100% over-abstention)
 - **Gate calibration** — question-clarity bypass; concept mismatch only when draft–goal below threshold

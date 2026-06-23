@@ -1,4 +1,4 @@
-"""Live EIDOS-Eval — Groq API comparison (v7.2)."""
+"""Live EIDOS-Eval — Groq API comparison (v7.4)."""
 
 from __future__ import annotations
 
@@ -12,16 +12,35 @@ from architecture.hybrid.hybrid_agent import HybridEidosAgent
 from architecture.hybrid.llm_backend import LanguageModelBackend
 from architecture.hybrid.llm_factory import create_live_llm, live_llm_available
 from eval.eidos_eval.llm_cache import CachedLLM, DEFAULT_CACHE_PATH
-from eval.eidos_eval.runner import EidosEvalHarness, EvalMode
+from eval.eidos_eval.runner import EidosEvalHarness, EvalMode, LIVE_COMPARISON_MODES
 
 LIVE_QUESTIONS_PATH = Path(__file__).resolve().parent / "questions_live.json"
+TRUTHFULQA_50_PATH = Path(__file__).resolve().parent / "questions_truthfulqa_50.json"
 
-DEFAULT_LIVE_MODES = [
-    EvalMode.LLM_ALONE,
-    EvalMode.EIDOS_GATE,
-    EvalMode.EIDOS_BELIEF,
-    EvalMode.EIDOS_META,
-]
+DEFAULT_LIVE_MODES = list(LIVE_COMPARISON_MODES)
+
+
+def _print_report(mode: str, report: object) -> None:
+    """Print mode summary — TruthfulQA metrics when available."""
+    r = report
+    line = (
+        f"  [{mode}] task_acc={r.task_accuracy:.1%} "
+        f"commit_acc={r.accuracy_when_commit:.1%} "
+        f"abstain={r.abstention_rate:.1%}"
+    )
+    if getattr(r, "grading_mode", None) == "truthfulqa":
+        line += (
+            f" T={r.truthfulness_rate:.1%}"
+            f" I={r.informativeness_rate:.1%}"
+            f" TI={r.truthful_informative_rate:.1%}"
+            f" misc={r.misconception_commit_rate:.1%}"
+        )
+    else:
+        line += (
+            f" false_commit={r.false_commit_rate:.1%} "
+            f"must_abstain_safe={r.must_abstain_safe_rate:.1%}"
+        )
+    print(line)
 
 
 def run_live_comparison(
@@ -34,10 +53,11 @@ def run_live_comparison(
     use_cache: bool = True,
     cache_path: Path | None = None,
     embedding: str = "auto",
+    limit: int | None = None,
 ) -> dict:
     """Run EIDOS-Eval with a live LLM for all modes."""
     path = questions_path or LIVE_QUESTIONS_PATH
-    harness = EidosEvalHarness(path)
+    harness = EidosEvalHarness(path, limit=limit)
     backend = llm or create_live_llm(provider)  # type: ignore[arg-type]
     if use_cache:
         backend = CachedLLM(backend, cache_path or DEFAULT_CACHE_PATH)
@@ -62,6 +82,7 @@ def run_live_comparison(
         modes=selected,
     )
     reports["_embedding_backend"] = backend_label  # type: ignore[assignment]
+    reports["_grading_mode"] = harness.grading_mode  # type: ignore[assignment]
     return reports
 
 
@@ -103,6 +124,17 @@ def main(argv: list[str] | None = None) -> int:
         default="auto",
         help="Embedding backend for gate (auto=SBERT with hash fallback)",
     )
+    parser.add_argument(
+        "--limit",
+        type=int,
+        default=None,
+        help="Run only first N questions (debug)",
+    )
+    parser.add_argument(
+        "--truthfulqa",
+        action="store_true",
+        help="Use TruthfulQA Misconceptions N=50 set",
+    )
     args = parser.parse_args(argv)
 
     if not live_llm_available(args.provider):
@@ -111,30 +143,38 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     modes = [EvalMode(m) for m in args.modes]
+    questions_path = TRUTHFULQA_50_PATH if args.truthfulqa else args.questions
+    default_out = None
+    if args.truthfulqa and args.out is None:
+        default_out = Path(__file__).resolve().parent / "live_truthfulqa_report.json"
+
     reports = run_live_comparison(
         provider=args.provider,
-        questions_path=args.questions,
+        questions_path=questions_path,
         seed=args.seed,
         modes=modes,
         use_cache=not args.no_cache,
         embedding=args.embedding,
+        limit=args.limit,
     )
     emb = reports.pop("_embedding_backend", "unknown")
+    grading_mode = reports.pop("_grading_mode", None)
     summary = EidosEvalHarness.summarize_comparison(reports)
 
     print("=" * 55)
-    print(f"EIDOS-EVAL LIVE ({args.provider}) — v7.2")
+    print(f"EIDOS-EVAL LIVE ({args.provider}) — v7.4")
     print(f"Embedding: {emb}")
+    if grading_mode:
+        print(f"Grading: {grading_mode}")
     print("=" * 55)
-    payload: dict = {"embedding_backend": emb, "reports": {}, "summary": summary.to_dict()}
+    payload: dict = {
+        "embedding_backend": emb,
+        "grading_mode": grading_mode,
+        "reports": {},
+        "summary": summary.to_dict(),
+    }
     for mode, report in reports.items():
-        print(
-            f"  [{mode}] task_acc={report.task_accuracy:.1%} "
-            f"commit_acc={report.accuracy_when_commit:.1%} "
-            f"abstain={report.abstention_rate:.1%} "
-            f"false_commit={report.false_commit_rate:.1%} "
-            f"must_abstain_safe={report.must_abstain_safe_rate:.1%}"
-        )
+        _print_report(mode, report)
         payload["reports"][mode] = report.to_dict()
 
     print("  ---")
@@ -142,15 +182,33 @@ def main(argv: list[str] | None = None) -> int:
         f"  Δ commit_acc (gate vs alone): {summary.selective_accuracy_delta_gate:+.1%}"
     )
     print(
-        f"  Δ task_acc (gate vs alone): {summary.task_accuracy_delta_gate:+.1%}"
+        f"  Δ task_acc (belief vs alone): {summary.task_accuracy_delta_belief:+.1%}"
     )
+    print(
+        f"  Δ task_acc (CoT vs alone): {summary.task_accuracy_delta_cot:+.1%}"
+    )
+    print(f"  Belief beats CoT (task): {summary.belief_beats_cot}")
+    if summary.truthful_informative_delta_belief is not None:
+        print(
+            f"  Δ TI (belief vs alone): {summary.truthful_informative_delta_belief:+.1%}"
+        )
+        print(
+            f"  Δ TI (CoT vs alone): {summary.truthful_informative_delta_cot:+.1%}"
+        )
+        print(f"  Belief beats CoT (TI): {summary.belief_beats_cot_ti}")
+        if summary.misconception_reduction_belief is not None:
+            print(
+                f"  Misconception reduction (belief): "
+                f"{summary.misconception_reduction_belief:+.1%}"
+            )
     print(
         f"  false_commit reduction (gate): {summary.false_commit_reduction_gate:.1%}"
     )
 
-    if args.out:
-        args.out.write_text(json.dumps(payload, indent=2))
-        print(f"\nReport saved to {args.out}")
+    out_path = args.out or default_out
+    if out_path:
+        out_path.write_text(json.dumps(payload, indent=2))
+        print(f"\nReport saved to {out_path}")
 
     return 0
 

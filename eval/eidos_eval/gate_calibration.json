@@ -1,0 +1,13 @@
+{
+  "version": "1.0",
+  "recommended_gate_only": {
+    "min_draft_goal_align": 0.82,
+    "concept_ambiguity_eps": 0.04,
+    "question_goal_clear": 0.68,
+    "must_abstain_safe_rate": 1.0,
+    "false_commit_rate": 0.0,
+    "decision_match_rate": 0.8823529411764706
+  },
+  "candidates_tested": 80,
+  "mock_eval_gate_task_accuracy": 0.875
+}

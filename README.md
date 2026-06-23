@@ -2,7 +2,7 @@
 
 **Emergent Intelligence via Distributed Organisational Systems**
 
-**Status: Active (v7.2)** — [Lab report](LAB_REPORT.md) · [Changelog](CHANGELOG.md) · [Positioning](docs/POSITIONING.md) · [What EIDOS is](docs/WHAT_EIDOS_IS.md) · [Releases](https://github.com/yesYescaca/eidos/releases)
+**Status: Active (v7.4)** — [Lab report](LAB_REPORT.md) · [Changelog](CHANGELOG.md) · [Positioning](docs/POSITIONING.md) · [What EIDOS is](docs/WHAT_EIDOS_IS.md) · [Live pilot](docs/LIVE_EVAL_PILOT.md) · [TruthfulQA eval](docs/TRUTHFULQA_EVAL.md) · [Releases](https://github.com/yesYescaca/eidos/releases)
 
 EIDOS is a laboratory prototype reasoning agent built from cognitive science primitives — not from transformer architectures or token prediction. Instead of learning statistical text patterns, EIDOS implements mechanisms drawn from neuroscience: hierarchical predictive coding, global workspace broadcasting, Hebbian association learning, attentional gating, and intrinsic curiosity reward. It is a transparent, numpy-only system designed to explore how biological cognition might be computationally reconstructed.
 
@@ -10,10 +10,10 @@ EIDOS is a laboratory prototype reasoning agent built from cognitive science pri
 
 | | |
 |---|---|
-| **Experiments** | 24 controlled tests (v1 → v7.1) |
-| **Unit tests** | 78 (pytest) |
-| **Benchmark** | 17 ambiguous QA cases + EIDOS-Eval (mock + live) |
-| **Latest** | v7.2 — Calibrated live gate + task accuracy metrics |
+| **Experiments** | 26 controlled tests (v1 → v7.4) |
+| **Unit tests** | 91 (pytest) |
+| **Benchmark** | 17 ambiguous QA + EIDOS-Eval + TruthfulQA N=50 |
+| **Latest** | v7.4 — TruthfulQA T/I/TI grading + belief beats CoT (N=50 Groq) |
 | **Hybrid** | LLM proposes → EIDOS gates (`HybridEidosAgent`) |
 
 ```bash
@@ -21,9 +21,42 @@ git clone https://github.com/yesYescaca/eidos.git && cd eidos
 pip install -r requirements.txt
 pytest tests/ && python run_all_experiments.py
 py -m benchmark.ambiguous_qa.runner
-py -m benchmark.ambiguous_qa.runner
 py -m eval.eidos_eval.runner
-py -m eval.eidos_eval.live_runner --provider groq   # needs GROQ_API_KEY
+py -m eval.eidos_eval.live_runner --provider groq --truthfulqa
+```
+
+## v7.4 — TruthfulQA-Aligned Grading + Factual Gate
+
+- **`truthfulqa_scorer.py`** — T / I / TI metrics (Lin et al., ACL 2022)
+- **`LIVE_TRUTHFULQA`** gate profile — fewer spurious abstentions on misconceptions
+- **N=50 Groq pilot** — belief TI 78% vs CoT 64% ([docs/LIVE_EVAL_PILOT.md](docs/LIVE_EVAL_PILOT.md))
+- **Exp 26** — TruthfulQA grading mock CI
+
+```bash
+py -m eval.eidos_eval.live_runner --provider groq --truthfulqa --limit 10
+py -m eval.eidos_eval.live_runner --provider groq --truthfulqa
+```
+
+## v7.3 — TruthfulQA N=50 + CoT Baseline
+
+- **`questions_truthfulqa_50.json`** — 50 Misconceptions items from official TruthfulQA CSV
+- **`llm_cot` mode** — chain-of-thought baseline vs EIDOS belief
+- **`gate_profiles.py`** — calibrated gate-only thresholds (less over-abstention)
+- **Pilot results** — [docs/LIVE_EVAL_PILOT.md](docs/LIVE_EVAL_PILOT.md)
+- **Exp 25** — TruthfulQA meta vs CoT (CI subset)
+
+```bash
+py -m eval.eidos_eval.build_truthfulqa_subset --n 50
+py -m eval.eidos_eval.live_runner --provider groq --truthfulqa
+py -m eval.eidos_eval.calibrate_gate
+```
+
+## v7.2 — Calibrated Live Sidecar
+
+- **task_accuracy** metric, SBERT live path, response cache
+
+```bash
+py -m eval.eidos_eval.live_runner --provider groq
 ```
 
 ## v7.1 — Live Groq Eval + Belief-Grounded Sidecar
