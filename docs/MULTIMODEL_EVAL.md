@@ -8,7 +8,7 @@ Run the same EIDOS-Eval harness across multiple LLMs to check whether **belief i
 |----------|-------|
 | `llama-3.3-70b-versatile` | Primary baseline (v7.5 results) |
 | `llama-3.1-8b-instant` | Small / fast |
-| `llama-3.1-70b-versatile` | Mid-size alternative |
+| `openai/gpt-oss-20b` | Mid-size, different model family (Groq production) |
 
 ## Single model
 

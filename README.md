@@ -30,7 +30,7 @@ py -m eval.eidos_eval.run_multimodel_eval --provider groq
 ## v7.6 — Multi-Model Live Eval
 
 - **`--model`** on live runner — per-model cache + reports
-- **`run_multimodel_eval`** — TruthfulQA + mixed across 70B / 8B / 70B-3.1
+- **`run_multimodel_eval`** — TruthfulQA + mixed across 70B Llama / 8B Llama / GPT-OSS-20B
 - See [docs/MULTIMODEL_EVAL.md](docs/MULTIMODEL_EVAL.md)
 
 ```bash

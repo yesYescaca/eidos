@@ -3,16 +3,16 @@
   "models": [
     "llama-3.3-70b-versatile",
     "llama-3.1-8b-instant",
-    "llama-3.1-70b-versatile"
+    "openai/gpt-oss-20b"
   ],
   "slugs": [
     "llama-3.3-70b-versatile",
     "llama-3.1-8b-instant",
-    "llama-3.1-70b-versatile"
+    "openai_gpt-oss-20b"
   ],
   "cache_files": [
     "live_cache_llama-3.3-70b-versatile.json",
     "live_cache_llama-3.1-8b-instant.json",
-    "live_cache_llama-3.1-70b-versatile.json"
+    "live_cache_openai_gpt-oss-20b.json"
   ]
 }

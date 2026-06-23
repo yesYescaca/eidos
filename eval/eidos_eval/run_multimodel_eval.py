@@ -61,15 +61,30 @@ def run_multimodel_eval(
         model_id = resolve_model_id(provider, model)
         for bench in benchmarks:
             questions_path = BENCHMARK_PATHS[bench]
-            reports = run_live_comparison(
-                provider=provider,
-                model=model,
-                questions_path=questions_path,
-                seed=seed,
-                use_cache=use_cache,
-                embedding=embedding,
-                limit=limit,
-            )
+            try:
+                reports = run_live_comparison(
+                    provider=provider,
+                    model=model,
+                    questions_path=questions_path,
+                    seed=seed,
+                    use_cache=use_cache,
+                    embedding=embedding,
+                    limit=limit,
+                )
+            except Exception as exc:  # noqa: BLE001 — continue other model/benchmark pairs
+                err_row = {
+                    "model": model_id,
+                    "benchmark": bench,
+                    "error": str(exc),
+                    "belief_beats_cot_commit_ti": None,
+                }
+                results["runs"].append(err_row)
+                results.setdefault("errors", []).append(err_row)
+                print()
+                print(f"=== {model_id} / {bench} — FAILED ===")
+                print(f"  {exc}")
+                continue
+
             payload = build_live_payload(reports)
             out_path = REPORTS_DIR / report_basename(bench, model_id)
             out_path.parent.mkdir(parents=True, exist_ok=True)
@@ -107,6 +122,12 @@ def print_comparison_table(results: dict) -> None:
     print(f"{'Model':<32} {'Bench':<12} {'Belief':>8} {'CoT':>8} {'Alone':>8} {'B>C':>5}")
     print("-" * 72)
     for row in results["runs"]:
+        if row.get("error"):
+            slug = model_slug(row["model"])
+            err = row["error"][:40] + "…" if len(row["error"]) > 40 else row["error"]
+            print(f"{slug:<32} {row['benchmark']:<12} {'ERROR':>8} {'—':>8} {'—':>8} {'—':>5}")
+            print(f"  ↳ {err}")
+            continue
         b = row["belief_commit_ti"]
         c = row["cot_commit_ti"]
         a = row["alone_task_acc"]

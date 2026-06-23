@@ -4,7 +4,7 @@
 - **`--model`** on live runner — explicit Groq/OpenAI model ID
 - **Per-model cache** — `live_cache_{model_slug}.json`
 - **`run_multimodel_eval.py`** — TruthfulQA + mixed across default Groq model set
-- **`live_models.py`** — `GROQ_EVAL_MODELS` (70b, 8b, 70b-3.1)
+- **`live_models.py`** — `GROQ_EVAL_MODELS` (70b Llama, 8b, GPT-OSS-20B)
 - **Reports** — `eval/eidos_eval/reports/` per model + benchmark
 - **`docs/MULTIMODEL_EVAL.md`** — multi-model workflow
 - **Exp 28** — model registry smoke test

@@ -5,6 +5,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
+
 from eval.eidos_eval.live_models import (
     GROQ_EVAL_MODELS,
     model_slug,
@@ -81,6 +83,18 @@ def test_build_live_payload_from_mock_harness(tmp_path):
 def test_groq_eval_models_list():
     assert "llama-3.3-70b-versatile" in GROQ_EVAL_MODELS
     assert "llama-3.1-8b-instant" in GROQ_EVAL_MODELS
+    assert "openai/gpt-oss-20b" in GROQ_EVAL_MODELS
+    assert "llama-3.1-70b-versatile" not in GROQ_EVAL_MODELS
+
+
+def test_normalize_deprecated_groq_model():
+    from eval.eidos_eval.live_models import normalize_groq_model
+
+    with pytest.warns(UserWarning, match="deprecated"):
+        assert (
+            normalize_groq_model("llama-3.1-70b-versatile")
+            == "llama-3.3-70b-versatile"
+        )
 
 
 def test_multimodel_summary_shape(tmp_path, monkeypatch):
