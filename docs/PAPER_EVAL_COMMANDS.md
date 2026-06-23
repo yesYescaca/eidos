@@ -157,3 +157,14 @@ py update_paper_nocache_figure.py
 ```
 
 Expect ~15–30 minutes (4 modes × 50 questions, fresh API calls).
+
+### Results (70B mixed, completed)
+
+| Mode | Cached | No-cache | Δ |
+|------|--------|----------|---|
+| LLM alone | 60% | 60% | 0 |
+| LLM CoT | 40% | 36% | −4 |
+| LLM reflection | 54% | 54% | 0 |
+| EIDOS belief | 86% | **88%** | +2 |
+
+**Belief vs reflection:** +32 pts (cached), **+34 pts** (no-cache) — headline claim robust.

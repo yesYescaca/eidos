@@ -66,23 +66,17 @@ def print_comparison(summary: dict, *, metrics: tuple[str, ...]) -> None:
     bl = summary["baseline_label"]
     vl = summary["variant_label"]
     print(f"\nAblation: {bl} vs {vl} ({summary.get('grading_mode', '?')})")
-    print(f"{'Mode':<18} ", end="")
     for metric in metrics:
-        short = metric.replace("_rate", "").replace("_accuracy", "_acc")[:12]
-        print(f"{short+'('+bl+')':>14} {short+'('+vl+')':>14} {'Δ pts':>8}", end="")
-    print()
-    print("-" * (18 + 38 * len(metrics)))
-    for mode, row in summary["modes"].items():
-        print(f"{mode:<18} ", end="")
-        for metric in metrics:
+        short = metric.replace("_rate", "").replace("_accuracy", "")
+        print(f"\n  [{short}]")
+        print(f"  {'Mode':<18} {bl:>12} {vl:>12} {'Δ pts':>8}")
+        print(f"  {'-'*52}")
+        for mode, row in summary["modes"].items():
             cell = row.get(metric, {})
-            print(
-                f"{_fmt_rate(cell.get('baseline')):>14} "
-                f"{_fmt_rate(cell.get('variant')):>14} "
-                f"{cell.get('delta_pts', '—')!s:>8}",
-                end="",
-            )
-        print()
+            b = _fmt_rate(cell.get("baseline"))
+            v = _fmt_rate(cell.get("variant"))
+            d = cell.get("delta_pts", "—")
+            print(f"  {mode:<18} {b:>12} {v:>12} {str(d):>8}")
 
 
 def main(argv: list[str] | None = None) -> int:
